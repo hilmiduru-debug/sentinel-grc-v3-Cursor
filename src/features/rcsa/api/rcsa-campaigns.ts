@@ -35,9 +35,15 @@ export interface CreateRCSACampaignInput {
   endDate?: string;
 }
 
+/** created_by için kullanılacak fallback (anon / auth yokken). */
+const FALLBACK_CREATED_BY = ACTIVE_TENANT_ID;
+
 export async function createRCSACampaign(
   input: CreateRCSACampaignInput,
 ): Promise<RCSACampaign> {
+  const { data: user } = await supabase.auth.getUser();
+  const createdBy = user?.user?.id ?? FALLBACK_CREATED_BY;
+
   const { data, error } = await supabase
     .from('rcsa_campaigns')
     .insert({
@@ -47,6 +53,7 @@ export async function createRCSACampaign(
       end_date: input.endDate ?? null,
       status: 'DRAFT',
       completion_rate: 0,
+      created_by: createdBy,
     })
     .select('*')
     .single();

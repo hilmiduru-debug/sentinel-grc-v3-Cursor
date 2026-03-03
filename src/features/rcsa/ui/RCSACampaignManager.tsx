@@ -60,8 +60,9 @@ export const RCSACampaignManager = () => {
       setIsLaunchOpen(false);
       setForm(initialForm);
     },
-    onError: () => {
-      toast.error('Kampanya oluşturulurken bir hata oluştu.');
+    onError: (err: Error & { message?: string }) => {
+      const msg = err?.message ?? 'Kampanya oluşturulurken bir hata oluştu.';
+      toast.error(msg);
     },
   });
 
@@ -156,8 +157,13 @@ export const RCSACampaignManager = () => {
         </div>
         <button
           type="button"
-          onClick={() => setIsLaunchOpen(true)}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsLaunchOpen(true);
+          }}
           className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-blue-700 transition-colors"
+          aria-label="Yeni RCSA kampanyası fırlat"
         >
           <Plus className="h-4 w-4" />
           Launch Campaign
@@ -187,7 +193,11 @@ export const RCSACampaignManager = () => {
             <p>Henüz tanımlı bir RCSA kampanyası bulunmuyor.</p>
             <button
               type="button"
-              onClick={() => setIsLaunchOpen(true)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsLaunchOpen(true);
+              }}
               className="inline-flex items-center gap-2 rounded-lg border border-blue-500 px-3 py-1.5 text-xs font-semibold text-blue-600 hover:bg-blue-50 transition-colors"
             >
               <Plus className="h-4 w-4" />
@@ -279,16 +289,24 @@ export const RCSACampaignManager = () => {
         )}
       </div>
 
-      {/* Launch Modal */}
+      {/* Launch Modal - z-[100] ile her zaman üstte */}
       {isLaunchOpen && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-2xl bg-surface p-6 shadow-2xl border border-slate-200">
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="rcsa-launch-title"
+        >
+          <div
+            className="w-full max-w-lg rounded-2xl bg-surface p-6 shadow-2xl border border-slate-200"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="mb-4 flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md">
                 <Rocket className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="text-base font-semibold text-slate-900">
+                <h2 id="rcsa-launch-title" className="text-base font-semibold text-slate-900">
                   Yeni RCSA Kampanyası Fırlat
                 </h2>
                 <p className="text-xs text-slate-500">
