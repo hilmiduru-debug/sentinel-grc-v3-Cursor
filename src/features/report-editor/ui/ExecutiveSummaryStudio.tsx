@@ -18,6 +18,7 @@ import { useActiveReportStore } from '@/entities/report';
 import type { ExecutiveSummarySections, ManagementResponse, DynamicSection } from '@/entities/report';
 import { SmartVariableNode } from '@/features/report-editor/blocks/extensions/SmartVariableNode';
 import { useReportSummary } from '@/features/report-editor/api/useReportSummary';
+import { FourEyesGate } from '@/features/security/ui/FourEyesGate';
 
 function warmthToBg(w: number): string {
   const t = w / 10;
@@ -253,6 +254,11 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
     [es, updateExecutiveSummary],
   );
 
+  /** Müfettiş kanaati (not override) kaydı — 4 göz onayı sonrası veya bypass’ta DB’ye yazar. */
+  const handleSaveOverride = useCallback(() => {
+    updateExecutiveSummary({});
+  }, [updateExecutiveSummary]);
+
   if (!es) return null;
 
   const trendPositive = es.trend > 0;
@@ -356,6 +362,38 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
                 </select>
               </div>
             </div>
+            {!readOnly && (
+              <div className="mt-4 pt-4 border-t border-slate-200">
+                <FourEyesGate
+                  isCritical={true}
+                  resourceType="REPORT_GRADE"
+                  resourceId={reportId ?? 'mock-id'}
+                  actionName={`Override System Grade to ${es.grade}`}
+                  payload={{
+                    grade: es.grade,
+                    score: es.score,
+                    previousGrade: es.previousGrade,
+                    trend: es.trend,
+                    assuranceLevel: es.assuranceLevel,
+                  }}
+                  onExecute={handleSaveOverride}
+                  children={({ onClick, loading }) => (
+                    <button
+                      type="button"
+                      onClick={onClick}
+                      disabled={loading}
+                      className="flex items-center gap-2 px-4 py-2.5 bg-amber-600 hover:bg-amber-700 disabled:bg-amber-400 text-white rounded-xl text-sm font-sans font-semibold transition-colors shadow-sm"
+                    >
+                      {loading ? (
+                        <>Bekleniyor...</>
+                      ) : (
+                        <>Kanaat Gerekçesini Kaydet (Görüşü Mühürle)</>
+                      )}
+                    </button>
+                  )}
+                />
+              </div>
+            )}
           </div>
         )}
 

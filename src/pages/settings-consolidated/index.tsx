@@ -188,9 +188,9 @@ export default function SettingsConsolidatedPage() {
                           Tüm verileri sil ve temiz demo verilerini yeniden yükle.
                         </p>
                         <ul className="text-xs text-slate-500 space-y-1 mb-4">
-                          <li>• 50 Bulgu (Demo data)</li>
-                          <li>• 15 Denetim (2026 Annual Plan)</li>
-                          <li>• 61 Entite (HQ + 10 Dept + 50 Branches)</li>
+                          <li>• 50 Bulgu (Demo verisi)</li>
+                          <li>• 15 Denetim (2026 Yıllık Plan)</li>
+                          <li>• 61 Entite (Genel Müdürlük + 10 Birim + 50 Şube)</li>
                           <li>• 50 Risk Tanımı ve Değerlendirmesi</li>
                           <li>• 30 Aksiyon Planı</li>
                           <li>• 100 Çalışma Kağıdı</li>

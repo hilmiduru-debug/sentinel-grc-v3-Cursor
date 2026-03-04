@@ -62,6 +62,7 @@ export const PERSONAS: Record<PersonaRole, PersonaConfig> = {
       '/strategy/risk-heatmap',
       '/strategy/neural-map',
       '/governance/board',
+      '/security',
     ],
     hiddenPaths: [
       '/execution',

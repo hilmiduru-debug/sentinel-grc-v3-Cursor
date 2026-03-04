@@ -375,7 +375,7 @@ export const Sidebar = () => {
                   <span className="text-sm font-black text-white tracking-tight">Sentinel Asistan</span>
                   <Sparkles size={14} className="text-yellow-300 animate-pulse" />
                 </div>
-                <div className="text-[10px] text-white/80 font-medium uppercase tracking-wider">The Oracle</div>
+                <div className="text-[10px] text-white/80 font-medium uppercase tracking-wider">Zeka Çekirdeği</div>
               </div>
             )}
           </div>
@@ -464,10 +464,10 @@ export const Sidebar = () => {
             {isSidebarOpen && (
               <div className="flex-1 text-left overflow-hidden">
                 <div className="font-semibold text-sm text-white truncate">
-                  {userData?.name || 'Sentinel User'}
+                  {userData?.name || 'Sentinel Kullanıcısı'}
                 </div>
                 <div className="text-[10px] text-slate-400 truncate uppercase tracking-wider">
-                  {userData?.role || 'Senior Auditor'}
+                  {userData?.role || 'Kıdemli Müfettiş'}
                 </div>
               </div>
             )}

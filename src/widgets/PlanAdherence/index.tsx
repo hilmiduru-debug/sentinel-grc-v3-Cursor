@@ -119,7 +119,7 @@ export function PlanAdherence({ data = DEMO_DATA }: { data?: AdherenceData }) {
             <XAxis type="number" stroke="#94a3b8" style={{ fontSize: '11px' }} />
             <YAxis type="category" dataKey="name" stroke="#94a3b8" style={{ fontSize: '10px' }} width={120} />
             <Tooltip
-              formatter={(value: number) => [`${value > 0 ? '+' : ''}${value} gun`, 'Sapma']}
+              formatter={(value: number) => [`${value > 0 ? '+' : ''}${value} gün`, 'Sapma']}
               contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '12px' }}
             />
             <Bar dataKey="variance" radius={[0, 4, 4, 0]}>

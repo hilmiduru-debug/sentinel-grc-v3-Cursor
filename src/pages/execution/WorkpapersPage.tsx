@@ -13,21 +13,21 @@ import { useWorkpaperControlSet } from '@/entities/workpaper/api/fetchWorkpaperC
 type ViewMode = 'table' | 'list';
 
 const CATEGORY_FILTERS = [
-  'All',
-  'Access Control',
-  'Network Security',
-  'Business Continuity',
-  'Physical Security',
-  'Change Management',
-  'Data Protection',
-  'Endpoint Security',
-  'Governance',
-  'Monitoring',
+  { value: 'ALL', label: 'Tümü' },
+  { value: 'Access Control', label: 'Erişim Kontrolü' },
+  { value: 'Network Security', label: 'Ağ Güvenliği' },
+  { value: 'Business Continuity', label: 'İş Sürekliliği' },
+  { value: 'Physical Security', label: 'Fiziksel Güvenlik' },
+  { value: 'Change Management', label: 'Değişiklik Yönetimi' },
+  { value: 'Data Protection', label: 'Veri Koruma' },
+  { value: 'Endpoint Security', label: 'Uç Nokta Güvenliği' },
+  { value: 'Governance', label: 'Yönetişim' },
+  { value: 'Monitoring', label: 'İzleme' },
 ];
 
 export default function WorkpapersPage() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('All');
+  const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
   const [workpaperMap, setWorkpaperMap] = useState<Record<string, WorkpaperMapping>>({});
   const [mappedCount, setMappedCount] = useState(0);
   const [viewMode, setViewMode] = useState<ViewMode>('table');
@@ -59,8 +59,8 @@ export default function WorkpapersPage() {
   const filteredControls = useMemo(() => {
     let result = controls;
 
-    if (categoryFilter !== 'All') {
-      result = result.filter(r => r.category === categoryFilter);
+    if (categoryFilter !== 'ALL') {
+      result = result.filter((r) => r.category === categoryFilter);
     }
 
     if (searchTerm) {
@@ -190,7 +190,7 @@ export default function WorkpapersPage() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
               <input
                 type="text"
-                placeholder="Search controls by ID, title, or category..."
+                placeholder="Kontrolleri ID, başlık veya kategoriye göre ara..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 bg-canvas border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
@@ -205,24 +205,31 @@ export default function WorkpapersPage() {
                 className="px-3 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-surface text-sm font-medium"
               >
                 {CATEGORY_FILTERS.map((cat) => (
-                  <option key={cat} value={cat}>{cat}</option>
+                  <option key={cat.value} value={cat.value}>
+                    {cat.label}
+                  </option>
                 ))}
               </select>
             </div>
 
             <div className="flex items-center gap-3">
               <div className="text-sm font-semibold text-slate-600">
-                {filteredControls.length} controls
+                {filteredControls.length} kontrol
               </div>
               {dbLoading ? (
                 <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-50 rounded-lg">
                   <Loader2 size={12} className="animate-spin text-blue-500" />
-                  <span className="text-[10px] font-medium text-blue-600">DB Sync</span>
+                  <span className="text-[10px] font-medium text-blue-600">DB Senkronizasyonu</span>
                 </div>
               ) : (
-                <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-50 rounded-lg" title={`${mappedCount} controls mapped to workpapers in DB`}>
+                <div
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-50 rounded-lg"
+                  title={`${mappedCount} kontrol DB'deki çalışma kağıtlarına eşlendi`}
+                >
                   <Database size={12} className="text-emerald-500" />
-                  <span className="text-[10px] font-medium text-emerald-600">{mappedCount} mapped</span>
+                  <span className="text-[10px] font-medium text-emerald-600">
+                    {mappedCount} eşlenmiş
+                  </span>
                 </div>
               )}
             </div>

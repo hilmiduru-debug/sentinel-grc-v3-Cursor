@@ -48,3 +48,48 @@ export async function createFourEyesApproval(
   return data as FourEyesApproval;
 }
 
+/** PENDING durumundaki tüm onay taleplerini getirir (Checker paneli için). */
+export async function fetchPendingApprovals(): Promise<FourEyesApproval[]> {
+  const { data, error } = await supabase
+    .from('sys_four_eyes_approvals')
+    .select('*')
+    .eq('status', 'PENDING')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []) as FourEyesApproval[];
+}
+
+export type ResolveApprovalStatus = 'APPROVED' | 'REJECTED';
+
+export interface ResolveApprovalInput {
+  id: string;
+  status: ResolveApprovalStatus;
+}
+
+/** Onay talebini onayla veya reddet; checker_id ve decided_at güncellenir. */
+export async function resolveApproval(input: ResolveApprovalInput): Promise<FourEyesApproval> {
+  const { data: user } = await supabase.auth.getUser();
+  const checkerId = user?.user?.id ?? null;
+
+  const { data, error } = await supabase
+    .from('sys_four_eyes_approvals')
+    .update({
+      status: input.status,
+      checker_id: checkerId,
+      decided_at: new Date().toISOString(),
+    })
+    .eq('id', input.id)
+    .select('*')
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data as FourEyesApproval;
+}
+

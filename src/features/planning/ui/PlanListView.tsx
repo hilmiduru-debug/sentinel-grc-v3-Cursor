@@ -100,7 +100,7 @@ function ListRow({ engagement, index, source }: RowProps) {
               ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
               : 'bg-slate-100 text-slate-600 border border-slate-200'
         }`}>
-          {isCCM ? 'CCM Trigger' : source === 'sprint' ? 'Q-Sprint' : 'Backlog'}
+          {isCCM ? 'CCM Tetikleyici' : source === 'sprint' ? 'Q-Sprint' : 'İş Listesi'}
         </span>
       </td>
 
@@ -110,7 +110,7 @@ function ListRow({ engagement, index, source }: RowProps) {
             onClick={() => pullToSprint(engagement.id)}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 text-xs font-semibold hover:bg-indigo-100 transition-colors duration-150"
           >
-            Sprint
+            Sprint'e Taşı
             <ArrowRight size={11} />
           </button>
         )}
@@ -135,7 +135,7 @@ export function PlanListView() {
           <FileText size={14} className="text-slate-600" />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-slate-800">Core Assurance Programme</h3>
+          <h3 className="text-sm font-bold text-slate-800">Çekirdek Güvence Programı</h3>
           <p className="text-xs text-slate-500">BDDK / GIAS 2024 — Geleneksel Denetim Listesi</p>
         </div>
         <div className="ml-auto flex items-center gap-3">
@@ -143,7 +143,7 @@ export function PlanListView() {
             {qSprint.length} Q-Sprint
           </span>
           <span className="text-xs font-medium text-slate-600 bg-slate-100 border border-slate-200 rounded-full px-2.5 py-1">
-            {backlog.length} Backlog
+            {backlog.length} İş Listesi
           </span>
         </div>
       </div>
@@ -153,7 +153,7 @@ export function PlanListView() {
           <FileText size={36} className="text-slate-200" />
           <p className="text-sm font-medium text-slate-400">Plan boş</p>
           <p className="text-xs text-slate-400 max-w-xs">
-            Risk evreninden görevler ekleyin veya CCM trigger'ı simüle edin.
+            Risk evreninden görevler ekleyin veya CCM tetikleyicisini simüle edin.
           </p>
         </div>
       ) : (
@@ -171,7 +171,7 @@ export function PlanListView() {
                   Seviye
                 </th>
                 <th className="px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-wide bg-canvas">
-                  Velocity
+                  Risk Hızı
                 </th>
                 <th className="px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-wide bg-canvas">
                   Özel Kapsam

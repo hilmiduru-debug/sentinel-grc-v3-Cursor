@@ -103,6 +103,7 @@ import AcademyPage from '@/pages/academy';
 import PlaybookPage from '@/pages/playbook';
 import ActivityReportsPage from '@/pages/reporting/ActivityReportsPage';
 import RCSAPage from '@/pages/rcsa';
+import ApprovalCenterPage from '@/pages/security/ApprovalCenterPage';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true' || localStorage.getItem('sentinel_token');
@@ -204,6 +205,7 @@ export const AppRoutes = () => {
       <Route path="/reporting/activity-reports" element={<ProtectedRoute><ActivityReportsPage /></ProtectedRoute>} />
 
       <Route path="/qaip" element={<ProtectedRoute><QAIPPage /></ProtectedRoute>} />
+      <Route path="/security/approvals" element={<ProtectedRoute><ApprovalCenterPage /></ProtectedRoute>} />
 
       <Route path="/settings" element={<ProtectedRoute><SettingsConsolidatedPage /></ProtectedRoute>} />
       <Route path="/settings/system-health" element={<ProtectedRoute><SystemHealthPage /></ProtectedRoute>} />

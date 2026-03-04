@@ -87,7 +87,7 @@ export default function StrategicPlanningPage() {
 
   const tabs = [
     { id: 'universe' as const,  label: 'Risk Evreni & Puanlama', icon: Target,        color: 'blue' },
-    { id: 'rolling' as const,   label: 'Bimodal Rolling Plan',   icon: GitBranch,     color: 'indigo' },
+    { id: 'rolling' as const,   label: 'Bimodal Hareketli Plan', icon: GitBranch,     color: 'indigo' },
     { id: 'annual' as const,    label: 'Yıllık Plan',            icon: CalendarRange, color: 'sky' },
     { id: 'list' as const,      label: 'Denetim Listesi',        icon: FileText,      color: 'teal' },
     { id: 'adherence' as const, label: 'Plan Uyumu',             icon: Gauge,         color: 'amber' },
@@ -172,7 +172,7 @@ export default function StrategicPlanningPage() {
               <div className="mb-6">
                 <h2 className="text-2xl font-bold text-primary mb-2">Risk Evreni Skorlaması</h2>
                 <p className="text-slate-600">
-                  Score audit universe entities based on impact and likelihood to drive risk-based planning
+                  Denetim evrenindeki varlıkları etki ve olasılık bazında puanlayarak risk odaklı planlama yapın.
                 </p>
               </div>
               <UniverseScoring />
@@ -193,7 +193,7 @@ export default function StrategicPlanningPage() {
                     }`}
                   >
                     <List size={15} />
-                    Mode 1: Core Assurance
+                    Mod 1: Çekirdek Güvence
                   </button>
                   <button
                     onClick={() => setPlanMode('mode2_agile')}
@@ -204,7 +204,7 @@ export default function StrategicPlanningPage() {
                     }`}
                   >
                     <Kanban size={15} />
-                    Mode 2: Agile Sprints
+                    Mod 2: Agile Sprintler
                   </button>
                 </div>
 
@@ -259,7 +259,7 @@ export default function StrategicPlanningPage() {
                 <div>
                   <h2 className="text-2xl font-bold text-primary mb-2">Denetim Görevleri Listesi</h2>
                   <p className="text-slate-600">
-                    Comprehensive list view of all planned and active audit engagements
+                    Planlanmış ve aktif tüm denetim görevlerinin kapsamlı liste görünümü.
                   </p>
                 </div>
                 <button
@@ -274,27 +274,29 @@ export default function StrategicPlanningPage() {
               {loadingEngagements ? (
                 <div className="flex items-center justify-center py-16">
                   <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600" />
-                  <span className="ml-3 text-slate-600">Loading engagements...</span>
+                  <span className="ml-3 text-slate-600">Denetim görevleri yükleniyor...</span>
                 </div>
               ) : engagements.length === 0 ? (
                 <div className="text-center py-16">
                   <Calendar className="mx-auto mb-4 text-slate-400" size={48} />
-                  <p className="text-lg text-slate-600">No audit engagements planned yet</p>
-                  <p className="text-sm text-slate-500 mt-1">Click "Yeni Denetim Planla" to add your first engagement</p>
+                  <p className="text-lg text-slate-600">Henüz planlanmış bir denetim görevi yok</p>
+                  <p className="text-sm text-slate-500 mt-1">
+                    İlk denetim görevinizi eklemek için &quot;Yeni Denetim Planla&quot; butonunu kullanın.
+                  </p>
                 </div>
               ) : (
                 <div className="overflow-x-auto rounded-xl border border-slate-200">
                   <table className="w-full">
                     <thead className="bg-surface border-b border-slate-200">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Title</th>
-                        <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Type</th>
-                        <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Status</th>
-                        <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Start Date</th>
-                        <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">End Date</th>
-                        <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Est. Hours</th>
-                        <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Risk Score</th>
-                        <th className="px-4 py-3 text-center text-xs font-bold text-slate-600 uppercase tracking-wider">Actions</th>
+                        <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Başlık</th>
+                        <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Tip</th>
+                        <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Durum</th>
+                        <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Başlangıç Tarihi</th>
+                        <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Bitiş Tarihi</th>
+                        <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Tahmini Saat</th>
+                        <th className="px-4 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Risk Skoru</th>
+                        <th className="px-4 py-3 text-center text-xs font-bold text-slate-600 uppercase tracking-wider">İşlemler</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -371,14 +373,14 @@ export default function StrategicPlanningPage() {
                                     navigate(`/execution/my-engagements/${engagement.id}`);
                                   }}
                                   className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-colors"
-                                  title="View Details"
+                                  title="Detayı Görüntüle"
                                 >
                                   <Eye size={16} />
                                 </button>
                                 <button
                                   onClick={(e) => e.stopPropagation()}
                                   className="p-1.5 text-slate-600 hover:bg-canvas rounded transition-colors"
-                                  title="Edit"
+                                  title="Düzenle"
                                 >
                                   <Edit2 size={16} />
                                 </button>
@@ -418,20 +420,26 @@ export default function StrategicPlanningPage() {
               {engagements.length > 0 && (
                 <div className="mt-4 flex items-center justify-between text-sm text-slate-600">
                   <div>
-                    Total: <span className="font-semibold text-primary">{engagements.length}</span> engagements
+                    Toplam: <span className="font-semibold text-primary">{engagements.length}</span> denetim görevi
                   </div>
                   <div className="flex items-center gap-6">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-blue-500" />
-                      <span>{engagements.filter((e) => e.status === 'IN_PROGRESS').length} In Progress</span>
+                      <span>
+                        {engagements.filter((e) => e.status === 'IN_PROGRESS').length} Devam Eden
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-slate-500" />
-                      <span>{engagements.filter((e) => e.status === 'PLANNED').length} Planned</span>
+                      <span>
+                        {engagements.filter((e) => e.status === 'PLANNED').length} Planlanan
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                      <span>{engagements.filter((e) => e.status === 'COMPLETED').length} Completed</span>
+                      <span>
+                        {engagements.filter((e) => e.status === 'COMPLETED').length} Tamamlanan
+                      </span>
                     </div>
                   </div>
                 </div>

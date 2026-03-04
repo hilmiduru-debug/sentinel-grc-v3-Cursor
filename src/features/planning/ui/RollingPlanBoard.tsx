@@ -8,7 +8,7 @@ export function RollingPlanBoard() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* 9-Month Dynamic Backlog */}
+      {/* 9 Aylık Dinamik Havuz */}
       <div className="bg-canvas/50 p-6 rounded-2xl border border-slate-200/60 flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -16,8 +16,8 @@ export function RollingPlanBoard() {
               <Database size={15} className="text-slate-500" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-slate-800">9-Month Dynamic Pool</h2>
-              <p className="text-xs text-slate-500 font-medium">Tentative Backlog</p>
+              <h2 className="text-sm font-bold text-slate-800">9 Aylık Dinamik Havuz</h2>
+              <p className="text-xs text-slate-500 font-medium">Taslak İş Listesi</p>
             </div>
           </div>
           <span className="text-xs font-semibold text-slate-600 bg-surface border border-slate-200 rounded-full px-2.5 py-1 shadow-sm">
@@ -40,7 +40,7 @@ export function RollingPlanBoard() {
         </div>
       </div>
 
-      {/* 3-Month Locked Q-Sprint */}
+      {/* 3 Aylık Kilitli Q-Sprint */}
       <div className="bg-indigo-50/30 p-6 rounded-2xl border border-indigo-100 flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -48,8 +48,8 @@ export function RollingPlanBoard() {
               <Lock size={15} className="text-white" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-indigo-900">3-Month Locked Sprint</h2>
-              <p className="text-xs text-indigo-500 font-medium">Q-Sprint — aktif çeyrek</p>
+              <h2 className="text-sm font-bold text-indigo-900">3 Aylık Kilitli Sprint</h2>
+              <p className="text-xs text-indigo-500 font-medium">Q-Sprint — Aktif çeyrek</p>
             </div>
           </div>
           <span className="text-xs font-semibold text-indigo-700 bg-indigo-100 border border-indigo-200 rounded-full px-2.5 py-1">

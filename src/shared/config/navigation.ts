@@ -479,6 +479,14 @@ export const navigationConfig: NavigationItem[] = [
         icon: ShieldCheck,
       },
       {
+        id: 'approval-center',
+        label: 'Siber Güvenlik & Onay Merkezi',
+        path: '/security/approvals',
+        icon: Lock,
+        badge: '4G',
+        badgeColor: 'red',
+      },
+      {
         id: 'academy',
         label: 'Akademi & Sertifika',
         path: '/academy',

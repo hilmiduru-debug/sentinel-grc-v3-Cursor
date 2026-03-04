@@ -6,15 +6,15 @@ import { usePlanningStore } from '@/entities/planning/model/store';
 const SIGNALS = [
   {
     id: 'teverruk-kci',
-    label: 'Simulate Digital Teverruk KCI Breach',
-    description: 'Shariah Non-Compliance Latency — Velocity: Extreme',
+    label: 'Dijital Teverruk KCI İhlali Simüle Et',
+    description: 'Şer\'i uyumsuzluk gecikmesi — Hız: Aşırı',
     color: 'red',
     engagement: {
       id: `ccm-trigger-${Date.now()}`,
       universeNodeId: 'node-teverruk-ccm',
-      universeNodeName: 'Digital Teverruk Shariah Compliance (Latency Issue)',
+      universeNodeName: 'Dijital Teverruk Şer\'i Uyumluluk (Gecikme Sorunu)',
       cascadeRisk: 95,
-      requiredSkills: ['Shariah Audit', 'API Forensics', 'AAOIFI'],
+      requiredSkills: ['Şer\'i Denetim', 'API Adli Analiz', 'AAOIFI'],
       addedAt: new Date().toISOString(),
       baseRisk: 95,
       velocity: 'HIGH' as const,
@@ -22,19 +22,19 @@ const SIGNALS = [
       esg: false,
       isCCMTriggered: true,
     },
-    toastMsg: 'KCI Threshold Breached (Shariah Risk — Velocity: Extreme). Auto-injected to top of 9-Month Backlog.',
+    toastMsg: 'KCI eşiği aşıldı (Şer\'i risk — Hız: Aşırı). 9 aylık iş listesinin başına otomatik eklendi.',
   },
   {
     id: 'fx-var-kri',
-    label: 'Simulate FX VaR KRI Breach',
-    description: 'FX Volatility exceeds 3-sigma threshold',
+    label: 'FX VaR KRI İhlali Simüle Et',
+    description: 'FX oynaklığı 3-sigma eşiğini aşıyor',
     color: 'amber',
     engagement: {
       id: `ccm-trigger-fx-${Date.now()}`,
       universeNodeId: 'node-fx-var-ccm',
-      universeNodeName: 'FX VaR Breach — 3-Sigma Threshold Exceeded',
+      universeNodeName: 'FX VaR İhlali — 3-Sigma Eşiği Aşıldı',
       cascadeRisk: 88,
-      requiredSkills: ['Market Risk', 'VaR Modelling', 'BDDK'],
+      requiredSkills: ['Piyasa Riski', 'VaR Modelleme', 'BDDK'],
       addedAt: new Date().toISOString(),
       baseRisk: 88,
       velocity: 'HIGH' as const,
@@ -42,7 +42,7 @@ const SIGNALS = [
       esg: false,
       isCCMTriggered: true,
     },
-    toastMsg: 'KRI Threshold Breached (FX VaR — 3-Sigma). Auto-injected to top of 9-Month Backlog.',
+    toastMsg: 'KRI eşiği aşıldı (FX VaR — 3-Sigma). 9 aylık iş listesinin başına otomatik eklendi.',
   },
 ];
 
@@ -75,12 +75,12 @@ export function CCMSignalSimulator() {
           <Radio size={16} className="text-white" />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-slate-800">Live Risk Signals (CCM)</h3>
-          <p className="text-xs text-slate-500">Simulate KCI/KRI threshold breaches to test auto-injection</p>
+          <h3 className="text-sm font-bold text-slate-800">Canlı Risk Sinyalleri (CCM)</h3>
+          <p className="text-xs text-slate-500">Otomatik eklemeyi test etmek için KCI/KRI eşik ihlallerini simüle edin</p>
         </div>
         <div className="ml-auto flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-xs font-semibold text-emerald-700">Live</span>
+          <span className="text-xs font-semibold text-emerald-700">Canlı</span>
         </div>
       </div>
 
@@ -116,7 +116,7 @@ export function CCMSignalSimulator() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold text-slate-800 leading-snug">
-                  {fired ? 'Injected to Backlog' : signal.label}
+                  {fired ? 'İş listesine eklendi' : signal.label}
                 </p>
                 <p className="text-xs text-slate-500 mt-0.5 leading-snug">{signal.description}</p>
               </div>

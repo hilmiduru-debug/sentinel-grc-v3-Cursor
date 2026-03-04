@@ -55,7 +55,7 @@ export function PlanCard({ engagement, isBacklog = false }: PlanCardProps) {
             <div className="flex items-center gap-1.5 mb-1.5">
               <Zap size={11} className="text-red-500 shrink-0" />
               <span className="text-xs font-bold text-red-600 leading-none tracking-wide uppercase">
-                KCI Breach — Auto-Triggered
+                KCI İhlali — Otomatik Tetikleme
               </span>
             </div>
           )}
@@ -123,7 +123,7 @@ export function PlanCard({ engagement, isBacklog = false }: PlanCardProps) {
             className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white text-xs font-semibold shadow-sm hover:shadow-md hover:from-blue-700 hover:to-blue-600 transition-all duration-150"
           >
             <Rocket size={13} />
-            Sahaya Git (Execute)
+            Sahaya Git (Uygula)
           </button>
         )}
       </div>
