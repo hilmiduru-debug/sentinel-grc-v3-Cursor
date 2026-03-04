@@ -75,6 +75,7 @@ import EsgPage from '@/pages/esg';
 import NewEngagementPage from '@/pages/execution/NewEngagementPage';
 import SprintBoardPage from '@/pages/execution/SprintBoardPage';
 import { AgileEngagementsPage } from '@/pages/execution/AgileEngagementsPage';
+import AgileTasksPage from '@/pages/execution/AgileTasksPage';
 import DataMonitorPage from '@/pages/ccm/DataMonitorPage';
 import AnomalyDashboard from '@/pages/ccm/AnomalyDashboard';
 import PredatorCockpit from '@/pages/ccm/PredatorCockpit';
@@ -169,6 +170,7 @@ export const AppRoutes = () => {
       <Route path="/execution/pbc" element={<ProtectedRoute><PBCPage /></ProtectedRoute>} />
       <Route path="/execution/start" element={<ProtectedRoute><AuditStartPage /></ProtectedRoute>} />
       <Route path="/execution/agile" element={<ProtectedRoute><AgileEngagementsPage /></ProtectedRoute>} />
+      <Route path="/execution/agile/:id" element={<ProtectedRoute><AgileTasksPage /></ProtectedRoute>} />
       <Route path="/execution/new-engagement" element={<ProtectedRoute><NewEngagementPage /></ProtectedRoute>} />
       <Route path="/execution/sprint-board" element={<ProtectedRoute><AgileEngagementsPage /></ProtectedRoute>} />
       <Route path="/execution/sprint-board/:id" element={<ProtectedRoute><SprintBoardPage /></ProtectedRoute>} />

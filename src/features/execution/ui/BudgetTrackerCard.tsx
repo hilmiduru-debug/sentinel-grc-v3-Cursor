@@ -9,7 +9,8 @@ import {
   TrendingUp,
   User,
 } from 'lucide-react';
-import type { BudgetSummary } from '../time-tracking';
+import type { BudgetSummary, EngagementAuditorCost } from '../time-tracking';
+import { useEngagementBudgetCard } from '../api/useEngagementBudgetCard';
 
 export interface AuditorCostEntry {
   id: string;
@@ -20,30 +21,13 @@ export interface AuditorCostEntry {
 }
 
 export interface CostEngineProps {
+  /** When set, budget and auditor costs are loaded from Supabase; overrides passed-in values */
+  engagementId?: string;
   budget?: BudgetSummary;
   auditorCosts?: AuditorCostEntry[];
   allocatedBudgetOverride?: number;
   currency?: string;
 }
-
-const DEFAULT_AUDITORS: AuditorCostEntry[] = [
-  { id: 'a1', name: 'Hilmi Duru',    title: 'Baş Denetçi',       hoursLogged: 100, hourlyRate: 600 },
-  { id: 'a2', name: 'Ayşe Kaya',    title: 'Kıdemli Analist',   hoursLogged: 85,  hourlyRate: 400 },
-  { id: 'a3', name: 'Emre Şahin',   title: 'Analist',           hoursLogged: 70,  hourlyRate: 300 },
-  { id: 'a4', name: 'Zeynep Arslan', title: 'Asistan Denetçi',  hoursLogged: 40,  hourlyRate: 250 },
-];
-
-const MOCK_BUDGET: BudgetSummary = {
-  engagement_id: 'mock',
-  title: 'Finansal Maliyet Motoru',
-  estimated_hours: 250,
-  actual_hours: 295,
-  variance_hours: -45,
-  utilization_percent: 83,
-  budget_status: 'ON_BUDGET',
-};
-
-const DEFAULT_ALLOCATED = 150_000;
 
 function formatTRY(value: number): string {
   return `₺${value.toLocaleString('tr-TR', { maximumFractionDigits: 0 })}`;
@@ -72,18 +56,55 @@ function AnimatedNumber({ value }: { value: number }) {
 }
 
 export function BudgetTrackerCard({
-  budget        = MOCK_BUDGET,
-  auditorCosts  = DEFAULT_AUDITORS,
-  allocatedBudgetOverride = DEFAULT_ALLOCATED,
+  engagementId,
+  budget: budgetProp,
+  auditorCosts: auditorCostsProp,
+  allocatedBudgetOverride: allocatedProp,
 }: CostEngineProps) {
   const [expanded, setExpanded] = useState(false);
+  const { budget: budgetFromApi, auditorCosts: costsFromApi, allocatedBudget: allocatedFromApi, isLoading } =
+    useEngagementBudgetCard(engagementId);
+
+  const budget = engagementId ? budgetFromApi : budgetProp;
+  const auditorCosts: AuditorCostEntry[] = engagementId
+    ? (costsFromApi as AuditorCostEntry[])
+    : (auditorCostsProp ?? []);
+  const allocatedBudgetOverride = engagementId ? allocatedFromApi : allocatedProp;
+
+  if (engagementId && isLoading) {
+    return (
+      <div className="bg-surface shadow-sm border border-slate-200 rounded-xl p-6">
+        <div className="animate-pulse flex flex-col gap-3">
+          <div className="h-4 bg-slate-200 rounded w-1/2" />
+          <div className="h-8 bg-slate-200 rounded w-3/4" />
+          <div className="grid grid-cols-3 gap-2">
+            <div className="h-14 bg-slate-100 rounded-lg" />
+            <div className="h-14 bg-slate-100 rounded-lg" />
+            <div className="h-14 bg-slate-100 rounded-lg" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!budget && !auditorCosts.length) {
+    return (
+      <div className="bg-surface shadow-sm border border-slate-200 rounded-xl p-6">
+        <div className="flex flex-col items-center justify-center py-8 text-slate-500">
+          <Activity className="w-8 h-8 mb-2 opacity-50" />
+          <p className="text-sm font-medium">Bütçe verisi yok</p>
+          <p className="text-xs">Bir denetim seçin veya zaman girişi yapın.</p>
+        </div>
+      </div>
+    );
+  }
 
   const totalBurn = auditorCosts.reduce(
     (sum, a) => sum + a.hoursLogged * a.hourlyRate,
     0,
   );
 
-  const allocated    = allocatedBudgetOverride;
+  const allocated    = allocatedBudgetOverride ?? (budget ? budget.estimated_hours * 1500 : 0);
   const remaining    = Math.max(0, allocated - totalBurn);
   const burnPercent  = allocated > 0 ? Math.min((totalBurn / allocated) * 100, 200) : 0;
 
@@ -137,7 +158,7 @@ export function BudgetTrackerCard({
               </span>
             </div>
             <h3 className="text-sm font-bold text-primary leading-tight">
-              Finansal Maliyet Motoru (Cost Engine)
+              {budget?.title ?? 'Maliyet Motoru (Cost Engine)'}
             </h3>
           </div>
 

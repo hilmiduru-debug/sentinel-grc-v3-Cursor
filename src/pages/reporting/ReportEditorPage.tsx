@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Lock, BookOpen, Layout, Monitor, MessageSquare, Plus, Sun, Sunrise, X, FileText } from 'lucide-react';
+import { Lock, BookOpen, Layout, Monitor, MessageSquare, Plus, Sun, Sunrise, X, FileText, ShieldCheck } from 'lucide-react';
 import clsx from 'clsx';
 import { useActiveReportStore } from '@/entities/report';
 import { fetchFirstDraftReport } from '@/entities/report/api/report-api';
@@ -18,6 +18,7 @@ import { WorkflowActionBar } from '@/features/report-editor/ui/WorkflowActionBar
 import { ReviewNotesSidebar } from '@/features/report-editor/ui/ReviewNotesSidebar';
 import { useCollaboration } from '@/features/report-editor/hooks/useCollaboration';
 import { TraceabilityDrawer } from '@/widgets/TraceabilityDrawer';
+import { ReportSealerModal } from '@/features/reporting/ui/ReportSealerModal';
 
 type TabId = 'executive' | 'canvas' | 'board';
 
@@ -177,6 +178,7 @@ export default function ReportEditorPage() {
   const [rightPanel, setRightPanel] = useState<'blocks' | 'notes'>('blocks');
   const [warmth, setWarmth] = useState(2);
   const [traceabilityOpen, setTraceabilityOpen] = useState(false);
+  const [sealerModalOpen, setSealerModalOpen] = useState(false);
   const collabCtx = useCollaboration(id ?? 'no-report');
 
   useEffect(() => {
@@ -278,7 +280,17 @@ export default function ReportEditorPage() {
               </button>
             ))}
           </div>
-          <div className="flex-shrink-0 pl-3 py-1.5">
+          <div className="flex-shrink-0 pl-3 py-1.5 flex items-center gap-2">
+            {isEditable && activeReport && (
+              <button
+                type="button"
+                onClick={() => setSealerModalOpen(true)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100 transition-colors"
+              >
+                <ShieldCheck size={14} />
+                Nihai Raporu Mühürle
+              </button>
+            )}
             <WarmthControl warmth={warmth} onChange={setWarmth} />
           </div>
         </div>
@@ -357,6 +369,18 @@ export default function ReportEditorPage() {
         open={traceabilityOpen}
         onClose={() => setTraceabilityOpen(false)}
       />
+
+      {sealerModalOpen && activeReport && (
+        <ReportSealerModal
+          reportId={activeReport.id}
+          reportTitle={activeReport.title}
+          onSealed={() => {
+            setSealerModalOpen(false);
+            void loadReport(activeReport.id);
+          }}
+          onClose={() => setSealerModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

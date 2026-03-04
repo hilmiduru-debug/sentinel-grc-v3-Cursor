@@ -1742,81 +1742,91 @@ INSERT INTO public.methodology_configs (
 -- Katılım Bankacılığı 2026 Stratejik Planı hedefleri
 -- -----------------------------------------------------------------------------
 INSERT INTO public.strategic_bank_goals
-  (id, tenant_id, title, description, period_year, weight, category, owner_executive)
+  (id, tenant_id, title, description, period_year, weight, category, owner_executive, progress, risk_appetite, linked_audit_objective_ids)
 VALUES
   (
     'b1000000-0000-0000-0000-000000000001'::uuid,
     '11111111-1111-1111-1111-111111111111'::uuid,
     'Sürdürülebilir Katılım Finansmanı (Yeşil Sukuk)',
     'Yeşil Sukuk ihracı ve sürdürülebilir finansman araçları aracılığıyla katılım bankacılığı portföyünü çeşitlendirip büyütmek; yeşil sukuk hacmini 2026 sonuna kadar %25 artırmak. BDDK Sürdürülebilir Finans Tebliği kapsamında raporlama yükümlülükleri yerine getirilecektir.',
-    2026, 85, 'COMPLIANCE', 'Mehmet Karaca (Genel Müdür)'
+    2026, 85, 'COMPLIANCE', 'Mehmet Karaca (Genel Müdür)',
+    25, 'High', ARRAY['b2000000-0000-0000-0000-000000000001'::uuid]
   ),
   (
     'b1000000-0000-0000-0000-000000000002'::uuid,
     '11111111-1111-1111-1111-111111111111'::uuid,
     'Dijital Teverruk Otomasyonu',
     'Teverruk işlemlerinin (organized tawarruq) uçtan uca dijitalleştirilmesi; manuel onay süreçlerini %80 azaltarak müşteri başvurusundan akid imzasına kadar geçen süreyi 4 saate indirmek.',
-    2026, 90, 'INNOVATION', 'Ali Rıza Koç (GMY — Kredi ve Operasyon)'
+    2026, 90, 'INNOVATION', 'Ali Rıza Koç (GMY — Kredi ve Operasyon)',
+    40, 'Medium', ARRAY['b2000000-0000-0000-0000-000000000002'::uuid]
   ),
   (
     'b1000000-0000-0000-0000-000000000003'::uuid,
     '11111111-1111-1111-1111-111111111111'::uuid,
     'Katılım Fonu Portföy Büyümesi',
     'Katılım Fonu ürün gamını genişleterek (Altın Katılım, Döviz Katılım, Vadeli Katılım) toplam katılım fonu hacmini 2026 yılsonuna kadar %30 büyütmek ve kurumsal katılımcı sayısını 500''e çıkarmak.',
-    2026, 80, 'GROWTH', 'Hüseyin Çelik (Katılım Fonları Yöneticisi)'
+    2026, 80, 'GROWTH', 'Hüseyin Çelik (Katılım Fonları Yöneticisi)',
+    15, 'Medium', ARRAY['b2000000-0000-0000-0000-000000000003'::uuid]
   ),
   (
     'b1000000-0000-0000-0000-000000000004'::uuid,
     '11111111-1111-1111-1111-111111111111'::uuid,
     'Şube Operasyonel Mükemmelliyet Programı',
     'Tüm şube süreçlerinin SLA hedefleri dahilinde yürütülmesini sağlamak; Lean metodolojisi ile süreç israfını %35 azaltmak ve müşteri şikayet sayısını yıllık %20 düşürmek.',
-    2026, 70, 'EFFICIENCY', 'Burak Yılmaz (Şube Müdürü)'
+    2026, 70, 'EFFICIENCY', 'Burak Yılmaz (Şube Müdürü)',
+    55, 'Low', '{}'
   ),
   (
     'b1000000-0000-0000-0000-000000000005'::uuid,
     '11111111-1111-1111-1111-111111111111'::uuid,
     'BDDK BT Denetimi Uyum Yol Haritası',
     'BDDK BT Denetimi rehberi (Aralık 2023) gerekliliklerini 2026 yılsonuna kadar tam olarak karşılamak; BT Risk değerlendirme süreçlerini ISO 27001:2022 ile uyumlandırmak.',
-    2026, 95, 'COMPLIANCE', 'Zeynep Kılıç (BT Altyapı Müdürü)'
+    2026, 95, 'COMPLIANCE', 'Zeynep Kılıç (BT Altyapı Müdürü)',
+    70, 'High', ARRAY['b2000000-0000-0000-0000-000000000004'::uuid]
   )
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET
+  progress = EXCLUDED.progress,
+  risk_appetite = EXCLUDED.risk_appetite,
+  linked_audit_objective_ids = EXCLUDED.linked_audit_objective_ids;
 
 -- -----------------------------------------------------------------------------
 -- 18.3 STRATEJİK DENETİM HEDEFLERİ (strategic_audit_objectives)
 -- İç Denetim Birimi 2026 Stratejik Denetim Hedefleri
 -- -----------------------------------------------------------------------------
 INSERT INTO public.strategic_audit_objectives
-  (id, tenant_id, title, description, period_year, category)
+  (id, tenant_id, title, description, period_year, category, type, status)
 VALUES
   (
     'b2000000-0000-0000-0000-000000000001'::uuid,
     '11111111-1111-1111-1111-111111111111'::uuid,
     'Yeşil Sukuk İhracı Uyum Denetimi',
     'Yeşil Sukuk ihraç süreçlerinin BDDK Sürdürülebilir Finans Tebliği ve IIFM standartlarına uygunluğunun denetlenmesi; çevre etkisi raporlamasının doğruluğunun ve şer''i uyumunun teyit edilmesi.',
-    2026, 'ASSURANCE'
+    2026, 'ASSURANCE', 'Assurance', 'On Track'
   ),
   (
     'b2000000-0000-0000-0000-000000000002'::uuid,
     '11111111-1111-1111-1111-111111111111'::uuid,
     'Dijital Teverruk API Şer''i Kontrol Danışmanlığı',
     'Teverruk otomasyonu geliştirme sürecinde kontrol tasarımı konusunda danışmanlık sağlamak; API akışlarının Danışma Kurulu onaylı şer''i kurallara uygunluğunu güvence altına almak.',
-    2026, 'ADVISORY'
+    2026, 'ADVISORY', 'Advisory', 'On Track'
   ),
   (
     'b2000000-0000-0000-0000-000000000003'::uuid,
     '11111111-1111-1111-1111-111111111111'::uuid,
     'Katılım Fonu Piyasa ve Likidite Riski Değerlendirmesi',
     'Katılım Fonu portföy büyüme stratejisine eşlik eden piyasa riski ve likidite riskini değerlendirmek; BDDK SYR yönetmeliği kapsamındaki risk ağırlıklı varlıkların doğru sınıflandırıldığını denetlemek.',
-    2026, 'RISK_MANAGEMENT'
+    2026, 'RISK_MANAGEMENT', 'Assurance', 'At Risk'
   ),
   (
     'b2000000-0000-0000-0000-000000000004'::uuid,
     '11111111-1111-1111-1111-111111111111'::uuid,
     'BT Altyapısı Kurumsal Yönetişim Denetimi',
     'BDDK BT Denetimi rehberi gerekliliklerine uyum çerçevesinde BT yönetişim yapısını ve ayrıcalıklı erişim yönetimini denetlemek; f0000000-0000-0000-0000-000000000001 bulgusuna yönelik aksiyon planının etkinliğini izlemek.',
-    2026, 'GOVERNANCE'
+    2026, 'GOVERNANCE', 'Assurance', 'On Track'
   )
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET
+  type = EXCLUDED.type,
+  status = EXCLUDED.status;
 
 -- -----------------------------------------------------------------------------
 -- 18.4 STRATEJİK HIZALAMA MATRİSİ (strategy_alignment_matrix)

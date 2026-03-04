@@ -47,6 +47,7 @@ export const FourEyesGate = ({
       await mutateAsync();
       toast.success('İşlem 4 Göz onayına gönderildi.');
       setIsModalOpen(false);
+      await onExecute?.();
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Four-eyes approval failed', error);

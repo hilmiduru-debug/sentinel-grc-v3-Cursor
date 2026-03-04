@@ -2,13 +2,16 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Activity, Database, AlertTriangle, Shield, Radio,
-  Server, FileText, Users, RefreshCw,
+  Server, FileText, Users, RefreshCw, Loader2, Radar,
 } from 'lucide-react';
 import clsx from 'clsx';
+import toast from 'react-hot-toast';
 import { PageHeader } from '@/shared/ui/PageHeader';
 import type { DataSource, CCMTransaction, CCMAlert, CCMStats } from '@/entities/ccm/types';
-import { fetchDataSources, fetchRecentTransactions, fetchAlerts, fetchCCMStats } from '@/entities/ccm/api';
+import { fetchDataSources, fetchRecentTransactions, fetchCCMStats } from '@/entities/ccm/api';
+import { useCCMAlerts, useInsertCCMAlert } from '@/features/ccm/api/useCCMAlerts';
 import { SourceCards, AlertPanel, LiveFeed } from '@/widgets/CCMDashboard';
+import { RuleAlertFeed } from '@/widgets/AnomalyCockpit';
 
 type Tab = 'overview' | 'feed' | 'alerts';
 
@@ -48,26 +51,35 @@ function PulseIndicator() {
   );
 }
 
+const SIMULATE_ALERT_PAYLOAD = {
+  title: "Olağandışı Saat İşlemi: Gece 03:14'te Hazine Biriminde Limit Aşımı",
+  description: "Kural ID: PRB-045. Aynı IP adresinden ardışık 3 yüksek montanlı SWIFT transferi tespit edildi.",
+  severity: 'CRITICAL' as const,
+  rule_triggered: 'UNUSUAL_HOURS',
+  risk_score: 95,
+  evidence_data: { rule_id: 'PRB-045', ip_count: 3, time: '03:14' },
+};
+
 export default function DataMonitorPage() {
   const [tab, setTab] = useState<Tab>('overview');
   const [sources, setSources] = useState<DataSource[]>([]);
   const [transactions, setTransactions] = useState<CCMTransaction[]>([]);
-  const [alerts, setAlerts] = useState<CCMAlert[]>([]);
   const [stats, setStats] = useState<CCMStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
+  const { alerts, isLoading: alertsLoading, refetch: refetchAlerts } = useCCMAlerts();
+  const { insertAlert, isInserting: isSimulating, mutation: insertMutation } = useInsertCCMAlert();
+
   const loadAll = async () => {
     try {
-      const [src, tx, al, st] = await Promise.all([
+      const [src, tx, st] = await Promise.all([
         fetchDataSources(),
         fetchRecentTransactions(100),
-        fetchAlerts(),
         fetchCCMStats(),
       ]);
       setSources(src);
       setTransactions(tx);
-      setAlerts(al);
       setStats(st);
     } catch (err) {
       console.error('CCM load failed:', err);
@@ -83,7 +95,17 @@ export default function DataMonitorPage() {
 
   const handleRefresh = () => {
     setRefreshing(true);
+    void refetchAlerts();
     loadAll();
+  };
+
+  const handleSimulateAnomaly = async () => {
+    try {
+      await insertAlert(SIMULATE_ALERT_PAYLOAD);
+      toast.success('Canlı sinyal tetiklendi. Alarm akışta görünecektir.');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Sinyal tetiklenemedi.');
+    }
   };
 
   const tabs: { key: Tab; label: string; icon: React.ElementType }[] = [
@@ -107,7 +129,20 @@ export default function DataMonitorPage() {
           title="Surekli Izleme Merkezi"
           subtitle="Neural Mesh - Veri Toplama & Anomali Tespit Motoru"
         />
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
+          <button
+            type="button"
+            onClick={handleSimulateAnomaly}
+            disabled={isSimulating}
+            className="flex items-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white text-sm font-bold rounded-xl shadow-lg shadow-red-500/25 transition-colors border border-red-500/30"
+          >
+            {isSimulating ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Radar size={16} />
+            )}
+            Canlı Sinyal Tetikle (Simulate Anomaly)
+          </button>
           <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-full">
             <PulseIndicator />
             <span className="text-[11px] font-semibold text-emerald-700">Canli</span>
@@ -195,9 +230,16 @@ export default function DataMonitorPage() {
         <div>
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-bold text-primary">Tum Alarmlar</h3>
-            <span className="text-[11px] text-slate-400">{alerts.length} alarm</span>
+            <span className="text-[11px] text-slate-400">{alerts.length} aktif alarm</span>
           </div>
-          <AlertPanel alerts={alerts} />
+          {alertsLoading ? (
+            <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-500 bg-surface border border-slate-200 rounded-xl">
+              <Loader2 size={28} className="animate-spin" />
+              <span className="text-sm font-medium">Alarmlar yükleniyor...</span>
+            </div>
+          ) : (
+            <RuleAlertFeed alerts={alerts} onStatusChange={() => void refetchAlerts()} />
+          )}
         </div>
       )}
     </div>

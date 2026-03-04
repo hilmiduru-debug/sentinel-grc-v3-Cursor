@@ -47,7 +47,7 @@ const RESOURCE_TABS = [
 
 export default function ResourceManagementPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const tabFromUrl = searchParams.get('tab') as TabKey | null;
+  const tabFromUrl = (searchParams?.get?.('tab') ?? null) as TabKey | null;
   const [activeTab, setActiveTab] = useState<TabKey>(tabFromUrl || 'profiles');
 
   useEffect(() => {

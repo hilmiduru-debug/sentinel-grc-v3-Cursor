@@ -1,22 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/shared/api/supabase';
 import { Clock, Calendar, Download, FileText, Plus } from 'lucide-react';
 import clsx from 'clsx';
-
-interface TimeEntry {
-  id: string;
-  workpaper_id: string;
-  auditor_id: string;
-  date: string;
-  hours: number;
-  description?: string;
-  workpaper?: {
-    title: string;
-    engagement?: {
-      title: string;
-    };
-  };
-}
+import { fetchTimeEntriesForWeek, type TimeEntry } from './api';
 
 interface DailySummary {
   date: string;
@@ -24,43 +11,39 @@ interface DailySummary {
   entries: TimeEntry[];
 }
 
+function getWeekStart(date: Date): Date {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  return new Date(d.setDate(diff));
+}
+
 export function TimesheetView() {
-  const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedWeek, setSelectedWeek] = useState<Date>(new Date());
 
-  useEffect(() => {
-    loadTimeEntries();
-  }, [selectedWeek]);
+  const weekStart = useMemo(() => getWeekStart(selectedWeek), [selectedWeek]);
+  const weekEnd = useMemo(() => {
+    const end = new Date(weekStart);
+    end.setDate(end.getDate() + 6);
+    return end;
+  }, [weekStart]);
+  const weekStartStr = weekStart instanceof Date && !isNaN(weekStart.getTime())
+    ? weekStart.toISOString().split('T')[0]
+    : '';
+  const weekEndStr = weekEnd instanceof Date && !isNaN(weekEnd.getTime())
+    ? weekEnd.toISOString().split('T')[0]
+    : '';
 
-  const loadTimeEntries = async () => {
-    try {
-      setLoading(true);
-      const weekStart = getWeekStart(selectedWeek);
-      const weekEnd = new Date(weekStart);
-      weekEnd.setDate(weekEnd.getDate() + 6);
-
-      const { data, error } = await supabase
-        .from('time_tracking')
-        .select(`
-          *,
-          workpaper:workpapers(
-            title,
-            engagement:audit_engagements(title)
-          )
-        `)
-        .gte('date', weekStart.toISOString())
-        .lte('date', weekEnd.toISOString())
-        .order('date', { ascending: true });
-
-      if (error) throw error;
-      setTimeEntries(data || []);
-    } catch (error) {
-      console.error('Failed to load time entries:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: timeEntries = [], isLoading: loading } = useQuery({
+    queryKey: ['timesheet-entries', weekStartStr, weekEndStr],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user?.id) return [];
+      if (!weekStartStr || !weekEndStr) return [];
+      return fetchTimeEntriesForWeek(user.id, weekStartStr, weekEndStr);
+    },
+    enabled: !!weekStartStr && !!weekEndStr,
+  });
 
   const getWeekStart = (date: Date) => {
     const d = new Date(date);
@@ -80,16 +63,20 @@ export function TimesheetView() {
   };
 
   const getDailySummary = (date: Date): DailySummary => {
-    const dateStr = date.toISOString().split('T')[0];
-    const dayEntries = timeEntries.filter(e => e.date.startsWith(dateStr));
+    const dateStr =
+      date instanceof Date && !isNaN(date.getTime())
+        ? date.toISOString().split('T')[0]
+        : '';
+    const dayEntries = timeEntries.filter(
+      (e) => typeof e.date === 'string' && e.date.startsWith(dateStr)
+    );
     return {
       date: dateStr,
       total_hours: dayEntries.reduce((sum, e) => sum + e.hours, 0),
-      entries: dayEntries
+      entries: dayEntries,
     };
   };
 
-  const weekStart = getWeekStart(selectedWeek);
   const weekDays = getWeekDays(weekStart);
   const weekTotal = timeEntries.reduce((sum, e) => sum + e.hours, 0);
 

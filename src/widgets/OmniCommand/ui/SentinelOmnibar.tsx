@@ -69,11 +69,11 @@ const RESULTS: OmniResult[] = [
   {
     id: 'seal-report',
     category: 'Quick Actions',
-    label: 'Seal Report (Module Bridge)',
-    description: 'Publish report and inject actions into Module 7 engine',
+    label: 'Nihai Raporu Mühürle',
+    description: 'Rapor editörde raporu 4 Göz ile kilitle (WORM mühür)',
     icon: <ShieldCheck size={16} />,
-    href: '/actions',
-    badge: 'CRYPTO',
+    href: '/reporting/zen-editor',
+    badge: '4 GÖZ',
   },
 ];
 

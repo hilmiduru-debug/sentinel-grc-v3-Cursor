@@ -10,7 +10,6 @@ import {
   ChevronRight,
   Shield,
 } from 'lucide-react';
-import { ReportSealerSimulator } from '@/features/module-bridge/ui/ReportSealerSimulator';
 
 interface ZoneCard {
   id: string;
@@ -170,8 +169,23 @@ const Module7HubPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            <div>
-              <ReportSealerSimulator />
+            <div className="bg-surface/70 backdrop-blur-md border border-slate-200 shadow-sm rounded-2xl p-6 flex flex-col justify-between">
+              <div className="space-y-3">
+                <p className="font-mono text-[10px] text-slate-400 uppercase tracking-widest">Nihai Mühürleme</p>
+                <h3 className="font-serif text-xl text-primary">Rapor Mühürleme (4 Göz)</h3>
+                <p className="text-xs text-slate-500 font-sans leading-relaxed">
+                  Raporu adli kanıt olarak kilitlemek için Rapor Düzenle ekranında &quot;Nihai Raporu Mühürle&quot; butonunu kullanın. 4 Göz onayı ile WORM mühür uygulanır.
+                </p>
+                <button
+                  onClick={() => navigate('/reporting/zen-editor')}
+                  className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium font-sans
+                    bg-surface/70 backdrop-blur-md border border-slate-300 text-slate-700
+                    hover:bg-canvas hover:border-slate-400 hover:shadow-md transition-all shadow-sm"
+                >
+                  Rapor Düzenle
+                  <ChevronRight size={14} />
+                </button>
+              </div>
             </div>
             <div className="bg-surface/70 backdrop-blur-md border border-slate-200 shadow-sm rounded-2xl p-6 flex flex-col justify-between">
               <div className="space-y-3">

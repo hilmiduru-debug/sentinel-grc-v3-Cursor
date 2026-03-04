@@ -134,7 +134,7 @@ export default function SprintBoardPage() {
           <SprintBoard engagementId={engagement.id} />
         </div>
         <div className="w-72 flex-shrink-0 border-l border-slate-200 bg-canvas overflow-y-auto p-4">
-          <BudgetTrackerCard />
+          <BudgetTrackerCard engagementId={engagement.id} />
         </div>
       </div>
     </div>

@@ -6,9 +6,9 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 import { PageHeader } from '@/shared/ui/PageHeader';
-import { fetchAlerts } from '@/entities/ccm/api';
 import type { CCMAlert } from '@/entities/ccm/types';
 import { runAnomalyScan, persistScanAlerts } from '@/features/ccm/anomaly-api';
+import { useCCMAlerts } from '@/features/ccm/api/useCCMAlerts';
 import type { AnomalyScanResult } from '@/features/ccm/types';
 import { BenfordChart, RuleAlertFeed } from '@/widgets/AnomalyCockpit';
 
@@ -140,16 +140,12 @@ function StructuringCards({ clusters }: { clusters: AnomalyScanResult['structuri
 
 export default function AnomalyDashboard() {
   const [scanResult, setScanResult] = useState<AnomalyScanResult | null>(null);
-  const [alerts, setAlerts] = useState<CCMAlert[]>([]);
   const [loading, setLoading] = useState(true);
   const [scanning, setScanning] = useState(false);
   const [persisting, setPersisting] = useState(false);
   const [lastScan, setLastScan] = useState<string | null>(null);
 
-  const loadAlerts = useCallback(async () => {
-    const data = await fetchAlerts();
-    setAlerts(data);
-  }, []);
+  const { alerts, refetch: refetchAlerts } = useCCMAlerts();
 
   const executeScan = useCallback(async () => {
     setScanning(true);
@@ -157,20 +153,20 @@ export default function AnomalyDashboard() {
       const result = await runAnomalyScan();
       setScanResult(result);
       setLastScan(result.scanTimestamp);
-      await loadAlerts();
+      void refetchAlerts();
     } catch (err) {
       console.error('Anomaly scan failed:', err);
     } finally {
       setScanning(false);
     }
-  }, [loadAlerts]);
+  }, [refetchAlerts]);
 
   const handlePersist = async () => {
     if (!scanResult) return;
     setPersisting(true);
     try {
       await persistScanAlerts(scanResult);
-      await loadAlerts();
+      void refetchAlerts();
     } finally {
       setPersisting(false);
     }
@@ -326,7 +322,7 @@ export default function AnomalyDashboard() {
             <span className="text-[10px] text-slate-400">Golden Rule Engine v1.0</span>
           </div>
         </div>
-        <RuleAlertFeed alerts={alerts} onStatusChange={loadAlerts} />
+        <RuleAlertFeed alerts={alerts} onStatusChange={() => void refetchAlerts()} />
       </div>
     </div>
   );

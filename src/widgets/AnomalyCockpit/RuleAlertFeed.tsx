@@ -55,8 +55,8 @@ export function RuleAlertFeed({ alerts, onStatusChange }: Props) {
         <div className="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-3">
           <AlertTriangle size={20} className="text-emerald-600" />
         </div>
-        <p className="text-sm font-medium text-slate-600">Aktif alarm bulunamadi</p>
-        <p className="text-xs text-slate-400 mt-1">Tum sistemler normal calisiyor</p>
+        <p className="text-sm font-medium text-slate-600">Sistemde şu an aktif bir anomali sinyali bulunmamaktadır. Radarlar temiz.</p>
+        <p className="text-xs text-slate-400 mt-1">Yeni sinyal tetiklendiğinde burada listelenecektir.</p>
       </div>
     );
   }

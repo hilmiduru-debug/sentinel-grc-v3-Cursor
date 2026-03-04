@@ -288,3 +288,70 @@ export async function deleteTimeLog(logId: string): Promise<void> {
 
   // DB triggers will automatically recalculate totals
 }
+
+/** Auditor cost entry for budget/cost engine UI */
+export interface EngagementAuditorCost {
+  id: string;
+  name: string;
+  title: string;
+  hoursLogged: number;
+  hourlyRate: number;
+}
+
+/**
+ * Get per-auditor cost summary for an engagement (from workpaper_time_logs + user_profiles + talent_profiles)
+ */
+export async function getEngagementAuditorCosts(engagementId: string): Promise<EngagementAuditorCost[]> {
+  const { data: steps } = await supabase
+    .from('audit_steps')
+    .select('id')
+    .eq('engagement_id', engagementId);
+  if (!steps?.length) return [];
+
+  const stepIds = steps.map((s) => s.id);
+  const { data: workpapers } = await supabase
+    .from('workpapers')
+    .select('id')
+    .in('step_id', stepIds);
+  if (!workpapers?.length) return [];
+
+  const wpIds = workpapers.map((w) => w.id);
+  const { data: logs, error: logsErr } = await supabase
+    .from('workpaper_time_logs')
+    .select('auditor_id, hours_logged')
+    .in('workpaper_id', wpIds);
+  if (logsErr || !logs?.length) return [];
+
+  const byAuditor = new Map<string, number>();
+  for (const row of logs) {
+    const cur = byAuditor.get(row.auditor_id) ?? 0;
+    byAuditor.set(row.auditor_id, cur + Number(row.hours_logged));
+  }
+
+  const auditorIds = [...byAuditor.keys()];
+  const { data: profiles } = await supabase
+    .from('user_profiles')
+    .select('id, full_name, role')
+    .in('id', auditorIds);
+  const { data: talent } = await supabase
+    .from('talent_profiles')
+    .select('user_id, hourly_rate')
+    .in('user_id', auditorIds);
+
+  const rateByUser = new Map<string, number>();
+  talent?.forEach((t) => rateByUser.set(t.user_id, Number(t.hourly_rate ?? 0)));
+  const profileById = new Map(profiles?.map((p) => [p.id, p]) ?? []);
+
+  return auditorIds.map((id) => {
+    const p = profileById.get(id);
+    const hoursLogged = byAuditor.get(id) ?? 0;
+    const hourlyRate = rateByUser.get(id) ?? 0;
+    return {
+      id,
+      name: p?.full_name ?? 'Bilinmeyen',
+      title: p?.role ?? '—',
+      hoursLogged,
+      hourlyRate,
+    };
+  });
+}
