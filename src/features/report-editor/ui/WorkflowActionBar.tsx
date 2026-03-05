@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Send, CheckCircle, RotateCcw, Lock, AlertCircle } from 'lucide-react';
+import { Send, CheckCircle, RotateCcw, Lock, AlertCircle, FileWarning } from 'lucide-react';
 import { useActiveReportStore } from '@/entities/report';
 import type { M6ReportStatus } from '@/entities/report';
 import { QAIPGateModal } from './QAIPGateModal';
+import { ReportAmendmentModal } from '@/features/reporting/ui/ReportAmendmentModal';
 
 const STATUS_LABELS: Record<M6ReportStatus, string> = {
   draft: 'Taslak',
@@ -21,11 +22,12 @@ const STATUS_COLORS: Record<M6ReportStatus, string> = {
 };
 
 export function WorkflowActionBar() {
-  const { activeReport, changeReportStatus, publishReport } = useActiveReportStore();
+  const { activeReport, changeReportStatus, publishReport, loadReport } = useActiveReportStore();
   const [gateModal, setGateModal] = useState<{ open: boolean; targetStatus: M6ReportStatus | null }>({
     open: false,
     targetStatus: null,
   });
+  const [amendmentModalOpen, setAmendmentModalOpen] = useState(false);
 
   if (!activeReport) return null;
 
@@ -63,6 +65,17 @@ export function WorkflowActionBar() {
           onClose={closeGate}
           onConfirm={handleGateConfirm}
         />
+      )}
+
+      {amendmentModalOpen && (
+        <div className="fixed inset-0 z-[100]" role="dialog" aria-modal="true">
+          <ReportAmendmentModal
+            reportId={activeReport.id}
+            reportTitle={activeReport.title}
+            onClose={() => setAmendmentModalOpen(false)}
+            onAmended={(newReportId) => void loadReport(newReportId)}
+          />
+        </div>
       )}
 
       <div className="no-print report-workflow-bar fixed bottom-0 left-0 right-0 z-50 bg-surface/95 backdrop-blur-sm border-t border-slate-200 shadow-[0_-4px_16px_rgba(0,0,0,0.06)]">
@@ -143,10 +156,21 @@ export function WorkflowActionBar() {
             )}
 
             {isLocked && (
-              <div className="flex items-center gap-2 px-5 py-2.5 bg-slate-100 text-slate-400 rounded-xl text-sm font-sans font-semibold cursor-default">
-                <Lock size={15} />
-                Rapor Kilitli
-              </div>
+              <>
+                <div className="flex items-center gap-2 px-5 py-2.5 bg-slate-100 text-slate-400 rounded-xl text-sm font-sans font-semibold cursor-default">
+                  <Lock size={15} />
+                  Rapor Kilitli
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setAmendmentModalOpen(true)}
+                  className="flex items-center gap-2 px-5 py-2.5 border-2 border-amber-400 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded-xl text-sm font-sans font-semibold transition-colors"
+                  title="GIAS: Hata bildir ve düzeltme versiyonu (zeyilname) oluştur"
+                >
+                  <FileWarning size={15} />
+                  GIAS Düzeltme (Zeyilname) Başlat
+                </button>
+              </>
             )}
           </div>
         </div>

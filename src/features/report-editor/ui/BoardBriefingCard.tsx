@@ -13,6 +13,7 @@ import {
   Building,
 } from 'lucide-react';
 import type { M6Report, DynamicSection } from '@/entities/report';
+import { DEFAULT_EXECUTIVE_SUMMARY } from '@/entities/report/api/report-api';
 
 function warmthToBg(w: number): string {
   const t = w / 10;
@@ -99,13 +100,14 @@ function DynamicSectionCard({ section }: { section: DynamicSection }) {
 }
 
 function PageFooter({ report }: { report: M6Report }) {
+  if (!report) return null;
   return (
     <div className="px-8 py-6 mt-6 border-t border-slate-100 bg-surface/40 flex items-center justify-between">
       <p className="text-xs text-slate-400 font-sans">
         Bu belge Sentinel v3.0 tarafından oluşturulmuştur. GIAS 2024 · BDDK Uyumlu.
       </p>
       <div className="flex items-center gap-4">
-        <p className="text-xs text-slate-400 font-sans">Rapor ID: {report.id}</p>
+        <p className="text-xs text-slate-400 font-sans">Rapor ID: {report?.id ?? '—'}</p>
         <button
           onClick={() => window.print()}
           className="no-print inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-sans font-medium text-slate-600 border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-colors"
@@ -119,10 +121,11 @@ function PageFooter({ report }: { report: M6Report }) {
 }
 
 function FindingBadgeRow({ findingCounts }: { findingCounts: M6Report['executiveSummary']['findingCounts'] }) {
+  const counts = findingCounts ?? DEFAULT_EXECUTIVE_SUMMARY.findingCounts;
   return (
     <div className="mt-6 flex flex-wrap gap-2">
       {FINDING_BADGES.map(({ key, label, bg, color }) => {
-        const count = findingCounts[key];
+        const count = counts[key];
         return (
           <span
             key={key}
@@ -139,13 +142,16 @@ function FindingBadgeRow({ findingCounts }: { findingCounts: M6Report['executive
 }
 
 function StandardAuditLayout({ report, warmth }: Props) {
-  const { executiveSummary: es, title } = report;
-  const currentGradeStyle = gradeStyle(es.grade);
-  const prevGradeStyle = gradeStyle(es.previousGrade);
-  const assStyle = assuranceStyle(es.assuranceLevel);
-  const trendPositive = es.trend > 0;
-  const trendNeutral = es.trend === 0;
+  const es = report?.executiveSummary ?? DEFAULT_EXECUTIVE_SUMMARY;
+  const title = report?.title ?? '';
+  const currentGradeStyle = gradeStyle(es?.grade ?? 'N/A');
+  const prevGradeStyle = gradeStyle(es?.previousGrade ?? 'N/A');
+  const assStyle = assuranceStyle(es?.assuranceLevel ?? '');
+  const trendPositive = (es?.trend ?? 0) > 0;
+  const trendNeutral = (es?.trend ?? 0) === 0;
   const paperBg = warmthToBg(warmth ?? 2);
+  const preciseScore = (report as { precise_score?: number | null })?.precise_score;
+  const displayScore = preciseScore != null ? preciseScore : (es?.score ?? 0);
 
   return (
     <div
@@ -164,9 +170,9 @@ function StandardAuditLayout({ report, warmth }: Props) {
           style={{ backgroundColor: currentGradeStyle.bg, color: currentGradeStyle.color }}
         >
           <p className="text-xs font-sans font-semibold uppercase tracking-wider opacity-80 mb-0.5">NOT</p>
-          <p className="text-3xl font-serif font-bold leading-none">{es.grade}</p>
+          <p className="text-3xl font-serif font-bold leading-none">{es?.grade ?? 'N/A'}</p>
           <p className="text-xs font-sans font-semibold uppercase tracking-wider mt-1 opacity-90">
-            {gradeLabel(es.grade)}
+            {gradeLabel(es?.grade ?? 'N/A')}
           </p>
         </div>
       </div>
@@ -174,7 +180,7 @@ function StandardAuditLayout({ report, warmth }: Props) {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-px bg-slate-200/50 border-b border-slate-100">
         <div className="bg-surface/70 px-5 py-4 text-center">
           <p className="text-xs text-slate-500 font-sans mb-1">Hassas Skor</p>
-          <p className="text-2xl font-bold font-serif text-primary">{es.score.toFixed(1)}</p>
+          <p className="text-2xl font-bold font-serif text-primary">{(typeof displayScore === 'number' ? displayScore : Number(displayScore) || 0).toFixed(1)}</p>
           <p className="text-xs text-slate-400 font-sans">/ 100</p>
         </div>
         <div className="bg-surface/70 px-5 py-4 text-center">
@@ -188,7 +194,7 @@ function StandardAuditLayout({ report, warmth }: Props) {
               <TrendingDown size={18} className="text-red-500" />
             )}
             <span className={`text-xl font-bold font-serif ${trendNeutral ? 'text-slate-500' : trendPositive ? 'text-green-700' : 'text-red-600'}`}>
-              {trendPositive ? '+' : ''}{es.trend.toFixed(1)}%
+              {trendPositive ? '+' : ''}{(es?.trend ?? 0).toFixed(1)}%
             </span>
           </div>
           <p className="text-xs text-slate-400 font-sans">önceki döneme göre</p>
@@ -199,14 +205,14 @@ function StandardAuditLayout({ report, warmth }: Props) {
             className="inline-block rounded-lg px-3 py-1 text-lg font-bold font-serif"
             style={{ backgroundColor: prevGradeStyle.bg, color: prevGradeStyle.color }}
           >
-            {es.previousGrade}
+            {es?.previousGrade ?? '—'}
           </span>
-          <p className="text-xs text-slate-400 font-sans mt-1">{gradeLabel(es.previousGrade)}</p>
+          <p className="text-xs text-slate-400 font-sans mt-1">{gradeLabel(es?.previousGrade ?? 'N/A')}</p>
         </div>
         <div className="bg-surface/70 px-5 py-4 text-center">
           <p className="text-xs text-slate-500 font-sans mb-1">Bulgu Sayısı</p>
           <p className="text-2xl font-bold font-serif text-primary">
-            {Object.values(es.findingCounts).reduce((a, b) => a + b, 0)}
+            {es?.findingCounts ? Object.values(es.findingCounts).reduce((a, b) => a + b, 0) : 0}
           </p>
           <p className="text-xs text-slate-400 font-sans">toplam bulgu</p>
         </div>
@@ -216,8 +222,8 @@ function StandardAuditLayout({ report, warmth }: Props) {
             className="inline-flex items-center rounded-lg px-3 py-1 text-xs font-sans font-semibold"
             style={{ backgroundColor: assStyle.bg, color: assStyle.color }}
           >
-            {assuranceIcon(es.assuranceLevel)}
-            {es.assuranceLevel}
+            {assuranceIcon(es?.assuranceLevel ?? '')}
+            {es?.assuranceLevel ?? '—'}
           </span>
         </div>
       </div>
@@ -227,31 +233,31 @@ function StandardAuditLayout({ report, warmth }: Props) {
           <p className="text-xs font-sans font-semibold uppercase tracking-widest text-blue-700 mb-2">
             Yönetim Kurulu Bilgilendirme Notu
           </p>
-          <p className="font-serif text-slate-800 text-sm leading-relaxed">{es.briefingNote}</p>
+          <p className="font-serif text-slate-800 text-sm leading-relaxed">{es?.briefingNote ?? ''}</p>
         </div>
 
-        <FindingBadgeRow findingCounts={es.findingCounts} />
+        <FindingBadgeRow findingCounts={es?.findingCounts ?? DEFAULT_EXECUTIVE_SUMMARY.findingCounts} />
 
-        {es.dynamicSections && es.dynamicSections.length > 0 ? (
-          es.dynamicSections.map((s) => <DynamicSectionCard key={s.id} section={s} />)
+        {es?.dynamicSections && es.dynamicSections.length > 0 ? (
+          es.dynamicSections.map((s) => <DynamicSectionCard key={s?.id ?? ''} section={s} />)
         ) : (
           <>
-            <SectionCard title="I. Denetim Görüşü" html={es.sections.auditOpinion} />
-            <SectionCard title="II. Kritik Risk Alanları" html={es.sections.criticalRisks} />
-            <SectionCard title="III. Stratejik Öneriler" html={es.sections.strategicRecommendations} />
-            <SectionCard title="IV. Yönetim Eylemi ve Taahhütler" html={es.sections.managementAction} />
+            <SectionCard title="I. Denetim Görüşü" html={es?.sections?.auditOpinion ?? ''} />
+            <SectionCard title="II. Kritik Risk Alanları" html={es?.sections?.criticalRisks ?? ''} />
+            <SectionCard title="III. Stratejik Öneriler" html={es?.sections?.strategicRecommendations ?? ''} />
+            <SectionCard title="IV. Yönetim Eylemi ve Taahhütler" html={es?.sections?.managementAction ?? ''} />
           </>
         )}
 
-        {es.managementResponse && (
+        {es?.managementResponse && (
           <div className="bg-canvas border-l-4 border-slate-400 p-4 mt-6 rounded-r-lg">
             <p className="text-xs font-sans font-semibold uppercase tracking-widest text-slate-500 mb-2">
               Yönetim Beyanı ve Taahhüdü
             </p>
             <p className="font-serif text-slate-800 text-sm leading-relaxed whitespace-pre-wrap">
-              {es.managementResponse.responseText}
+              {es?.managementResponse?.responseText ?? ''}
             </p>
-            {(es.managementResponse.providedBy || es.managementResponse.providedAt) && (
+            {((es?.managementResponse?.providedBy) || (es?.managementResponse?.providedAt)) && (
               <p className="text-xs font-sans text-slate-400 mt-3">
                 {es.managementResponse.providedBy && <span>{es.managementResponse.providedBy}</span>}
                 {es.managementResponse.providedBy && es.managementResponse.providedAt && <span> — </span>}
@@ -269,7 +275,7 @@ function StandardAuditLayout({ report, warmth }: Props) {
           </div>
         )}
 
-        {report.status === 'published' && report.hashSeal && (
+        {report?.status === 'published' && report?.hashSeal && (
           <div className="mt-6 flex items-center gap-2 text-xs text-emerald-700 bg-emerald-50 p-4 rounded-lg border border-emerald-200 font-mono shadow-sm">
             <ShieldCheck size={18} className="flex-shrink-0" />
             <span className="break-all">HUKUKİ BÜTÜNLÜK MÜHRÜ (SHA-256): {report.hashSeal}</span>
@@ -283,9 +289,10 @@ function StandardAuditLayout({ report, warmth }: Props) {
 }
 
 function InvestigationLayout({ report, warmth }: Props) {
-  const { executiveSummary: es, title } = report;
+  const es = report?.executiveSummary ?? DEFAULT_EXECUTIVE_SUMMARY;
+  const title = report?.title ?? '';
   const paperBg = warmthToBg(warmth ?? 2);
-  const dm = es.dynamicMetrics ?? {};
+  const dm = es?.dynamicMetrics ?? {};
 
   return (
     <div
@@ -332,26 +339,26 @@ function InvestigationLayout({ report, warmth }: Props) {
       )}
 
       <div className="px-8 pt-6">
-        <FindingBadgeRow findingCounts={es.findingCounts} />
+        <FindingBadgeRow findingCounts={es?.findingCounts ?? DEFAULT_EXECUTIVE_SUMMARY.findingCounts} />
 
-        {es.dynamicSections && es.dynamicSections.length > 0 ? (
-          es.dynamicSections.map((s) => <DynamicSectionCard key={s.id} section={s} />)
+        {es?.dynamicSections && es.dynamicSections.length > 0 ? (
+          es.dynamicSections.map((s) => <DynamicSectionCard key={s?.id ?? ''} section={s} />)
         ) : (
-          <SectionCard title="Bulgular ve Tespitler" html={es.sections.auditOpinion} />
+          <SectionCard title="Bulgular ve Tespitler" html={es?.sections?.auditOpinion ?? ''} />
         )}
 
-        {es.managementResponse && (
+        {es?.managementResponse && (
           <div className="bg-red-50 border-l-4 border-red-400 p-4 mt-6 rounded-r-lg">
             <p className="text-xs font-sans font-semibold uppercase tracking-widest text-red-600 mb-2">
               Yönetim Yanıtı ve Taahhüdü
             </p>
             <p className="font-serif text-slate-800 text-sm leading-relaxed whitespace-pre-wrap">
-              {es.managementResponse.responseText}
+              {es?.managementResponse?.responseText ?? ''}
             </p>
           </div>
         )}
 
-        {report.status === 'published' && report.hashSeal && (
+        {report?.status === 'published' && report?.hashSeal && (
           <div className="mt-6 flex items-center gap-2 text-xs text-emerald-700 bg-emerald-50 p-4 rounded-lg border border-emerald-200 font-mono shadow-sm">
             <ShieldCheck size={18} className="flex-shrink-0" />
             <span className="break-all">HUKUKİ BÜTÜNLÜK MÜHRÜ (SHA-256): {report.hashSeal}</span>
@@ -365,7 +372,8 @@ function InvestigationLayout({ report, warmth }: Props) {
 }
 
 function InfoNoteLayout({ report, warmth }: Props) {
-  const { executiveSummary: es, title } = report;
+  const es = report?.executiveSummary ?? DEFAULT_EXECUTIVE_SUMMARY;
+  const title = report?.title ?? '';
   const paperBg = warmthToBg(warmth ?? 2);
 
   return (
@@ -386,7 +394,7 @@ function InfoNoteLayout({ report, warmth }: Props) {
       </div>
 
       <div className="px-8 pt-6">
-        {es.briefingNote && (
+        {es?.briefingNote && (
           <div className="border-l-4 border-[#0070c0] bg-blue-50 p-4 rounded-r-xl mb-6">
             <p className="text-xs font-sans font-semibold uppercase tracking-widest text-blue-700 mb-2">
               Özet
@@ -395,10 +403,10 @@ function InfoNoteLayout({ report, warmth }: Props) {
           </div>
         )}
 
-        {es.dynamicSections && es.dynamicSections.length > 0 ? (
-          es.dynamicSections.map((s) => <DynamicSectionCard key={s.id} section={s} />)
+        {es?.dynamicSections && es.dynamicSections.length > 0 ? (
+          es.dynamicSections.map((s) => <DynamicSectionCard key={s?.id ?? ''} section={s} />)
         ) : (
-          <SectionCard title="İçerik" html={es.sections.auditOpinion} />
+          <SectionCard title="İçerik" html={es?.sections?.auditOpinion ?? ''} />
         )}
       </div>
 
@@ -408,7 +416,8 @@ function InfoNoteLayout({ report, warmth }: Props) {
 }
 
 export function BoardBriefingCard({ report, warmth = 2 }: Props) {
-  const layoutType = report.executiveSummary?.layoutType ?? 'standard_audit';
+  if (!report) return null;
+  const layoutType = report?.executiveSummary?.layoutType ?? 'standard_audit';
 
   return (
     <div className="bg-slate-100 min-h-screen py-8 px-4 lg:px-8">

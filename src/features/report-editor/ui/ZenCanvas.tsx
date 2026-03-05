@@ -86,12 +86,12 @@ function SectionView({ section, readOnly, collabCtx }: SectionViewProps) {
         {section.title}
       </h2>
       <div>
-        {section.blocks
+        {(section?.blocks ?? [])
           .slice()
-          .sort((a, b) => a.orderIndex - b.orderIndex)
+          .sort((a, b) => (a?.orderIndex ?? 0) - (b?.orderIndex ?? 0))
           .map((block) => (
             <BlockRenderer
-              key={block.id}
+              key={block?.id ?? block?.orderIndex ?? Math.random()}
               block={block}
               sectionId={section.id}
               readOnly={readOnly}
@@ -117,8 +117,9 @@ function VirtualizedSections({ sections, readOnly, collabCtx, scrollRef }: Virtu
     getScrollElement: () => scrollRef.current as HTMLElement,
     estimateSize: (i) => {
       const section = sections[i];
+      const blocks = section?.blocks ?? [];
       const base = 120;
-      const blockEst = section.blocks.reduce((acc, b) => {
+      const blockEst = blocks.reduce((acc, b) => {
         if (b.type === 'heading') return acc + 60;
         if (b.type === 'live_chart') return acc + 320;
         if (b.type === 'finding_ref') return acc + 220;
@@ -148,7 +149,7 @@ function VirtualizedSections({ sections, readOnly, collabCtx, scrollRef }: Virtu
           }}
         >
           <SectionView
-            section={sections[vItem.index]}
+            section={sections[vItem.index] ?? { id: 'default', title: 'İçerik', orderIndex: 0, blocks: [] }}
             readOnly={readOnly}
             collabCtx={collabCtx}
           />
@@ -185,7 +186,7 @@ export function ZenCanvas({ readOnly = false, warmth = 2, externalCollabCtx }: Z
     );
   }
 
-  const sections = activeReport.sections;
+  const sections = activeReport?.sections ?? [];
 
   return (
     <main

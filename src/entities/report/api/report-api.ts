@@ -64,81 +64,139 @@ interface DbReportRow {
 
 // ─── Mapping ──────────────────────────────────────────────────────────────────
 
-function mapDbBlockToFrontend(dbBlock: DbReportBlock): M6ReportBlock {
+/** Blok yoksa Zen Editor çökmesin diye varsayılan blok ID'leri. */
+const DEFAULT_HEADING_ID = '00000000-0000-0000-0000-000000000001';
+const DEFAULT_PARAGRAPH_ID = '00000000-0000-0000-0000-000000000002';
+
+function mapDbBlockToFrontend(dbBlock: DbReportBlock | null | undefined): M6ReportBlock {
+  if (!dbBlock) {
+    return {
+      id: DEFAULT_HEADING_ID,
+      type: 'paragraph',
+      orderIndex: 0,
+      content: {},
+      snapshotData: null,
+    } as M6ReportBlock;
+  }
+  const content = dbBlock.content != null && typeof dbBlock.content === 'object' && !Array.isArray(dbBlock.content)
+    ? dbBlock.content
+    : { text: '' };
   return {
     id: dbBlock.id,
-    type: dbBlock.block_type,
-    orderIndex: dbBlock.position_index,
-    content: dbBlock.content ?? {},
+    type: (dbBlock.block_type ?? 'paragraph') as M6ReportBlock['type'],
+    orderIndex: dbBlock.position_index ?? 0,
+    content,
     snapshotData: dbBlock.snapshot_data ?? null,
   } as M6ReportBlock;
 }
 
-function mapDbExecutiveSummary(dbSummary: DbExecutiveSummary | null | undefined): ExecutiveSummary {
-  if (!dbSummary) {
-    return {
-      score: 0,
-      grade: 'N/A',
-      assuranceLevel: '',
-      trend: 0,
-      previousGrade: '',
-      findingCounts: { critical: 0, high: 0, medium: 0, low: 0, observation: 0 },
-      briefingNote: '',
-      sections: {
-        auditOpinion: '',
-        criticalRisks: '',
-        strategicRecommendations: '',
-        managementAction: '',
-      },
-    };
+/** Rapor yok veya executive_summary null/undefined olduğunda kullanılacak varsayılan özet (UI crash önleme). */
+export const DEFAULT_EXECUTIVE_SUMMARY: ExecutiveSummary = {
+  score: 0,
+  grade: 'N/A',
+  assuranceLevel: '',
+  trend: 0,
+  previousGrade: '',
+  findingCounts: { critical: 0, high: 0, medium: 0, low: 0, observation: 0 },
+  briefingNote: '',
+  sections: {
+    auditOpinion: '',
+    criticalRisks: '',
+    strategicRecommendations: '',
+    managementAction: '',
+  },
+};
+
+/** DB'den null, string (JSON) veya obje gelebilir; UI çökmesin diye her zaman obje. */
+function sanitizeExecutiveSummary(raw: unknown): DbExecutiveSummary | null {
+  if (raw == null) return null;
+  if (typeof raw === 'object' && !Array.isArray(raw)) return raw as DbExecutiveSummary;
+  if (typeof raw === 'string') {
+    try {
+      const parsed = JSON.parse(raw) as unknown;
+      return typeof parsed === 'object' && parsed != null && !Array.isArray(parsed) ? (parsed as DbExecutiveSummary) : null;
+    } catch {
+      return null;
+    }
   }
+  return null;
+}
+
+function mapDbExecutiveSummary(dbSummary: DbExecutiveSummary | null | undefined): ExecutiveSummary {
+  const safe = sanitizeExecutiveSummary(dbSummary);
+  if (!safe) return DEFAULT_EXECUTIVE_SUMMARY;
   return {
-    score: dbSummary.score ?? 0,
-    grade: dbSummary.grade ?? 'N/A',
-    assuranceLevel: dbSummary.assuranceLevel ?? dbSummary.assurance_level ?? '',
-    trend: typeof dbSummary.trend === 'number'
-      ? dbSummary.trend
-      : (dbSummary.trendDelta ?? 0),
-    previousGrade: dbSummary.previousGrade ?? dbSummary.previous_grade ?? '',
-    findingCounts: dbSummary.findingCounts ?? {
-      critical: dbSummary.keyMetrics?.criticalFindings ?? 0,
-      high: dbSummary.keyMetrics?.highFindings ?? 0,
-      medium: dbSummary.keyMetrics?.mediumFindings ?? 0,
-      low: dbSummary.keyMetrics?.lowFindings ?? 0,
+    score: safe.score ?? 0,
+    grade: safe.grade ?? 'N/A',
+    assuranceLevel: safe.assuranceLevel ?? safe.assurance_level ?? '',
+    trend: typeof safe.trend === 'number'
+      ? safe.trend
+      : (safe.trendDelta ?? 0),
+    previousGrade: safe.previousGrade ?? safe.previous_grade ?? '',
+    findingCounts: safe.findingCounts ?? {
+      critical: safe.keyMetrics?.criticalFindings ?? 0,
+      high: safe.keyMetrics?.highFindings ?? 0,
+      medium: safe.keyMetrics?.mediumFindings ?? 0,
+      low: safe.keyMetrics?.lowFindings ?? 0,
       observation: 0,
     },
     briefingNote:
-      dbSummary.briefingNote ??
-      dbSummary.boardNote ??
-      dbSummary.aiNarrative ??
+      safe.briefingNote ??
+      safe.boardNote ??
+      safe.aiNarrative ??
       '',
-    sections: dbSummary.sections ?? {
-      auditOpinion: dbSummary.aiNarrative ?? '',
+    sections: safe.sections ?? {
+      auditOpinion: safe.aiNarrative ?? '',
       criticalRisks: '',
       strategicRecommendations: '',
       managementAction: '',
     },
-    managementResponse: dbSummary.managementResponse,
-    layoutType: dbSummary.layoutType ?? undefined,
-    dynamicMetrics: dbSummary.dynamicMetrics ?? undefined,
-    dynamicSections: dbSummary.dynamicSections ?? undefined,
+    managementResponse: safe.managementResponse,
+    layoutType: safe.layoutType ?? undefined,
+    dynamicMetrics: safe.dynamicMetrics ?? undefined,
+    dynamicSections: safe.dynamicSections ?? undefined,
   };
+}
+
+function getDefaultBlocksForEmptyReport(_reportId: string): DbReportBlock[] {
+  return [
+    {
+      id: DEFAULT_HEADING_ID,
+      report_id: _reportId,
+      position_index: 0,
+      parent_block_id: null,
+      depth_level: 0,
+      block_type: 'heading',
+      content: { text: 'Yönetici Özeti', level: 1 },
+    },
+    {
+      id: DEFAULT_PARAGRAPH_ID,
+      report_id: _reportId,
+      position_index: 1,
+      parent_block_id: DEFAULT_HEADING_ID,
+      depth_level: 0,
+      block_type: 'paragraph',
+      content: { text: 'İçerik buraya yazılacak.' },
+    },
+  ];
 }
 
 /** report_blocks listesinden bölümlere dönüştür: depth 0 + heading level 1 = bölüm başlığı, child'lar = bölüm blokları */
 function blocksToSections(blocks: DbReportBlock[]): ReportSection[] {
-  const sorted = [...blocks].sort((a, b) => a.position_index - b.position_index);
-  const topLevel = sorted.filter((b) => b.parent_block_id == null);
+  const safeBlocks = Array.isArray(blocks) ? blocks : [];
+  const sorted = [...safeBlocks].sort((a, b) => (a?.position_index ?? 0) - (b?.position_index ?? 0));
+  const topLevel = sorted.filter((b) => b && b.parent_block_id == null);
   const sections: ReportSection[] = [];
   for (let i = 0; i < topLevel.length; i++) {
     const head = topLevel[i];
+    if (!head) continue;
     const isSectionHeader =
       head.block_type === 'heading' &&
-      (head.content as { level?: number })?.level === 1;
+      (head.content as { level?: number } | undefined)?.level === 1;
     const title = isSectionHeader
-      ? String((head.content as { text?: string })?.text ?? 'Bölüm')
+      ? String((head.content as { text?: string } | undefined)?.text ?? 'Bölüm')
       : 'İçerik';
-    const childBlocks = sorted.filter((b) => b.parent_block_id === head.id);
+    const childBlocks = sorted.filter((b) => b && b.parent_block_id === head.id);
     const sectionBlocks = isSectionHeader ? [head, ...childBlocks] : [head];
     sections.push({
       id: head.id,
@@ -159,12 +217,18 @@ function blocksToSections(blocks: DbReportBlock[]): ReportSection[] {
 }
 
 export function mapDbReportToFrontend(dbReport: DbReportRow, blocks: DbReportBlock[]): M6Report {
-  const sections = blocksToSections(blocks);
+  // #region agent log
+  const esRaw = dbReport?.executive_summary;
+  const esType = esRaw === null ? 'null' : esRaw === undefined ? 'undefined' : typeof esRaw;
+  fetch('http://127.0.0.1:7282/ingest/73ddabe5-d152-4199-aa61-31a45c840ef0',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'9f8cd2'},body:JSON.stringify({sessionId:'9f8cd2',location:'report-api.ts:mapDbReportToFrontend',message:'dbReport exec_summary',data:{reportId:dbReport?.id,esType},timestamp:Date.now(),hypothesisId:'H4'})}).catch(()=>{});
+  // #endregion
+  const safeBlocks = Array.isArray(blocks) ? blocks.filter(Boolean) : [];
+  const sections = blocksToSections(safeBlocks);
   return {
     id: dbReport.id,
     engagementId: dbReport.engagement_id ?? '',
-    title: dbReport.title,
-    status: dbReport.status as M6Report['status'],
+    title: dbReport.title ?? '',
+    status: (dbReport.status ?? 'draft') as M6Report['status'],
     themeConfig: (dbReport.theme_config as M6Report['themeConfig']) ?? {
       paperStyle: 'zen_paper',
       typography: 'merriweather_inter',
@@ -177,6 +241,11 @@ export function mapDbReportToFrontend(dbReport: DbReportRow, blocks: DbReportBlo
     updatedAt: dbReport.updated_at,
     publishedAt: dbReport.published_at ?? undefined,
     hashSeal: dbReport.hash_seal ?? undefined,
+    precise_score: dbReport.precise_score != null ? Number(dbReport.precise_score) : null,
+    report_grade: (dbReport.report_grade as string) ?? null,
+    previous_grade: (dbReport.previous_grade as string) ?? null,
+    risk_level: (dbReport.risk_level as string) ?? null,
+    report_type: (dbReport.report_type as string) ?? null,
   };
 }
 
@@ -189,14 +258,18 @@ export async function fetchReportData(reportId: string): Promise<M6Report | null
   if (reportError) throw reportError;
   if (!reportRow) return null;
 
-  const { data: blocks = [], error: blocksError } = await supabase
+  const { data: blocksRaw, error: blocksError } = await supabase
     .from('report_blocks')
     .select('*')
     .eq('report_id', reportId)
     .order('position_index', { ascending: true });
   if (blocksError) throw blocksError;
 
-  return mapDbReportToFrontend(reportRow as DbReportRow, blocks as DbReportBlock[]);
+  const blocks = Array.isArray(blocksRaw) && blocksRaw.length > 0
+    ? (blocksRaw as DbReportBlock[])
+    : getDefaultBlocksForEmptyReport(reportId);
+
+  return mapDbReportToFrontend(reportRow as DbReportRow, blocks);
 }
 
 export async function fetchFirstDraftReport(): Promise<string | null> {

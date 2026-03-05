@@ -55,9 +55,10 @@ export function SearchPalette({ open, onClose }: SearchPaletteProps) {
         } else {
           const q_lower = q.toLowerCase();
           const local: SearchResult[] = [];
-          for (const section of activeReport.sections) {
-            for (const block of section.blocks) {
-              const html = (block.content as any)?.html ?? '';
+          const secs = activeReport?.sections ?? [];
+          for (const section of secs) {
+            for (const block of section?.blocks ?? []) {
+              const html = (block?.content as any)?.html ?? '';
               if (stripHtml(html).toLowerCase().includes(q_lower)) {
                 local.push({
                   block_id: block.id,

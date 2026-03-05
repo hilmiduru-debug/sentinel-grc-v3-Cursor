@@ -84,10 +84,11 @@ export function LiquidGlassToolbar({ collabCtx, traceabilityOpen, onTraceability
   const handleSimulate = () => {
     if (!activeReport) return;
     let targetId: string | null = null;
-    outer: for (const section of activeReport.sections) {
-      for (const block of section.blocks) {
-        if (block.type === 'finding_ref') {
-          targetId = (block as FindingRefBlock).content.findingId;
+    const secs = activeReport?.sections ?? [];
+    outer: for (const section of secs) {
+      for (const block of section?.blocks ?? []) {
+        if (block?.type === 'finding_ref') {
+          targetId = (block as FindingRefBlock).content?.findingId ?? null;
           break outer;
         }
       }

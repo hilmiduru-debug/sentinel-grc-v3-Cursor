@@ -5,8 +5,9 @@ import { useActiveReportStore } from '@/entities/report';
 
 export function SectionNavigator() {
   const { activeReport } = useActiveReportStore();
+  const sections = activeReport?.sections ?? [];
   const [activeSectionId, setActiveSectionId] = useState<string | null>(
-    activeReport?.sections[0]?.id ?? null,
+    sections[0]?.id ?? null,
   );
 
   const handleSectionClick = (sectionId: string) => {
@@ -31,8 +32,8 @@ export function SectionNavigator() {
           </div>
         ) : (
           <ul className="space-y-0.5 px-2">
-            {activeReport.sections.map((section, idx) => (
-              <li key={section.id}>
+            {sections.map((section, idx) => (
+              <li key={section?.id ?? idx}>
                 <button
                   onClick={() => handleSectionClick(section.id)}
                   className={clsx(
@@ -53,7 +54,7 @@ export function SectionNavigator() {
                     {idx + 1}
                   </span>
                   <span className="text-sm font-sans font-medium truncate leading-tight">
-                    {section.title}
+                    {section?.title ?? 'Bölüm'}
                   </span>
                   <ChevronRight
                     size={13}
@@ -65,8 +66,8 @@ export function SectionNavigator() {
                 </button>
 
                 <ul className="mt-0.5 ml-5 pl-3 border-l border-slate-100 space-y-0.5 mb-1">
-                  {section.blocks
-                    .filter((b) => b.type === 'heading')
+                  {(section?.blocks ?? [])
+                    .filter((b) => b?.type === 'heading')
                     .slice(0, 3)
                     .map((b) => (
                       <li key={b.id}>
@@ -84,8 +85,8 @@ export function SectionNavigator() {
 
       <div className="px-4 py-3 border-t border-slate-100">
         <p className="text-xs font-sans text-slate-400">
-          {activeReport?.sections.length ?? 0} bölüm &middot;{' '}
-          {activeReport?.sections.reduce((acc, s) => acc + s.blocks.length, 0) ?? 0} blok
+          {sections.length} bölüm &middot;{' '}
+          {sections.reduce((acc, s) => acc + (s?.blocks?.length ?? 0), 0)} blok
         </p>
       </div>
     </aside>

@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useActiveReportStore } from '@/entities/report';
+import { DEFAULT_EXECUTIVE_SUMMARY } from '@/entities/report/api/report-api';
 import { useFindingStore } from '@/entities/finding/model/store';
 import type { M6Report, FindingRefBlock } from '@/entities/report';
 import type { ComprehensiveFinding } from '@/entities/finding/model/types';
@@ -86,10 +87,12 @@ function ThreadNode({
 
 function extractFindingIds(report: M6Report): string[] {
   const ids: string[] = [];
-  for (const section of report.sections) {
-    for (const block of section.blocks) {
-      if (block.type === 'finding_ref') {
-        ids.push((block as FindingRefBlock).content.findingId);
+  const sections = report?.sections ?? [];
+  for (const section of sections) {
+    for (const block of section?.blocks ?? []) {
+      if (block?.type === 'finding_ref') {
+        const fid = (block as FindingRefBlock).content?.findingId;
+        if (fid) ids.push(fid);
       }
     }
   }
@@ -153,7 +156,7 @@ export function TraceabilityDrawer({ open, onClose }: TraceabilityDrawerProps) {
 
   if (!activeReport) return null;
 
-  const es = activeReport.executiveSummary;
+  const es = activeReport?.executiveSummary ?? DEFAULT_EXECUTIVE_SUMMARY;
 
   return (
       <div className="flex flex-col h-full bg-surface border-l border-slate-200">
@@ -215,10 +218,10 @@ export function TraceabilityDrawer({ open, onClose }: TraceabilityDrawerProps) {
                     color="bg-blue-500"
                     label="Denetim Kapsamı"
                     title={activeReport.title}
-                    subtitle={`${activeReport.sections.length} bölüm • ${activeReport.sections.reduce((s, sec) => s + sec.blocks.length, 0)} blok`}
+                    subtitle={`${(activeReport?.sections ?? []).length} bölüm • ${(activeReport?.sections ?? []).reduce((s, sec) => s + (sec?.blocks?.length ?? 0), 0)} blok`}
                   >
                     <div className="flex gap-1.5 flex-wrap">
-                      {activeReport.sections.map((sec) => (
+                      {(activeReport?.sections ?? []).map((sec) => (
                         <span
                           key={sec.id}
                           className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-[10px] font-sans font-medium"

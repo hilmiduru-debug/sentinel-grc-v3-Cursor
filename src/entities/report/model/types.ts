@@ -336,6 +336,16 @@ export interface M6Report {
   updatedAt: string;
   publishedAt?: string;
   hashSeal?: string;
+  /** Hassas skor (0–100, kart ve özet senkron) */
+  precise_score?: number | null;
+  /** Rapor notu (A (Güçlü) vb., kart ve özet senkron) */
+  report_grade?: string | null;
+  /** Önceki dönem notu */
+  previous_grade?: string | null;
+  /** Risk seviyesi: high, medium, low */
+  risk_level?: string | null;
+  /** Rapor türü (İç Denetim, Bilgi Sistemleri vb.) */
+  report_type?: string | null;
 }
 
 // ─── END MODULE 6 ────────────────────────────────────────────────────────────

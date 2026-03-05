@@ -10,6 +10,7 @@ import {
   deleteBlockDb,
   publishReportApi,
   createSectionDb,
+  DEFAULT_EXECUTIVE_SUMMARY,
 } from '../api/report-api';
 import { generateSHA256Hash } from '@/shared/lib/crypto';
 
@@ -272,6 +273,33 @@ interface ActiveReportState {
 const reindexBlocks = (blocks: M6ReportBlock[]): M6ReportBlock[] =>
   blocks.map((b, i) => ({ ...b, orderIndex: i }));
 
+/** Zeyilname/boş bloklu raporlarda editör çökmesini önler: sections/blocks her zaman dizi. */
+function normalizeReportForEditor(report: M6Report): M6Report {
+  const executiveSummary = report.executiveSummary ?? DEFAULT_EXECUTIVE_SUMMARY;
+  let sections = Array.isArray(report.sections) ? report.sections : [];
+  sections = sections.map((s) => ({
+    ...s,
+    id: s?.id ?? 'default',
+    title: s?.title ?? 'İçerik',
+    orderIndex: typeof s?.orderIndex === 'number' ? s.orderIndex : 0,
+    blocks: Array.isArray(s?.blocks) ? s.blocks : [],
+  }));
+  if (sections.length === 0) {
+    sections = [
+      {
+        id: 'default',
+        title: 'Yönetici Özeti',
+        orderIndex: 0,
+        blocks: [
+          { id: '00000000-0000-0000-0000-000000000001', type: 'heading', orderIndex: 0, content: { html: '', level: 1 } },
+          { id: '00000000-0000-0000-0000-000000000002', type: 'paragraph', orderIndex: 1, content: { html: 'İçerik buraya yazılacak.' } },
+        ] as M6ReportBlock[],
+      },
+    ];
+  }
+  return { ...report, executiveSummary, sections };
+}
+
 const mapSection = (
   sections: ReportSection[],
   sectionId: string,
@@ -298,22 +326,36 @@ export const useActiveReportStore = create<ActiveReportState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const report = await fetchReportData(reportId);
-      set({ activeReport: report, isLoading: false });
+      // #region agent log
+      fetch('http://127.0.0.1:7282/ingest/73ddabe5-d152-4199-aa61-31a45c840ef0',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'9f8cd2'},body:JSON.stringify({sessionId:'9f8cd2',location:'store.ts:loadReport',message:'after fetch',data:{reportId,reportNull:report==null,hasExec:report!=null&&'executiveSummary' in report},timestamp:Date.now(),hypothesisId:'H4'})}).catch(()=>{});
+      // #endregion
+      const safeReport: M6Report | null = report
+        ? normalizeReportForEditor(report)
+        : null;
+      set({ activeReport: safeReport, isLoading: false });
     } catch (err: any) {
       set({ isLoading: false, error: err?.message ?? 'Rapor yüklenemedi.' });
       toast.error('Rapor yüklenirken bir hata oluştu.');
     }
   },
 
-  setActiveReport: (report) => set({ activeReport: report }),
+  setActiveReport: (report) => {
+    // #region agent log
+    fetch('http://127.0.0.1:7282/ingest/73ddabe5-d152-4199-aa61-31a45c840ef0',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'9f8cd2'},body:JSON.stringify({sessionId:'9f8cd2',location:'store.ts:setActiveReport',message:'setActiveReport',data:{reportNull:report==null,hasExec:report!=null&&'executiveSummary' in (report as object)},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
+    // #endregion
+    const safe =
+      report == null ? null : normalizeReportForEditor(report as M6Report);
+    set({ activeReport: safe });
+  },
 
   updateExecutiveSummary: (data) => {
     const { activeReport } = get();
     if (!activeReport) return;
     const prev = { ...activeReport };
+    const baseEs = activeReport.executiveSummary ?? DEFAULT_EXECUTIVE_SUMMARY;
     const optimistic: M6Report = {
       ...activeReport,
-      executiveSummary: { ...activeReport.executiveSummary, ...data },
+      executiveSummary: { ...baseEs, ...data },
       updatedAt: new Date().toISOString(),
     };
     set({ activeReport: optimistic });

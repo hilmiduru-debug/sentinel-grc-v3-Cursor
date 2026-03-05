@@ -6,8 +6,8 @@
 import { useState } from 'react';
 import {
   Clock, Eye, CheckCircle, FileText, AlertTriangle, Edit3, Link2, BookOpen,
-  X, Loader2, ChevronDown, ChevronUp, Copy, Check, FileWarning, Lock, Ban,
-  type LucideIcon,
+  Loader2, ChevronDown, ChevronUp, Copy, Check, FileWarning, Lock, Ban,
+  BarChart2, Hash, Briefcase, Award, Tag, Gauge, History, AlertCircle, type LucideIcon,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -17,7 +17,6 @@ import {
   fetchReadReceipts,
   fetchMagicLinks,
 } from '../api/magic-link-api';
-import { ReportAmendmentModal } from './ReportAmendmentModal';
 import { usePersonaStore } from '@/entities/user/model/persona-store';
 import type { ReportListItem } from '../api/reports-api';
 
@@ -190,17 +189,23 @@ function MagicLinkPanel({ reportId }: { reportId: string }) {
   );
 }
 
+function normalizedStatusKey(status: string | undefined): keyof typeof STATUS_CONFIG {
+  const s = (status ?? 'draft').toLowerCase();
+  if (s === 'revoked_amended') return 'REVOKED_AMENDED';
+  return s as keyof typeof STATUS_CONFIG;
+}
+
 export function ReportCard({ report, onView, onEdit }: ReportCardProps) {
-  const statusCfg = STATUS_CONFIG[report.status] ?? STATUS_CONFIG.draft;
+  const statusKey = normalizedStatusKey(report.status);
+  const statusCfg = STATUS_CONFIG[statusKey] ?? STATUS_CONFIG.draft;
   const StatusIcon = statusCfg.icon;
 
-  const isRevoked = report.status === 'REVOKED_AMENDED';
+  const isRevoked = (report.status ?? '').toLowerCase() === 'revoked_amended';
   const isPublished =
-    report.status === 'published' || (report.locked_at != null && report.locked_at !== '');
+    (report.status ?? '').toLowerCase() === 'published' || (report.locked_at != null && report.locked_at !== '');
   const isLocked = isPublished;
 
   const [showMagicPanel, setShowMagicPanel] = useState(false);
-  const [amendmentModalOpen, setAmendmentModalOpen] = useState(false);
 
   const cardBorderClass = isRevoked
     ? 'border-t-red-500'
@@ -208,62 +213,95 @@ export function ReportCard({ report, onView, onEdit }: ReportCardProps) {
       ? 'border-t-emerald-500'
       : 'border-t-slate-200';
 
-  const cardBgClass = isRevoked ? 'bg-red-50/30' : isLocked ? 'bg-emerald-50/30' : 'bg-surface';
+  const cardBgClass = isRevoked ? 'bg-red-50/40' : isLocked ? 'bg-emerald-50/40' : 'bg-white/80';
 
   return (
     <div
       className={clsx(
-        'rounded-2xl border border-t-4 overflow-hidden flex flex-col transition-all duration-200',
+        'rounded-2xl border border-t-4 overflow-hidden flex flex-col transition-all duration-300',
+        'backdrop-blur-xl shadow-md',
         cardBgClass,
-        isRevoked ? 'border-red-200' : isLocked ? 'border-emerald-200' : 'border-slate-200',
+        isRevoked ? 'border-red-200' : isLocked ? 'border-emerald-200' : 'border-slate-200/80',
         cardBorderClass,
-        !isRevoked && 'hover:shadow-lg hover:border-slate-300',
+        !isRevoked && 'hover:shadow-xl hover:border-slate-300 hover:-translate-y-0.5',
       )}
     >
-      {/* Durum + Versiyon */}
-      <div className="px-5 pt-4 pb-3 flex items-start justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <FileText size={14} className="text-slate-400 flex-shrink-0" />
-          {report.engagement_title && (
-            <span className="text-xs font-sans text-slate-500 truncate max-w-[140px]" title={report.engagement_title}>
+      {/* Üst bilgi çubuğu — Denetim adı (Briefcase) + Durum rozeti + Adli Kilit */}
+      <div className="px-5 pt-4 pb-3 flex items-start justify-between gap-3 bg-white/30 backdrop-blur-sm border-b border-slate-100/80">
+        <div className="flex items-center gap-2 min-w-0">
+          <Briefcase size={16} className="text-slate-500 flex-shrink-0" />
+          {report.engagement_title ? (
+            <span className="text-xs font-sans font-medium text-slate-600 truncate max-w-[160px]" title={report.engagement_title}>
               {report.engagement_title}
             </span>
-          )}
-          {report.version > 1 && (
-            <span className="text-[10px] font-sans text-slate-400">v{report.version}</span>
+          ) : (
+            <span className="text-xs font-sans text-slate-400 italic">Denetim atanmamış</span>
           )}
         </div>
-        <span
-          className={clsx(
-            'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-sans font-semibold flex-shrink-0',
-            statusCfg.color,
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {isLocked && (
+            <span className="inline-flex items-center gap-1 text-[10px] text-emerald-600 font-sans" title="Adli mühürlü — değiştirilemez">
+              <Lock size={12} className="text-emerald-500" />
+            </span>
           )}
-        >
-          <StatusIcon size={10} />
-          {statusCfg.label}
-        </span>
+          <span
+            className={clsx(
+              'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-sans font-semibold shadow-sm',
+              statusCfg.color,
+            )}
+          >
+            <StatusIcon size={11} />
+            {statusCfg.label}
+          </span>
+        </div>
+      </div>
+
+      {/* Üst bar: Rapor türü + Risk seviyesi */}
+      <div className="px-5 pt-3 pb-1 flex flex-wrap items-center gap-2">
+        {report.report_type && (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-violet-50 border border-violet-200/80 text-violet-700 text-xs font-sans font-medium">
+            <Tag size={12} className="shrink-0" />
+            {report.report_type}
+          </span>
+        )}
+        {report.risk_level && (
+          <span
+            className={clsx(
+              'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-sans font-medium border',
+              report.risk_level === 'high'
+                ? 'bg-red-50 border-red-200/80 text-red-700'
+                : report.risk_level === 'medium'
+                  ? 'bg-amber-50 border-amber-200/80 text-amber-800'
+                  : 'bg-emerald-50 border-emerald-200/80 text-emerald-700',
+            )}
+            title="Risk seviyesi"
+          >
+            <AlertCircle size={12} className="shrink-0" />
+            {report.risk_level === 'high' ? 'Yüksek Risk' : report.risk_level === 'medium' ? 'Orta Risk' : 'Düşük Risk'}
+          </span>
+        )}
       </div>
 
       {/* Başlık + Açıklama */}
-      <div className={clsx('px-5 pb-3 flex-1', isRevoked && 'opacity-75')}>
+      <div className={clsx('px-5 py-4 flex-1', isRevoked && 'opacity-75')}>
         <h3
           className={clsx(
-            'font-sans font-bold text-primary text-sm leading-snug line-clamp-2 mb-1.5',
+            'font-sans font-bold text-primary text-base leading-snug line-clamp-2 mb-2',
             isRevoked && 'line-through text-slate-500',
           )}
         >
           {report.title}
         </h3>
-        <p className="text-xs font-sans text-slate-400 line-clamp-2">
+        <p className="text-sm font-sans text-slate-500 line-clamp-2">
           {report.description?.trim()
-            ? report.description.slice(0, 100) + (report.description.length > 100 ? '...' : '')
+            ? report.description.slice(0, 120) + (report.description.length > 120 ? '...' : '')
             : 'Taslak rapor — açıklama henüz girilmemiş.'}
         </p>
       </div>
 
       {/* REVOKED damgası */}
       {isRevoked && (
-        <div className="px-5 py-2 bg-red-100/80 border-y border-red-200 flex items-center gap-2">
+        <div className="px-5 py-2.5 bg-red-100/90 border-y border-red-200 flex items-center gap-2">
           <Ban size={14} className="text-red-600 flex-shrink-0" />
           <span className="text-xs font-sans font-semibold text-red-700">
             İPTAL EDİLDİ — ZEYİLNAME YAYINLANDI
@@ -271,8 +309,8 @@ export function ReportCard({ report, onView, onEdit }: ReportCardProps) {
         </div>
       )}
 
-      {/* Tarih */}
-      <div className="px-5 py-2.5 border-t border-slate-100 flex items-center justify-between gap-2">
+      {/* Alt bilgi çubuğu — Tarihler (Yayın/Kilit) + Sürüm */}
+      <div className="px-5 py-2.5 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
         <span className="text-xs font-sans text-slate-500">
           Oluşturulma: {new Date(report.created_at).toLocaleDateString('tr-TR', {
             day: 'numeric',
@@ -280,12 +318,97 @@ export function ReportCard({ report, onView, onEdit }: ReportCardProps) {
             year: 'numeric',
           })}
         </span>
-        {isLocked && report.locked_at && (
-          <span className="inline-flex items-center gap-1 text-[10px] text-emerald-600 font-sans">
-            <Lock size={10} />
-            Mühürlü
+        <div className="flex items-center gap-2">
+          {report.published_at && (
+            <span className="text-[10px] font-sans text-slate-400">
+              Yayın: {new Date(report.published_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}
+            </span>
+          )}
+          {isLocked && report.locked_at && (
+            <span className="inline-flex items-center gap-1 text-[10px] text-emerald-600 font-sans font-medium">
+              <Lock size={10} />
+              Mühürlü
+            </span>
+          )}
+          <span className="text-[10px] font-sans text-slate-400">v{report.version}</span>
+        </div>
+      </div>
+
+      {/* Meta rozetler (Glassmorphism footer) — Bulgu (AlertTriangle vurgulu), Risk (BarChart2), Sürüm */}
+      <div className="px-5 py-3 border-t border-slate-100/80 bg-white/50 backdrop-blur-sm flex flex-wrap items-center gap-2">
+        <span
+          className={clsx(
+            'inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-sans font-medium border',
+            report.findings_count > 0
+              ? 'bg-amber-50 border-amber-200/80 text-amber-800'
+              : 'bg-slate-100/80 border-slate-200/60 text-slate-600',
+          )}
+          title="Bu denetime bağlı bulgu sayısı"
+        >
+          {report.findings_count > 0 ? (
+            <AlertTriangle size={12} className="text-amber-600 shrink-0" />
+          ) : (
+            <FileWarning size={12} className="text-slate-500 shrink-0" />
+          )}
+          Bulgu: {report.findings_count}
+        </span>
+        <span
+          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100/80 text-slate-600 text-xs font-sans font-medium border border-slate-200/60"
+          title="Denetim risk skoru"
+        >
+          <BarChart2 size={12} className="text-slate-500 shrink-0" />
+          {report.engagement_risk_score != null || report.engagement_letter_grade ? (
+            <>
+              {report.engagement_risk_score != null && <span>{report.engagement_risk_score}</span>}
+              {report.engagement_letter_grade && (
+                <span className="font-semibold text-slate-700 ml-0.5">({report.engagement_letter_grade})</span>
+              )}
+            </>
+          ) : (
+            <span className="text-slate-400">—</span>
+          )}
+        </span>
+        {report.report_grade && (
+          <span
+            className={clsx(
+              'inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-sans font-medium border',
+              report.report_grade.startsWith('A')
+                ? 'bg-emerald-50 border-emerald-200/80 text-emerald-800'
+                : report.report_grade.startsWith('C')
+                  ? 'bg-amber-50 border-amber-200/80 text-amber-800'
+                  : 'bg-slate-100/80 border-slate-200/60 text-slate-700',
+            )}
+            title="Rapor notu"
+          >
+            <Award size={12} className="shrink-0" />
+            {report.report_grade}
           </span>
         )}
+        {report.precise_score != null && (
+          <span
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-50 border border-indigo-200/80 text-indigo-800 text-xs font-sans font-medium"
+            title="Hassas skor"
+          >
+            <Gauge size={12} className="shrink-0" />
+            {report.precise_score.toFixed(1)}
+          </span>
+        )}
+        {report.previous_grade && (
+          <span
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100/80 border border-slate-200/60 text-slate-700 text-xs font-sans font-medium"
+            title="Önceki not"
+          >
+            <History size={12} className="shrink-0" />
+            Önceki: {report.previous_grade.startsWith('A') ? 'A' : report.previous_grade.startsWith('B') ? 'B' : report.previous_grade.startsWith('C') ? 'C' : report.previous_grade}
+          </span>
+        )}
+        <span
+          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100/80 text-slate-600 text-xs font-sans font-medium border border-slate-200/60"
+          title="Rapor sürümü"
+        >
+          <Hash size={12} className="text-slate-500 shrink-0" />
+          v{report.version}
+        </span>
       </div>
 
       {/* Aksiyon Butonları */}
@@ -311,18 +434,6 @@ export function ReportCard({ report, onView, onEdit }: ReportCardProps) {
           Düzenle
         </button>
 
-        {/* GIAS: Düzeltme — sadece yayınlanmış; REVOKED_AMENDED kartında YOK */}
-        {isPublished && !isRevoked && (
-          <button
-            onClick={() => setAmendmentModalOpen(true)}
-            title="GIAS: Hata bildir ve düzeltme versiyonu (zeyilname) oluştur"
-            className="flex items-center gap-1 px-2.5 py-1.5 border border-amber-300 rounded-lg text-xs font-semibold
-                       text-amber-700 bg-amber-50 hover:bg-amber-100 transition-colors font-sans"
-          >
-            <FileWarning size={12} />
-            Düzeltme
-          </button>
-        )}
         {/* Sihirli Link — yalnızca yayınlanmış ve iptal edilmemiş */}
         {isPublished && !isRevoked && (
           <button
@@ -340,14 +451,6 @@ export function ReportCard({ report, onView, onEdit }: ReportCardProps) {
           </button>
         )}
       </div>
-
-      {amendmentModalOpen && (
-        <ReportAmendmentModal
-          reportId={report.id}
-          reportTitle={report.title}
-          onClose={() => setAmendmentModalOpen(false)}
-        />
-      )}
 
       <AnimatePresence>
         {showMagicPanel && isPublished && !isRevoked && (

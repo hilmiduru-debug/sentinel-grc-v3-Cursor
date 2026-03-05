@@ -14,7 +14,9 @@ import {
   Calendar,
   Building,
 } from 'lucide-react';
+import clsx from 'clsx';
 import { useActiveReportStore } from '@/entities/report';
+import { DEFAULT_EXECUTIVE_SUMMARY } from '@/entities/report/api/report-api';
 import type { ExecutiveSummarySections, ManagementResponse, DynamicSection } from '@/entities/report';
 import { SmartVariableNode } from '@/features/report-editor/blocks/extensions/SmartVariableNode';
 import { useReportSummary } from '@/features/report-editor/api/useReportSummary';
@@ -202,8 +204,13 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
   const { activeReport, updateExecutiveSummary, loadReport } = useActiveReportStore();
   const { report: reportFromQuery, generateSummary, isGenerating } = useReportSummary(reportId);
 
+  // #region agent log
+  const defaultEsDefined = typeof DEFAULT_EXECUTIVE_SUMMARY !== 'undefined' && DEFAULT_EXECUTIVE_SUMMARY != null;
+  const esRaw = activeReport?.executiveSummary ?? reportFromQuery?.executiveSummary ?? DEFAULT_EXECUTIVE_SUMMARY;
+  fetch('http://127.0.0.1:7282/ingest/73ddabe5-d152-4199-aa61-31a45c840ef0',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'9f8cd2'},body:JSON.stringify({sessionId:'9f8cd2',location:'ExecutiveSummaryStudio.tsx:entry',message:'es source',data:{activeReportId:activeReport?.id,reportFromQueryNull:reportFromQuery==null,defaultEsDefined,esRawNull:esRaw==null,hasScore:esRaw!=null&&'score' in esRaw},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{});
+  // #endregion
   const mgmtResponse = activeReport?.executiveSummary?.managementResponse;
-  const es = activeReport?.executiveSummary ?? reportFromQuery?.executiveSummary;
+  const es = esRaw;
   const paperBg = warmthToBg(warmth);
   const layoutType = es?.layoutType ?? 'standard_audit';
 
@@ -232,7 +239,7 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
   const handleSectionChange = useCallback(
     (key: keyof ExecutiveSummarySections, html: string) => {
       if (!es) return;
-      updateExecutiveSummary({ sections: { ...es.sections, [key]: html } });
+      updateExecutiveSummary({ sections: { ...(es?.sections ?? {}), [key]: html } });
     },
     [es, updateExecutiveSummary],
   );
@@ -240,7 +247,7 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
   const handleDynamicSectionChange = useCallback(
     (id: string, html: string) => {
       if (!es) return;
-      const updated = (es.dynamicSections ?? []).map((s) => s.id === id ? { ...s, content: html } : s);
+      const updated = (es?.dynamicSections ?? []).map((s) => s.id === id ? { ...s, content: html } : s);
       updateExecutiveSummary({ dynamicSections: updated });
     },
     [es, updateExecutiveSummary],
@@ -249,7 +256,7 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
   const handleDynamicMetricChange = useCallback(
     (key: string, value: string) => {
       if (!es) return;
-      updateExecutiveSummary({ dynamicMetrics: { ...(es.dynamicMetrics ?? {}), [key]: value } });
+      updateExecutiveSummary({ dynamicMetrics: { ...(es?.dynamicMetrics ?? {}), [key]: value } });
     },
     [es, updateExecutiveSummary],
   );
@@ -259,10 +266,19 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
     updateExecutiveSummary({});
   }, [updateExecutiveSummary]);
 
-  if (!es) return null;
+  // #region agent log
+  fetch('http://127.0.0.1:7282/ingest/73ddabe5-d152-4199-aa61-31a45c840ef0',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'9f8cd2'},body:JSON.stringify({sessionId:'9f8cd2',location:'ExecutiveSummaryStudio.tsx:displayScore',message:'before read',data:{esNull:es==null,esScoreType:es==null?'n/a':typeof (es as {score?:unknown})?.score},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{});
+  // #endregion
+  const trendPositive = (es?.trend ?? 0) > 0;
+  const trendNeutral = (es?.trend ?? 0) === 0;
 
-  const trendPositive = es.trend > 0;
-  const trendNeutral = es.trend === 0;
+  /* Rapor Kütüphanesi ile senkron: DB’den gelen değerler öncelikli (Hassas Skor, Not, Risk). */
+  const displayScore = activeReport?.precise_score ?? es?.score ?? 0;
+  const reportGradeRaw = activeReport?.report_grade ?? es?.grade;
+  const displayGrade = GRADE_OPTIONS.find((g) => reportGradeRaw?.startsWith(g)) ?? reportGradeRaw ?? es?.grade ?? 'N/A';
+  const prevGradeRaw = activeReport?.previous_grade ?? es?.previousGrade;
+  const displayPreviousGrade = GRADE_OPTIONS.find((g) => prevGradeRaw?.startsWith(g)) ?? prevGradeRaw ?? es?.previousGrade ?? 'N/A';
+  const displayRiskLevel = activeReport?.risk_level;
 
   return (
     <div className="min-h-full bg-slate-100 overflow-y-auto p-6 lg:p-10">
@@ -292,24 +308,24 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
             <h3 className="text-xs font-sans font-semibold uppercase tracking-widest text-slate-500 mb-4">
               Skor ve Değerlendirme
             </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
               <div>
-                <label className="block text-xs text-slate-500 mb-1">Güncel Skor</label>
+                <label className="block text-xs text-slate-500 mb-1">Hassas Skor</label>
                 <input
                   type="number"
                   min={0}
                   max={100}
                   step={0.1}
-                  value={es.score}
+                  value={displayScore}
                   disabled={readOnly}
                   onChange={(e) => updateExecutiveSummary({ score: parseFloat(e.target.value) || 0 })}
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-sans font-semibold text-primary focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-canvas disabled:cursor-not-allowed bg-surface"
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-500 mb-1">Not</label>
+                <label className="block text-xs text-slate-500 mb-1">Rapor Notu</label>
                 <select
-                  value={es.grade}
+                  value={displayGrade}
                   disabled={readOnly}
                   onChange={(e) => updateExecutiveSummary({ grade: e.target.value })}
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-sans font-semibold text-primary focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-canvas disabled:cursor-not-allowed bg-surface"
@@ -320,7 +336,7 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
               <div>
                 <label className="block text-xs text-slate-500 mb-1">Önceki Not</label>
                 <select
-                  value={es.previousGrade}
+                  value={displayPreviousGrade}
                   disabled={readOnly}
                   onChange={(e) => updateExecutiveSummary({ previousGrade: e.target.value })}
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-sans font-semibold text-primary focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-canvas disabled:cursor-not-allowed bg-surface"
@@ -329,12 +345,26 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
                 </select>
               </div>
               <div>
+                <label className="block text-xs text-slate-500 mb-1">Risk Seviyesi</label>
+                <div
+                  className={clsx(
+                    'w-full border rounded-lg px-3 py-2 text-sm font-sans font-semibold bg-surface',
+                    displayRiskLevel === 'high' && 'border-red-200 bg-red-50 text-red-800',
+                    displayRiskLevel === 'medium' && 'border-amber-200 bg-amber-50 text-amber-800',
+                    displayRiskLevel === 'low' && 'border-emerald-200 bg-emerald-50 text-emerald-800',
+                    !displayRiskLevel && 'border-slate-200 text-slate-500',
+                  )}
+                >
+                  {displayRiskLevel === 'high' ? 'Yüksek' : displayRiskLevel === 'medium' ? 'Orta' : displayRiskLevel === 'low' ? 'Düşük' : '—'}
+                </div>
+              </div>
+              <div>
                 <label className="block text-xs text-slate-500 mb-1">Trend (%)</label>
                 <div className="relative">
                   <input
                     type="number"
                     step={0.1}
-                    value={es.trend}
+                    value={es?.trend ?? 0}
                     disabled={readOnly}
                     onChange={(e) => updateExecutiveSummary({ trend: parseFloat(e.target.value) || 0 })}
                     className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-sans font-semibold text-primary focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-canvas disabled:cursor-not-allowed pr-8 bg-surface"
@@ -353,7 +383,7 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
               <div>
                 <label className="block text-xs text-slate-500 mb-1">Güvence Seviyesi</label>
                 <select
-                  value={es.assuranceLevel}
+                  value={es?.assuranceLevel ?? ''}
                   disabled={readOnly}
                   onChange={(e) => updateExecutiveSummary({ assuranceLevel: e.target.value })}
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-sans font-semibold text-primary focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-canvas disabled:cursor-not-allowed bg-surface"
@@ -368,13 +398,13 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
                   isCritical={true}
                   resourceType="REPORT_GRADE"
                   resourceId={reportId ?? 'mock-id'}
-                  actionName={`Override System Grade to ${es.grade}`}
+                  actionName={`Override System Grade to ${displayGrade}`}
                   payload={{
-                    grade: es.grade,
-                    score: es.score,
-                    previousGrade: es.previousGrade,
-                    trend: es.trend,
-                    assuranceLevel: es.assuranceLevel,
+                    grade: displayGrade,
+                    score: displayScore,
+                    previousGrade: es?.previousGrade ?? '',
+                    trend: es?.trend ?? 0,
+                    assuranceLevel: es?.assuranceLevel ?? '',
                   }}
                   onExecute={handleSaveOverride}
                   children={({ onClick, loading }) => (
@@ -410,7 +440,7 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
                 </div>
                 <input
                   type="text"
-                  value={es.dynamicMetrics?.maliBoyu ?? ''}
+                  value={es?.dynamicMetrics?.maliBoyu ?? ''}
                   disabled={readOnly}
                   onChange={(e) => handleDynamicMetricChange('maliBoyu', e.target.value)}
                   placeholder="örn: 450.000 TL"
@@ -424,7 +454,7 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
                 </div>
                 <input
                   type="text"
-                  value={es.dynamicMetrics?.olayTarihi ?? ''}
+                  value={es?.dynamicMetrics?.olayTarihi ?? ''}
                   disabled={readOnly}
                   onChange={(e) => handleDynamicMetricChange('olayTarihi', e.target.value)}
                   placeholder="örn: 15 Kasım 2025"
@@ -438,7 +468,7 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
                 </div>
                 <input
                   type="text"
-                  value={es.dynamicMetrics?.ilgiliBirim ?? ''}
+                  value={es?.dynamicMetrics?.ilgiliBirim ?? ''}
                   disabled={readOnly}
                   onChange={(e) => handleDynamicMetricChange('ilgiliBirim', e.target.value)}
                   placeholder="örn: Kadıköy Şubesi"
@@ -454,7 +484,7 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
             {layoutType === 'info_note' ? 'Özet' : 'YK Bilgilendirme Notu'}
           </h3>
           <textarea
-            value={es.briefingNote}
+            value={es?.briefingNote ?? ''}
             disabled={readOnly}
             onChange={(e) => updateExecutiveSummary({ briefingNote: e.target.value })}
             rows={3}
@@ -478,8 +508,8 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
               <SkeletonBlock lines={5} />
               <SkeletonBlock lines={4} />
             </>
-          ) : es.dynamicSections && es.dynamicSections.length > 0 ? (
-            es.dynamicSections.map((section, idx) => (
+          ) : (es?.dynamicSections?.length ?? 0) > 0 ? (
+            (es?.dynamicSections ?? []).map((section, idx) => (
               <DynamicTiptapField
                 key={section.id}
                 section={section}
@@ -493,7 +523,7 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
               <TiptapField
                 label="I. Denetim Görüşü"
                 fieldKey="auditOpinion"
-                content={es.sections.auditOpinion}
+                content={es?.sections?.auditOpinion ?? ''}
                 placeholder="Denetim görüşünüzü buraya yazın (GIAS 2400 çerçevesinde)..."
                 readOnly={readOnly}
                 onChange={handleSectionChange}
@@ -501,7 +531,7 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
               <TiptapField
                 label="II. Kritik Risk Alanları"
                 fieldKey="criticalRisks"
-                content={es.sections.criticalRisks}
+                content={es?.sections?.criticalRisks ?? ''}
                 placeholder="Kritik ve yüksek öncelikli risk tespitlerini açıklayın..."
                 readOnly={readOnly}
                 onChange={handleSectionChange}
@@ -509,7 +539,7 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
               <TiptapField
                 label="III. Stratejik Öneriler"
                 fieldKey="strategicRecommendations"
-                content={es.sections.strategicRecommendations}
+                content={es?.sections?.strategicRecommendations ?? ''}
                 placeholder="Yönetime yönelik stratejik tavsiyeler ve aksiyon önerilerini yazın..."
                 readOnly={readOnly}
                 onChange={handleSectionChange}
@@ -517,7 +547,7 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
               <TiptapField
                 label="IV. Yönetim Eylemi ve Taahhütler"
                 fieldKey="managementAction"
-                content={es.sections.managementAction}
+                content={es?.sections?.managementAction ?? ''}
                 placeholder="Yönetimin bulgulara verdiği yanıtlar ve taahhütleri belirtin..."
                 readOnly={readOnly}
                 onChange={handleSectionChange}

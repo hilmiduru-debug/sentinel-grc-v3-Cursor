@@ -2530,7 +2530,8 @@ INSERT INTO public.ccm_alerts (id, rule_triggered, risk_score, severity, title, 
 ON CONFLICT (id) DO NOTHING;
 
 -- -----------------------------------------------------------------------------
--- G7. RAPORLAR (1 Mühürlü published, 1 Taslak draft)
+-- G7. RAPORLAR (public.reports — Rapor Kütüphanesi tek kaynağı)
+-- created_by, published_by, locked_by = NULL (auth.users FK yok; seed her ortamda çalışsın)
 -- -----------------------------------------------------------------------------
 INSERT INTO public.reports (id, tenant_id, engagement_id, title, description, status, theme_config, layout_type, created_by, published_at, published_by, locked_at, locked_by) VALUES
   (
@@ -2542,11 +2543,11 @@ INSERT INTO public.reports (id, tenant_id, engagement_id, title, description, st
     'published',
     '{"mode": "neon", "accent": "blue", "layout": "standard"}'::jsonb,
     'standard',
-    '00000000-0000-0000-0000-000000000001'::uuid,
+    NULL,
     (CURRENT_TIMESTAMP - INTERVAL '7 days'),
-    '00000000-0000-0000-0000-000000000001'::uuid,
+    NULL,
     (CURRENT_TIMESTAMP - INTERVAL '7 days'),
-    '00000000-0000-0000-0000-000000000001'::uuid
+    NULL
   ),
   (
     'd8000000-0000-0000-0000-000000000002'::uuid,
@@ -2557,7 +2558,54 @@ INSERT INTO public.reports (id, tenant_id, engagement_id, title, description, st
     'draft',
     '{"mode": "neon", "accent": "blue", "layout": "standard"}'::jsonb,
     'standard',
-    '00000000-0000-0000-0000-000000000004'::uuid,
+    NULL,
+    NULL, NULL, NULL, NULL
+  ),
+  (
+    'd8000000-0000-0000-0000-000000000003'::uuid,
+    '11111111-1111-1111-1111-111111111111'::uuid,
+    '42d72f07-e813-4cff-8218-4a64f7a3baad'::uuid,
+    'Kadıköy Şubesi 2025 Yılı İkinci Yarı Operasyon Denetim Raporu',
+    'Kadıköy Şubesi operasyonel süreçlerinin kapsamlı denetimi. Kredi onay matrisi, KYC ve nakit yönetimi kapsam dahilinde.',
+    'review',
+    '{"mode": "neon", "accent": "blue", "layout": "standard"}'::jsonb,
+    'standard',
+    NULL,
     NULL, NULL, NULL, NULL
   )
 ON CONFLICT (id) DO NOTHING;
+
+-- G7b. report_blocks — Rapor editöründe görünecek bloklar (reports tablosuna bağlı)
+INSERT INTO public.report_blocks (id, tenant_id, report_id, position_index, parent_block_id, depth_level, block_type, content) VALUES
+  ('d9000000-0000-0000-0000-000000000001'::uuid, '11111111-1111-1111-1111-111111111111'::uuid, 'd8000000-0000-0000-0000-000000000001'::uuid, 0, NULL, 0, 'heading', '{"text": "Yönetici Özeti", "level": 1}'::jsonb),
+  ('d9000000-0000-0000-0000-000000000002'::uuid, '11111111-1111-1111-1111-111111111111'::uuid, 'd8000000-0000-0000-0000-000000000001'::uuid, 1, NULL, 0, 'paragraph', '{"text": "Katılım fonları kar dağıtım süreçleri BDDK ve şeri uyum çerçevesinde incelenmiş olup genel kontrol ortamı güçlü bulunmuştur. Tespit edilen iyileştirme alanları yönetimce kabul edilmiş ve aksiyon planları oluşturulmuştur."}'::jsonb),
+  ('d9000000-0000-0000-0000-000000000003'::uuid, '11111111-1111-1111-1111-111111111111'::uuid, 'd8000000-0000-0000-0000-000000000002'::uuid, 0, NULL, 0, 'heading', '{"text": "Sızma Testi Kapsam ve Metodoloji", "level": 1}'::jsonb),
+  ('d9000000-0000-0000-0000-000000000004'::uuid, '11111111-1111-1111-1111-111111111111'::uuid, 'd8000000-0000-0000-0000-000000000002'::uuid, 1, NULL, 0, 'paragraph', '{"text": "Kritik BT sistemlerine yönelik sızma testi ve ayrıcalıklı erişim denetimi CAE incelemesi beklemektedir. Taslak rapor iç denetim ekibi tarafından hazırlanmıştır."}'::jsonb),
+  ('d9000000-0000-0000-0000-000000000005'::uuid, '11111111-1111-1111-1111-111111111111'::uuid, 'd8000000-0000-0000-0000-000000000003'::uuid, 0, NULL, 0, 'heading', '{"text": "Denetim Görüşü", "level": 1}'::jsonb),
+  ('d9000000-0000-0000-0000-000000000006'::uuid, '11111111-1111-1111-1111-111111111111'::uuid, 'd8000000-0000-0000-0000-000000000003'::uuid, 1, NULL, 0, 'paragraph', '{"text": "Kadıköy Şubesi 2025 yılı ikinci yarı operasyon denetimi incelemede olup Yönetim Kurulu sunumuna hazırlanmaktadır."}'::jsonb)
+ON CONFLICT (id) DO NOTHING;
+
+-- -----------------------------------------------------------------------------
+-- G7c. ZENGİN DEMO RAPORLARI (report_type, report_grade ile — migration sonrası)
+-- -----------------------------------------------------------------------------
+INSERT INTO public.reports (id, tenant_id, engagement_id, title, description, status, theme_config, layout_type, created_by, published_at, published_by, locked_at, locked_by, report_type, report_grade) VALUES
+  ('d8000000-0000-0000-0000-000000000004'::uuid, '11111111-1111-1111-1111-111111111111'::uuid, '42d72f07-e813-4cff-8218-4a64f7a3baac'::uuid, '2026 Siber Güvenlik Sızma Testi Raporu', 'Kritik BT altyapısına yönelik sızma testi ve zafiyet taraması sonuçları. Gelişim alanları tespit edildi.', 'published', '{"mode": "neon", "accent": "blue", "layout": "standard"}'::jsonb, 'standard', NULL, (CURRENT_TIMESTAMP - INTERVAL '5 days'), NULL, (CURRENT_TIMESTAMP - INTERVAL '5 days'), NULL, 'Bilgi Sistemleri', 'C (Gelişim Alanı)'),
+  ('d8000000-0000-0000-0000-000000000005'::uuid, '11111111-1111-1111-1111-111111111111'::uuid, '42d72f07-e813-4cff-8218-4a64f7a3baab'::uuid, 'Bireysel Krediler Tahsis Süreci Denetimi', 'Bireysel kredi tahsis süreçlerinin politika ve limit uyumluluğu denetimi. CAE incelemesi bekleniyor.', 'review', '{"mode": "neon", "accent": "blue", "layout": "standard"}'::jsonb, 'standard', NULL, NULL, NULL, NULL, NULL, 'Süreç Denetimi', NULL),
+  ('d8000000-0000-0000-0000-000000000006'::uuid, '11111111-1111-1111-1111-111111111111'::uuid, '42d72f07-e813-4cff-8218-4a64f7a3baae'::uuid, 'Hazine Türev İşlemleri İncelemesi', 'Türev ürünler ve hedge işlemlerinin BDDK ve kurumsal politika uyumu. Güçlü kontrol ortamı tespit edildi.', 'published', '{"mode": "neon", "accent": "blue", "layout": "standard"}'::jsonb, 'standard', NULL, (CURRENT_TIMESTAMP - INTERVAL '14 days'), NULL, (CURRENT_TIMESTAMP - INTERVAL '14 days'), NULL, 'İnceleme/Soruşturma', 'A (Güçlü)'),
+  ('d8000000-0000-0000-0000-000000000007'::uuid, '11111111-1111-1111-1111-111111111111'::uuid, '42d72f07-e813-4cff-8218-4a64f7a3baad'::uuid, 'Şube Operasyonları 1. Çeyrek Denetim Raporu', 'Şube operasyonları, nakit yönetimi ve müşteri işlemleri kapsamında taslak rapor.', 'draft', '{"mode": "neon", "accent": "blue", "layout": "standard"}'::jsonb, 'standard', NULL, NULL, NULL, NULL, NULL, 'İç Denetim Raporu', NULL),
+  ('d8000000-0000-0000-0000-000000000008'::uuid, '11111111-1111-1111-1111-111111111111'::uuid, '42d72f07-e813-4cff-8218-4a64f7a3baab'::uuid, 'Eski Suistimal Raporu (İptal)', 'Hata ve eksiklik nedeniyle geçersiz kılındı; zeyilname yayımlandı.', 'REVOKED_AMENDED', '{"mode": "neon", "accent": "blue", "layout": "standard"}'::jsonb, 'standard', NULL, (CURRENT_TIMESTAMP - INTERVAL '90 days'), NULL, NULL, NULL, 'İnceleme/Soruşturma', NULL),
+  ('d8000000-0000-0000-0000-000000000009'::uuid, '11111111-1111-1111-1111-111111111111'::uuid, '42d72f07-e813-4cff-8218-4a64f7a3baae'::uuid, 'KYC ve Müşteri Tanıma Uyum Denetimi', 'Müşteri tanıma ve KYC süreçlerinin 5549 sayılı Kanun ve BDDK düzenlemelerine uyumu. Yeterli kontrol ortamı.', 'published', '{"mode": "neon", "accent": "blue", "layout": "standard"}'::jsonb, 'standard', NULL, (CURRENT_TIMESTAMP - INTERVAL '3 days'), NULL, (CURRENT_TIMESTAMP - INTERVAL '3 days'), NULL, 'Uyum Denetimi', 'B (Yeterli)')
+ON CONFLICT (id) DO NOTHING;
+
+-- -----------------------------------------------------------------------------
+-- G7d. RAPORLAR — Hassas Skor, Önceki Not, Risk Seviyesi (migration 20260312000000 sonrası)
+-- -----------------------------------------------------------------------------
+UPDATE public.reports SET precise_score = 85.5, previous_grade = 'A (Güçlü)', risk_level = 'low'   WHERE id = 'd8000000-0000-0000-0000-000000000001'::uuid;
+UPDATE public.reports SET precise_score = 72.0, previous_grade = 'B (Yeterli)', risk_level = 'high'  WHERE id = 'd8000000-0000-0000-0000-000000000002'::uuid;
+UPDATE public.reports SET precise_score = 78.0, previous_grade = 'B (Yeterli)', risk_level = 'medium' WHERE id = 'd8000000-0000-0000-0000-000000000003'::uuid;
+UPDATE public.reports SET precise_score = 68.5, previous_grade = 'C (Gelişim Alanı)', risk_level = 'high'  WHERE id = 'd8000000-0000-0000-0000-000000000004'::uuid;
+UPDATE public.reports SET precise_score = 81.0, previous_grade = NULL, risk_level = 'medium' WHERE id = 'd8000000-0000-0000-0000-000000000005'::uuid;
+UPDATE public.reports SET precise_score = 92.0, previous_grade = 'A (Güçlü)', risk_level = 'low'   WHERE id = 'd8000000-0000-0000-0000-000000000006'::uuid;
+UPDATE public.reports SET precise_score = 65.0, previous_grade = NULL, risk_level = 'medium' WHERE id = 'd8000000-0000-0000-0000-000000000007'::uuid;
+UPDATE public.reports SET precise_score = NULL, previous_grade = NULL, risk_level = 'high'  WHERE id = 'd8000000-0000-0000-0000-000000000008'::uuid;
+UPDATE public.reports SET precise_score = 79.5, previous_grade = 'B (Yeterli)', risk_level = 'low'   WHERE id = 'd8000000-0000-0000-0000-000000000009'::uuid;

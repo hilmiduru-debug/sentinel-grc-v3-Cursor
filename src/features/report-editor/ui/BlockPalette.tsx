@@ -108,11 +108,10 @@ export function BlockPalette() {
   const selectedSection = sections.find((s) => s.id === effectiveSectionId);
 
   const alreadyAddedIds = new Set<string>();
-  if (activeReport) {
-    for (const section of activeReport.sections) {
-      for (const block of section.blocks) {
-        if (block.type === 'finding_ref') alreadyAddedIds.add((block as FindingRefBlock).content.findingId);
-      }
+  const reportSections = activeReport?.sections ?? [];
+  for (const section of reportSections) {
+    for (const block of section?.blocks ?? []) {
+      if (block?.type === 'finding_ref') alreadyAddedIds.add((block as FindingRefBlock).content?.findingId ?? '');
     }
   }
 
