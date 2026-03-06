@@ -15,7 +15,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Sun, Star, Calendar, List, Plus, Search, CheckCircle2, Circle,
   StarOff, ChevronRight, X, Trash2, AlignLeft, Bell, Loader2,
-  RefreshCw, Link2, FileText, Tag, AlertCircle, Check, SunMedium
+  RefreshCw, Link2, AlertCircle, Check, SunMedium
 } from 'lucide-react';
 import clsx from 'clsx';
 import toast from 'react-hot-toast';
@@ -57,9 +57,11 @@ interface SidebarProps {
   lists: TaskList[];
   activeListId: string | null;
   onSelect: (id: string) => void;
+  searchQuery: string;
+  onSearchChange: (q: string) => void;
 }
 
-function Sidebar({ lists, activeListId, onSelect }: SidebarProps) {
+function Sidebar({ lists, activeListId, onSelect, searchQuery, onSearchChange }: SidebarProps) {
   const smartLists = (lists || []).filter((l) => l?.is_smart);
   const customLists = (lists || []).filter((l) => !l?.is_smart);
 
@@ -82,7 +84,12 @@ function Sidebar({ lists, activeListId, onSelect }: SidebarProps) {
       <div className="px-4 mb-4">
         <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/80 border border-slate-200/60 shadow-sm">
           <Search size={13} className="text-slate-400" />
-          <span className="text-sm text-slate-400">Ara...</span>
+          <input
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder="Ara..."
+            className="flex-1 bg-transparent text-sm text-slate-700 placeholder-slate-400 outline-none"
+          />
         </div>
       </div>
 
@@ -625,7 +632,13 @@ export function TaskCommandWidget() {
           <Loader2 size={22} className="animate-spin text-slate-300" />
         </div>
       ) : (
-        <Sidebar lists={lists} activeListId={activeListId} onSelect={handleListSelect} />
+        <Sidebar
+          lists={lists}
+          activeListId={activeListId}
+          onSelect={handleListSelect}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
       )}
 
       {/* ─── Orta: Görev Listesi ─────────────────────────────────────────── */}

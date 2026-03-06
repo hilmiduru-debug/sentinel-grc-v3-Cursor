@@ -2609,3 +2609,37 @@ UPDATE public.reports SET precise_score = 92.0, previous_grade = 'A (Güçlü)',
 UPDATE public.reports SET precise_score = 65.0, previous_grade = NULL, risk_level = 'medium' WHERE id = 'd8000000-0000-0000-0000-000000000007'::uuid;
 UPDATE public.reports SET precise_score = NULL, previous_grade = NULL, risk_level = 'high'  WHERE id = 'd8000000-0000-0000-0000-000000000008'::uuid;
 UPDATE public.reports SET precise_score = 79.5, previous_grade = 'B (Yeterli)', risk_level = 'low'   WHERE id = 'd8000000-0000-0000-0000-000000000009'::uuid;
+
+
+-- =============================================================================
+-- SEED: Sentinel Task Command — task_lists & sentinel_tasks (Wave 11)
+-- Bağımlılık sırası: task_lists önce, sentinel_tasks sonra (FK: list_id)
+-- =============================================================================
+
+-- ── Akıllı Listeler ───────────────────────────────────────────────────────────
+INSERT INTO public.task_lists (id, name, icon, color, is_smart, smart_filter, sort_order) VALUES
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'Günüm',       '☀️',  '#f59e0b', TRUE,  '{"is_my_day": true}'::JSONB,      0),
+  ('aaaaaaaa-0000-0000-0000-000000000002', 'Önemli',      '⭐',  '#ef4444', TRUE,  '{"is_important": true}'::JSONB,   1),
+  ('aaaaaaaa-0000-0000-0000-000000000003', 'Planlı',      '📅',  '#6366f1', TRUE,  '{"has_due_date": true}'::JSONB,   2),
+  ('aaaaaaaa-0000-0000-0000-000000000004', 'Tüm Görevler','📋', '#64748b', TRUE,  '{}'::JSONB,                        3),
+  ('aaaaaaaa-0000-0000-0000-000000000005', 'Denetim',     '🔍',  '#0891b2', FALSE, '{}'::JSONB,                        4),
+  ('aaaaaaaa-0000-0000-0000-000000000006', 'Kişisel',     '👤',  '#8b5cf6', FALSE, '{}'::JSONB,                        5)
+ON CONFLICT (id) DO NOTHING;
+
+-- ── Görevler (Basit + Bağlamsal / Linked) ─────────────────────────────────────
+INSERT INTO public.sentinel_tasks
+  (title, notes, list_id, is_important, is_my_day, due_date, status, linked_entity_type, linked_entity_id, linked_entity_label, sort_order)
+VALUES
+  -- Günlük / Kişisel görevler
+  ('Ekip toplantısı için ajanda hazırla',      'Haftalık denetim koordinasyon toplantısı saat 10:00', 'aaaaaaaa-0000-0000-0000-000000000006', FALSE, TRUE,  '2026-03-07', 'pending',   NULL,         NULL,                                   NULL,                0),
+  ('BDDK raporunu Genel Müdür''e ilet',         'Q1 denetim faaliyet raporu son hali gönderilecek',   'aaaaaaaa-0000-0000-0000-000000000005', TRUE,  TRUE,  '2026-03-07', 'pending',   NULL,         NULL,                                   NULL,                1),
+  ('CPE eğitim modülünü tamamla',              'IIA Türkiye — Risk Odaklı Denetim sertifikası',      'aaaaaaaa-0000-0000-0000-000000000006', FALSE, FALSE, '2026-03-14', 'pending',   NULL,         NULL,                                   NULL,                2),
+  ('Ekip performans değerlendirmesini doldur', NULL,                                                  'aaaaaaaa-0000-0000-0000-000000000006', FALSE, FALSE, '2026-03-10', 'pending',   NULL,         NULL,                                   NULL,                3),
+  ('VPN erişim iznini yenile',                 'IT Güvenlik portalından talep açılacak',              'aaaaaaaa-0000-0000-0000-000000000006', FALSE, FALSE, NULL,          'completed', NULL,         NULL,                                   NULL,                4),
+  -- Bağlamsal / Denetim Görevi (linked_entity)
+  ('Kredi riski çalışma kağıdını tamamla',     'Örnekleme testi tamamlandı, sonuçlar girilecek',     'aaaaaaaa-0000-0000-0000-000000000005', TRUE,  TRUE,  '2026-03-08', 'pending',   'workpaper',  '00000000-0000-0000-0000-000000000101',  'WP-2026-KRD-01',    0),
+  ('Bulgu B-2024-047 aksiyon planını gözden geçir','Aksiyon sahibi yanıt süresini aştı',             'aaaaaaaa-0000-0000-0000-000000000005', TRUE,  FALSE, '2026-03-09', 'pending',   'finding',    '00000000-0000-0000-0000-000000000201',  'B-2024-047',        1),
+  ('IT denetimi kanıtlarını yükle',            'Supabase Storage''a 3 log dosyası yüklenecek',        'aaaaaaaa-0000-0000-0000-000000000005', FALSE, TRUE,  '2026-03-07', 'pending',   'workpaper',  '00000000-0000-0000-0000-000000000102',  'WP-2026-IT-03',     2),
+  ('Şube denetimi son raporunu imzala',        'CAE imzası bekleniyor',                               'aaaaaaaa-0000-0000-0000-000000000005', TRUE,  FALSE, '2026-03-11', 'pending',   'engagement', '00000000-0000-0000-0000-000000000301',  'ENG-2026-SUB-01',   3),
+  ('Planlama matrisini güncelle',              NULL,                                                   'aaaaaaaa-0000-0000-0000-000000000005', FALSE, FALSE, '2026-03-15', 'pending',   NULL,         NULL,                                   NULL,                4)
+ON CONFLICT DO NOTHING;
