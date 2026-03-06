@@ -1,10 +1,12 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   FileText, Brain, X, Sparkles, Loader2, Copy, CheckCircle2,
-  AlertTriangle, ChevronDown, ChevronUp, Download
+  AlertTriangle, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { useSentinelAI } from '@/shared/hooks/useSentinelAI';
+import { useQuery } from '@tanstack/react-query';
+import { findingApi } from '@/entities/finding/api';
 import clsx from 'clsx';
 
 interface FindingSummary {
@@ -17,18 +19,8 @@ interface FindingSummary {
   rootCause?: string;
 }
 
-const MOCK_FINDINGS: FindingSummary[] = [
-  { code: 'AUD-2025-SR-04', title: 'Kasa Islemlerinde Cift Anahtar Kurali Ihlali', severity: 'CRITICAL', category: 'Operasyonel Risk', department: 'Sube Mudurugu', financialImpact: 69200000, rootCause: 'Kasa guvenlik altyapisinin eksik bakimi' },
-  { code: 'AUD-2025-KR-01', title: 'Kredi Tahsis Limit Asimi', severity: 'CRITICAL', category: 'Kredi Riski', department: 'Kredi Tahsis', financialImpact: 125000000, rootCause: 'Yetkilendirme matrisindeki bosluklar' },
-  { code: 'AUD-2025-BT-03', title: 'Kritik Sistemlerde Yama Yonetimi Eksikligi', severity: 'HIGH', category: 'BT Riski', department: 'Bilgi Teknolojileri', rootCause: 'Yama yonetim surecinin otomasyona alinmamasi' },
-  { code: 'AUD-2025-OP-07', title: 'Dis Ticaret Akreditif Kontrol Zafiyeti', severity: 'HIGH', category: 'Operasyonel Risk', department: 'Dis Ticaret', financialImpact: 45000000, rootCause: 'Manuel kontrol sureclerindeki yetersizlik' },
-  { code: 'AUD-2025-UY-02', title: 'MASAK Raporlamasinda Gecikme', severity: 'HIGH', category: 'Uyumluluk Riski', department: 'Uyumluluk', rootCause: 'Otomasyon eksikligi ve personel yetersizligi' },
-  { code: 'AUD-2025-HR-05', title: 'Bordro Sisteminde Yetki Ayrimi Ihlali', severity: 'HIGH', category: 'Operasyonel Risk', department: 'Insan Kaynaklari', financialImpact: 8500000, rootCause: 'Gorevler ayrıligi prensibinin uygulanmamasi' },
-  { code: 'AUD-2025-HZ-01', title: 'Hazine Pozisyon Limiti Asimi', severity: 'CRITICAL', category: 'Piyasa Riski', department: 'Hazine', financialImpact: 230000000, rootCause: 'Pozisyon izleme sisteminin yetersizligi' },
-  { code: 'AUD-2025-OP-12', title: 'Sube Nakit Envanter Farkliliklari', severity: 'MEDIUM', category: 'Operasyonel Risk', department: 'Sube Operasyonlari', financialImpact: 3200000, rootCause: 'Sayim prosedurlerinin guncellenmemesi' },
-  { code: 'AUD-2025-BT-08', title: 'Veritabani Erisim Kontrolu Eksikligi', severity: 'HIGH', category: 'BT Riski', department: 'Bilgi Teknolojileri', rootCause: 'Privilege access yonetiminin merkezi olarak yapilamamasi' },
-  { code: 'AUD-2025-KR-06', title: 'Teminat Degerleme Gecikmeleri', severity: 'MEDIUM', category: 'Kredi Riski', department: 'Kredi Izleme', financialImpact: 67000000, rootCause: 'Ekspertiz sureclerinin dijitallestirilmemesi' },
-];
+// Silencing static mock in favor of dynamic mapping.
+// But we keep the interface intact.
 
 const SEVERITY_CONFIG = {
   CRITICAL: { label: 'Kritik', bg: 'bg-red-100', text: 'text-red-700', dot: 'bg-red-500' },
@@ -44,25 +36,44 @@ export function ExecSummaryGenerator() {
   const [showFindings, setShowFindings] = useState(false);
   const { loading, generate, configured, error } = useSentinelAI();
 
-  const criticalCount = MOCK_FINDINGS.filter(f => f.severity === 'CRITICAL').length;
-  const highCount = MOCK_FINDINGS.filter(f => f.severity === 'HIGH').length;
-  const totalFinancial = MOCK_FINDINGS.reduce((sum, f) => sum + (f.financialImpact || 0), 0);
+  const { data: dbFindings, isLoading: isDbLoading } = useQuery({
+    queryKey: ['exec-summary-findings'],
+    queryFn: findingApi.getAll,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const findingsList: FindingSummary[] = useMemo(() => {
+    if (!dbFindings) return [];
+    return dbFindings.map((f: any) => ({
+      code: f.id.slice(0, 8).toUpperCase(),
+      title: f.title || 'İsimsiz Bulgu',
+      severity: (f.severity?.toUpperCase() || 'MEDIUM') as 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW',
+      category: f.gias_category || 'Genel Risk',
+      department: f.details?.department || 'Bilinmiyor',
+      financialImpact: f.financial_impact || 0,
+      rootCause: f.details?.rootCause || 'Kök neden analizi bekleniyor'
+    }));
+  }, [dbFindings]);
+
+  const criticalCount = findingsList.filter(f => f.severity === 'CRITICAL').length;
+  const highCount = findingsList.filter(f => f.severity === 'HIGH').length;
+  const totalFinancial = findingsList.reduce((sum, f) => sum + (f.financialImpact || 0), 0);
 
   const handleGenerate = useCallback(async () => {
     setShowModal(true);
     setSummary(null);
 
-    const findingsSerialized = MOCK_FINDINGS
+    const findingsSerialized = findingsList
       .map(f => `[${f.severity}] ${f.code} - ${f.title} | Departman: ${f.department} | Kategori: ${f.category}${f.financialImpact ? ` | Finansal Etki: ${(f.financialImpact / 1000000).toFixed(1)}M TL` : ''}${f.rootCause ? ` | Kok Neden: ${f.rootCause}` : ''}`)
       .join('\n');
 
-    const prompt = `Sen Ic Denetim Baskanisin. Asagidaki ${MOCK_FINDINGS.length} bulguyu Yonetim Kuruluna sunulmak uzere 2 sayfalik bir Yonetici Ozeti haline getir.
+    const prompt = `Sen Ic Denetim Baskanisin. Asagidaki ${findingsList.length} bulguyu Yonetim Kuruluna sunulmak uzere 2 sayfalik bir Yonetici Ozeti haline getir.
 
 BULGULAR:
 ${findingsSerialized}
 
 OZET ISTATISTIKLER:
-- Toplam Bulgu: ${MOCK_FINDINGS.length}
+- Toplam Bulgu: ${findingsList.length}
 - Kritik: ${criticalCount}
 - Yuksek: ${highCount}
 - Tahmini Toplam Finansal Etki: ${(totalFinancial / 1000000).toFixed(0)}M TL
@@ -77,7 +88,7 @@ Ton: Profesyonel, kararsiz degil kesin, veriye dayali. Turkce yaz.`;
 
     const result = await generate(prompt);
     if (result) setSummary(result);
-  }, [generate, criticalCount, highCount, totalFinancial]);
+  }, [generate, criticalCount, highCount, totalFinancial, findingsList]);
 
   const handleCopy = () => {
     if (summary) {
@@ -91,12 +102,12 @@ Ton: Profesyonel, kararsiz degil kesin, veriye dayali. Turkce yaz.`;
     <>
       <button
         onClick={handleGenerate}
-        disabled={loading}
+        disabled={loading || isDbLoading}
         className="flex items-center gap-2 px-5 py-3 bg-slate-800 text-white rounded-xl text-sm font-bold hover:bg-slate-700 transition-all shadow-lg shadow-slate-800/20 group"
       >
         <Brain size={18} className={loading ? 'animate-spin' : 'group-hover:scale-110 transition-transform'} />
         <span>Yonetici Ozeti Olustur</span>
-        {loading && <Loader2 size={14} className="animate-spin ml-1" />}
+        {(loading || isDbLoading) && <Loader2 size={14} className="animate-spin ml-1" />}
       </button>
 
       <AnimatePresence>
@@ -124,7 +135,7 @@ Ton: Profesyonel, kararsiz degil kesin, veriye dayali. Turkce yaz.`;
                   <div>
                     <h2 className="text-base font-bold text-white">Yonetim Kurulu Yonetici Ozeti</h2>
                     <p className="text-xs text-slate-400 mt-0.5">
-                      {MOCK_FINDINGS.length} bulgu analiz ediliyor
+                      {findingsList.length} bulgu analiz ediliyor
                     </p>
                   </div>
                 </div>
@@ -149,7 +160,7 @@ Ton: Profesyonel, kararsiz degil kesin, veriye dayali. Turkce yaz.`;
 
               <div className="flex-1 overflow-y-auto p-6 space-y-5">
                 <div className="grid grid-cols-4 gap-3">
-                  <SummaryStatCard label="Toplam Bulgu" value={MOCK_FINDINGS.length.toString()} color="bg-slate-600" />
+                  <SummaryStatCard label="Toplam Bulgu" value={findingsList.length.toString()} color="bg-slate-600" />
                   <SummaryStatCard label="Kritik" value={criticalCount.toString()} color="bg-red-600" />
                   <SummaryStatCard label="Yuksek" value={highCount.toString()} color="bg-orange-500" />
                   <SummaryStatCard label="Finansal Etki" value={`${(totalFinancial / 1000000).toFixed(0)}M`} color="bg-blue-600" />
@@ -160,7 +171,7 @@ Ton: Profesyonel, kararsiz degil kesin, veriye dayali. Turkce yaz.`;
                   className="flex items-center gap-2 text-xs font-bold text-slate-600 hover:text-primary transition-colors"
                 >
                   {showFindings ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                  Kaynak Bulgulari {showFindings ? 'Gizle' : 'Goster'} ({MOCK_FINDINGS.length})
+                  Kaynak Bulgulari {showFindings ? 'Gizle' : 'Goster'} ({findingsList.length})
                 </button>
 
                 <AnimatePresence>
@@ -172,7 +183,7 @@ Ton: Profesyonel, kararsiz degil kesin, veriye dayali. Turkce yaz.`;
                       className="overflow-hidden"
                     >
                       <div className="space-y-1.5 max-h-48 overflow-y-auto pr-2">
-                        {MOCK_FINDINGS.map(f => {
+                        {findingsList.map(f => {
                           const cfg = SEVERITY_CONFIG[f.severity];
                           return (
                             <div key={f.code} className="flex items-center gap-2 p-2 bg-canvas rounded-lg">
@@ -209,7 +220,7 @@ Ton: Profesyonel, kararsiz degil kesin, veriye dayali. Turkce yaz.`;
                     <div className="text-center">
                       <p className="text-sm font-bold text-slate-800">Yonetici Ozeti Hazirlaniyor...</p>
                       <p className="text-xs text-slate-500 mt-1">
-                        {MOCK_FINDINGS.length} bulgu analiz ediliyor, sistemik riskler belirleniyor
+                        {findingsList.length} bulgu analiz ediliyor, sistemik riskler belirleniyor
                       </p>
                     </div>
                   </div>

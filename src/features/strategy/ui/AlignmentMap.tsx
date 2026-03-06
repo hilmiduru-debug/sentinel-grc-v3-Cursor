@@ -1,8 +1,10 @@
 import { useStrategyStore } from '@/entities/strategy/model/store';
 import { CorporateGoalCard } from './CorporateGoalCard';
 import { AuditObjectiveCard } from './AuditObjectiveCard';
-import { GitMerge, FileText } from 'lucide-react';
-import { useState } from 'react';
+import { GitMerge, FileText, Loader2 } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { fetchEngagementsList } from '@/entities/planning/api/queries';
 import clsx from 'clsx';
 
 // SVG Çizim Mantığı için Yardımcı Bileşen
@@ -56,13 +58,21 @@ export const AlignmentMap = () => {
   const { goals, objectives } = useStrategyStore();
   const [activeGoalId, setActiveGoalId] = useState<string | null>(null);
 
-  // Mock Engagement Data (Normalde Planning Store'dan gelir)
-  const mockEngagements = [
-    { title: 'Şube Operasyonları Denetimi', type: 'Süreç', status: 'Planlandı' },
-    { title: 'Kredi Tahsis Süreci', type: 'Risk', status: 'Devam Ediyor' },
-    { title: 'Bilgi Güvenliği Sızma Testi', type: 'IT', status: 'Tamamlandı' },
-    { title: 'Alternatif Dağıtım Kanalları', type: 'Süreç', status: 'Planlandı' },
-  ];
+  const { data: dbEngagements, isLoading } = useQuery({
+    queryKey: ['audit-engagements-alignment'],
+    queryFn: fetchEngagementsList,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const displayEngagements = useMemo(() => {
+    if (!dbEngagements) return [];
+    return dbEngagements.slice(0, 5).map(eng => ({
+      id: eng.id,
+      title: eng.title,
+      type: eng.audit_type === 'COMPREHENSIVE' ? 'Kapsamlı' : eng.audit_type === 'TARGETED' ? 'Hedefli' : 'Süreç',
+      status: eng.status === 'PLANNED' ? 'Planlandı' : eng.status === 'IN_PROGRESS' ? 'Devam Ediyor' : 'Tamamlandı'
+    }));
+  }, [dbEngagements]);
 
   return (
     <div className="w-full relative">
@@ -157,10 +167,15 @@ export const AlignmentMap = () => {
             <span className="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-1 rounded border border-emerald-100">SONUÇ</span>
             <h4 className="text-sm font-bold text-slate-700">Denetim Görevleri (İcra)</h4>
           </div>
-          <div className="space-y-3">
-            {mockEngagements.map((eng, idx) => (
+          <div className="space-y-3 relative min-h-[200px]">
+            {isLoading ? (
+              <div className="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-sm z-30 rounded-xl">
+                <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
+              </div>
+            ) : null}
+            {displayEngagements.map((eng, idx) => (
               <div 
-                key={idx}
+                key={eng.id || idx}
                 className={clsx(
                   "p-4 rounded-xl border bg-surface/80 backdrop-blur-md flex items-center gap-3 shadow-sm transition-all duration-500",
                   activeGoalId ? "border-emerald-200 shadow-emerald-100 translate-x-[-5px]" : "border-slate-200"

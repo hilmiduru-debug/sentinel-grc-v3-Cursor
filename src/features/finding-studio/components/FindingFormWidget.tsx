@@ -15,10 +15,12 @@ import {
   Info,      // YENİ: Gözlem İkonu
   Send,     // GÖREV 1: Workflow advance butonu
   Link,     // GÖREV 2: Cross-linking
-  Plus
+  Plus,
+  Loader2
 } from 'lucide-react';
 import { cn } from '@/shared/utils/cn';
 import { QAIPChecklistModal } from './QAIPChecklistModal';
+import { useFindingTaxonomy } from '@/entities/finding/api';
 
 // --- Types ---
 interface FindingFormWidgetProps {
@@ -43,54 +45,11 @@ const SEVERITY_COLORS = {
   'OBSERVATION': 'text-slate-600 bg-slate-100 border-slate-200 ring-slate-100' // Nötr
 };
 
-// --- Mock Data ---
-const CATEGORIES = [
-  'Bilgi Teknolojileri (IT)',
-  'Kredi Riski',
-  'Operasyonel Risk',
-  'Uyum ve Mevzuat',
-  'İnsan Kaynakları',
-  'Finansal Raporlama'
-];
-
-const DEPARTMENTS = [
-  'Genel Müdürlük',
-  'Yazılım Geliştirme',
-  'Sistem ve Ağ Yönetimi',
-  'Krediler Tahsis',
-  'Şube Operasyonları'
-];
-
-// --- GIS 2024 Expansion: Risk Universe ---
-const RISK_TYPES = [
-  { id: 'credit', label: 'Kredi Riski', icon: '💳' },
-  { id: 'market', label: 'Piyasa Riski', icon: '📊' },
-  { id: 'operational', label: 'Operasyonel Risk', icon: '⚙️' },
-  { id: 'liquidity', label: 'Likidite Riski', icon: '💧' },
-  { id: 'compliance', label: 'Uyum Riski', icon: '⚖️' },
-  { id: 'strategic', label: 'Stratejik Risk', icon: '🎯' },
-  { id: 'reputation', label: 'İtibar Riski', icon: '🛡️' }
-];
-
-// --- Process Map (Simplified) ---
-const PROCESSES = [
-  { id: 'lending', label: 'Kredi Süreçleri', subprocesses: ['Bireysel Kredi', 'Ticari Kredi', 'Kredi Tahsis'] },
-  { id: 'treasury', label: 'Hazine İşlemleri', subprocesses: ['FX İşlemleri', 'Türev Ürünler', 'Likidite Yönetimi'] },
-  { id: 'operations', label: 'Operasyon', subprocesses: ['Ödeme Sistemleri', 'Mutabakat', 'Hesap İşlemleri'] },
-  { id: 'it', label: 'Bilgi Teknolojileri', subprocesses: ['Yazılım Geliştirme', 'Siber Güvenlik', 'IT Operasyon'] },
-  { id: 'compliance', label: 'Uyum', subprocesses: ['AML/CFT', 'KYC', 'Mevzuat Takibi'] }
-];
-
-// --- Control Library (Mock) ---
-const CONTROLS = [
-  { id: 'C001', title: '4-Göz Prensibi (Maker-Checker)', category: 'Preventive' },
-  { id: 'C002', title: 'Sistem Otomasyon Kontrolleri', category: 'Detective' },
-  { id: 'C003', title: 'Günlük Log İzleme', category: 'Detective' },
-  { id: 'C004', title: 'Erişim Yetkilendirme Matrisi', category: 'Preventive' },
-  { id: 'C005', title: 'Üst Limit Onayı', category: 'Preventive' }
-];
+// MOCK taxonomies removed in favor of dynamic `useFindingTaxonomy` hook.
 
 export const FindingFormWidget: React.FC<FindingFormWidgetProps> = ({ finding, onUpdate, onAdvanceWorkflow }) => {
+  const { data: taxonomy, isLoading: isTaxonomyLoading } = useFindingTaxonomy();
+
   // Local state for Tag Input
   const [tagInput, setTagInput] = useState('');
 
@@ -100,6 +59,13 @@ export const FindingFormWidget: React.FC<FindingFormWidgetProps> = ({ finding, o
   // GÖREV 2: Cross-Linking State
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
   const [linkSearchQuery, setLinkSearchQuery] = useState('');
+
+  // Extract taxonomies safely
+  const CATEGORIES = taxonomy?.categories || [];
+  const DEPARTMENTS = taxonomy?.departments || [];
+  const RISK_TYPES = taxonomy?.riskTypes || [];
+  const PROCESSES = taxonomy?.processes || [];
+  const CONTROLS = taxonomy?.controls || [];
 
   // --- Logic Extraction ---
   
@@ -187,6 +153,15 @@ export const FindingFormWidget: React.FC<FindingFormWidgetProps> = ({ finding, o
     onUpdate('tags', currentTags.filter((t: string) => t !== tagToRemove));
   };
 
+  if (isTaxonomyLoading) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center bg-canvas border-r border-slate-200 w-full lg:max-w-xs p-6">
+        <Loader2 className="w-8 h-8 animate-spin text-slate-400 mb-4" />
+        <p className="text-sm font-medium text-slate-500">Taksonomi yükleniyor...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full flex flex-col bg-canvas border-r border-slate-200 w-full lg:max-w-xs overflow-y-auto">
       
@@ -257,7 +232,7 @@ export const FindingFormWidget: React.FC<FindingFormWidgetProps> = ({ finding, o
                {finding.severity === 'OBSERVATION' ? 'OBS' : (auditFramework === 'BDDK' ? getSeverityLabel() : riskScore)}
             </span>
             <span className="text-[10px] font-bold uppercase mt-1 tracking-wider opacity-80 text-center px-2">
-               {finding.severity === 'OBSERVATION' ? 'Risk Yok' : (auditFramework === 'BDDK' ? 'Mevzuat Sınıfı' : getSeverityLabel(riskScore))}
+               {finding.severity === 'OBSERVATION' ? 'Risk Yok' : (auditFramework === 'BDDK' ? 'Mevzuat Sınıfı' : getSeverityLabel())}
             </span>
           </div>
 
@@ -641,12 +616,8 @@ export const FindingFormWidget: React.FC<FindingFormWidgetProps> = ({ finding, o
                 />
               </div>
               <div className="p-4 space-y-2 max-h-64 overflow-y-auto">
-                {/* Mock Suggestions */}
-                {[
-                  { id: 'FIND-042', type: 'Finding', title: 'Yetkilendirme Matrisi Eksikliği' },
-                  { id: 'POL-018', type: 'Policy', title: 'Bilgi Güvenliği Politikası' },
-                  { id: 'ACT-125', type: 'Action', title: 'Firewall Kuralları Revizyonu' }
-                ].filter(item =>
+                {/* Mock Suggestions Removed. Real search logic should map live data here. */}
+                {([] as any[]).filter(item =>
                   linkSearchQuery === '' ||
                   item.title.toLowerCase().includes(linkSearchQuery.toLowerCase()) ||
                   item.id.toLowerCase().includes(linkSearchQuery.toLowerCase())

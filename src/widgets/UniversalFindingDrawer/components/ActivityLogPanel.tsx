@@ -9,79 +9,37 @@ import {
   TrendingUp,
   Shield
 } from 'lucide-react';
-import { cn } from '@/shared/utils/cn';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
+import { useQuery } from '@tanstack/react-query';
+import { fetchFindingHistory } from '@/entities/finding/api/history';
+import type { FindingHistory } from '@/entities/finding/model/types';
+import { Loader2 } from 'lucide-react';
+import { cn } from '@/shared/utils/cn';
 
 interface ActivityLogPanelProps {
   findingId: string | null;
 }
 
-// Mock Activity Log Data (GÖREV 3)
-const MOCK_ACTIVITY_LOG = [
-  {
-    id: 'log-001',
-    timestamp: new Date(Date.now() - 1000 * 60 * 15), // 15 dk önce
-    action_type: 'risk_score_changed',
-    actor: { name: 'Ahmet Yılmaz', role: 'Kıdemli Denetçi' },
-    details: { field: 'impact', old_value: 3, new_value: 5 },
-    icon: TrendingUp,
-    color: 'amber'
-  },
-  {
-    id: 'log-002',
-    timestamp: new Date(Date.now() - 1000 * 60 * 45), // 45 dk önce
-    action_type: 'evidence_uploaded',
-    actor: { name: 'Zeynep Demir', role: 'Denetçi' },
-    details: { filename: 'kasa_kamera_kaydi_14022026.mp4' },
-    icon: Paperclip,
-    color: 'blue'
-  },
-  {
-    id: 'log-003',
-    timestamp: new Date(Date.now() - 1000 * 60 * 120), // 2 saat önce
-    action_type: 'status_changed',
-    actor: { name: 'Sistem', role: 'Automation' },
-    details: { old_status: 'draft', new_status: 'review' },
-    icon: GitBranch,
-    color: 'indigo'
-  },
-  {
-    id: 'log-004',
-    timestamp: new Date(Date.now() - 1000 * 60 * 240), // 4 saat önce
-    action_type: 'finding_created',
-    actor: { name: 'Ahmet Yılmaz', role: 'Kıdemli Denetçi' },
-    details: { title: 'Kasa İşlemlerinde Çift Anahtar Prensibi İhlali' },
-    icon: FileText,
-    color: 'emerald'
-  },
-  {
-    id: 'log-005',
-    timestamp: new Date(Date.now() - 1000 * 60 * 480), // 8 saat önce
-    action_type: 'risk_score_changed',
-    actor: { name: 'Mehmet Kaya', role: 'Başmüfettiş' },
-    details: { field: 'likelihood', old_value: 2, new_value: 3 },
-    icon: TrendingUp,
-    color: 'amber'
-  },
-  {
-    id: 'log-006',
-    timestamp: new Date(Date.now() - 1000 * 60 * 720), // 12 saat önce
-    action_type: 'review_approved',
-    actor: { name: 'Selim Özkan', role: 'Gözetim Müdürü' },
-    details: { comment: 'Kök neden analizi yeterli, onaylandı.' },
-    icon: Shield,
-    color: 'emerald'
-  }
-];
-
 const ACTION_LABELS: Record<string, string> = {
-  risk_score_changed: 'Risk Skoru Değişti',
-  evidence_uploaded: 'Kanıt Yüklendi',
-  status_changed: 'Statü Değişti',
-  finding_created: 'Bulgu Oluşturuldu',
-  review_approved: 'Gözden Geçirme Onaylandı',
-  review_rejected: 'Gözden Geçirme Reddedildi'
+  STATE_CHANGE: 'Statü Değişti',
+  CONTENT_EDIT: 'İçerik Düzenlendi',
+  SEVERITY_CHANGE: 'Risk Skoru Değişti',
+  ASSIGNMENT: 'Atama Yapıldı',
+  ACTION_PLAN_ADDED: 'Aksiyon Planı Eklendi',
+  COMMENT_ADDED: 'Gözden Geçirme Notu',
+  AI_GENERATION: 'AI Tarafından Yaratıldı',
+};
+
+const getIconConfig = (type: string) => {
+  switch (type) {
+    case 'SEVERITY_CHANGE': return { icon: TrendingUp, color: 'amber' };
+    case 'CONTENT_EDIT': return { icon: FileText, color: 'blue' };
+    case 'STATE_CHANGE': return { icon: GitBranch, color: 'indigo' };
+    case 'AI_GENERATION': return { icon: FileText, color: 'emerald' };
+    case 'COMMENT_ADDED': return { icon: Shield, color: 'slate' };
+    default: return { icon: Paperclip, color: 'slate' };
+  }
 };
 
 const COLOR_MAP: Record<string, { bg: string; text: string; border: string }> = {
@@ -93,6 +51,29 @@ const COLOR_MAP: Record<string, { bg: string; text: string; border: string }> = 
 };
 
 export const ActivityLogPanel: React.FC<ActivityLogPanelProps> = ({ findingId }) => {
+  const { data: historyLogs, isLoading } = useQuery({
+    queryKey: ['finding-history', findingId],
+    queryFn: () => fetchFindingHistory(findingId!),
+    enabled: !!findingId,
+    staleTime: 60 * 1000,
+  });
+
+  const displayLogs = React.useMemo(() => {
+    if (!historyLogs) return [];
+    return historyLogs.map((h: FindingHistory) => {
+      const cfg = getIconConfig(h.change_type);
+      return {
+        id: h.id,
+        timestamp: new Date(h.changed_at),
+        action_type: h.change_type,
+        actor: { name: h.changed_by || 'Bilinmiyor', role: h.changed_by_role || 'Sistem' },
+        details: h.changed_fields || (h.change_description ? { Not: h.change_description } : null),
+        icon: cfg.icon,
+        color: cfg.color
+      };
+    });
+  }, [historyLogs]);
+
   if (!findingId) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-slate-400 p-8">
@@ -102,12 +83,21 @@ export const ActivityLogPanel: React.FC<ActivityLogPanelProps> = ({ findingId })
     );
   }
 
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12 space-y-4">
+        <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
+        <p className="text-sm text-slate-500 font-medium">Tarihçe yükleniyor...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-1 relative">
       {/* Timeline Line */}
       <div className="absolute left-[19px] top-8 bottom-0 w-[2px] bg-gradient-to-b from-slate-200 via-slate-100 to-transparent" />
 
-      {MOCK_ACTIVITY_LOG.map((log, index) => {
+      {displayLogs.map((log, index) => {
         const colors = COLOR_MAP[log.color] || COLOR_MAP.slate;
         const Icon = log.icon;
 

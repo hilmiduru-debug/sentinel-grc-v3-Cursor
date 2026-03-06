@@ -2,6 +2,7 @@ import { supabase } from '@/shared/api/supabase';
 import type { Finding, Assignment, ActionStep, FindingWithAssignment } from '../model/types';
 
 export * from './crud';
+export * from './taxonomy';
 
 export const findingApi = {
   async getAll(): Promise<FindingWithAssignment[]> {

@@ -18,8 +18,10 @@ import {
   ChevronRight,
   LayoutGrid,
   List,
+  Loader2,
 } from 'lucide-react';
 import clsx from 'clsx';
+import { useReports } from '@/features/reporting/api/reports-api';
 
 type ReportStatus = 'ONAYLANDI' | 'INCELEMEDE' | 'TASLAK';
 type ReportType = 'FAAALİYET' | 'KOMİTE' | 'BDDK' | 'YÖNETİM';
@@ -40,104 +42,7 @@ interface ActivityReport {
   actions: number;
 }
 
-const MOCK_REPORTS: ActivityReport[] = [
-  {
-    id: 'rpt-001',
-    title: '2026 Ocak-Şubat Dönemi Denetim Faaliyet Raporu',
-    type: 'FAAALİYET',
-    period: 'Ocak-Şubat 2026',
-    preparedBy: 'Ayşe Kaya, Baş Denetçi',
-    committee: 'Denetim Komitesi',
-    status: 'ONAYLANDI',
-    pageCount: 47,
-    createdAt: '2026-02-15',
-    approvedAt: '2026-02-22',
-    findings: 14,
-    actions: 28,
-  },
-  {
-    id: 'rpt-002',
-    title: 'Aralık 2025 Denetim Komitesi Sunumu - Yılsonu Değerlendirmesi',
-    type: 'KOMİTE',
-    period: 'Aralık 2025',
-    preparedBy: 'Mehmet Demir, Denetim Müdürü',
-    committee: 'Denetim Komitesi',
-    status: 'ONAYLANDI',
-    pageCount: 62,
-    createdAt: '2025-12-10',
-    approvedAt: '2025-12-18',
-    findings: 22,
-    actions: 41,
-  },
-  {
-    id: 'rpt-003',
-    title: '2025 BT Sistemleri Denetimi BDDK Uyum Raporu',
-    type: 'BDDK',
-    period: 'Kasım-Aralık 2025',
-    preparedBy: 'Zeynep Arslan, BT Denetim Uzmanı',
-    committee: 'BDDK',
-    status: 'ONAYLANDI',
-    pageCount: 89,
-    createdAt: '2025-11-28',
-    approvedAt: '2025-12-05',
-    findings: 9,
-    actions: 18,
-  },
-  {
-    id: 'rpt-004',
-    title: 'Kasım 2025 Dönemi Operasyonel Risk Faaliyet Raporu',
-    type: 'FAAALİYET',
-    period: 'Kasım 2025',
-    preparedBy: 'Ali Yılmaz, Risk Uzmanı',
-    committee: 'Risk Komitesi',
-    status: 'ONAYLANDI',
-    pageCount: 38,
-    createdAt: '2025-11-20',
-    approvedAt: '2025-11-28',
-    findings: 7,
-    actions: 15,
-  },
-  {
-    id: 'rpt-005',
-    title: 'Ekim 2025 Kredi Denetimi Komite Sunumu',
-    type: 'KOMİTE',
-    period: 'Ekim 2025',
-    preparedBy: 'Fatma Şahin, Kıdemli Denetçi',
-    committee: 'Denetim Komitesi',
-    status: 'ONAYLANDI',
-    pageCount: 55,
-    createdAt: '2025-10-22',
-    approvedAt: '2025-10-30',
-    findings: 11,
-    actions: 23,
-  },
-  {
-    id: 'rpt-006',
-    title: '2026 Q1 Yönetim Faaliyet Özet Raporu',
-    type: 'YÖNETİM',
-    period: 'Ocak-Mart 2026 (Taslak)',
-    preparedBy: 'Ahmet Koç, Teftiş Başkanı',
-    committee: 'Yönetim Kurulu',
-    status: 'INCELEMEDE',
-    pageCount: 24,
-    createdAt: '2026-02-20',
-    findings: 6,
-    actions: 12,
-  },
-  {
-    id: 'rpt-007',
-    title: 'Bireysel Bankacılık Denetimi Taslak Raporu',
-    type: 'FAAALİYET',
-    period: 'Şubat 2026',
-    preparedBy: 'Burak Çelik, Denetçi',
-    committee: 'Denetim Komitesi',
-    status: 'TASLAK',
-    pageCount: 18,
-    createdAt: '2026-02-24',
-    findings: 4,
-    actions: 0,
-  },
-];
+// MOCK_REPORTS removed. Real data mapped inside the component component.
 
 const TYPE_LABELS: Record<ReportType, { label: string; color: string }> = {
   FAAALİYET: { label: 'Faaliyet', color: 'bg-blue-100 text-blue-700' },
@@ -158,7 +63,38 @@ export default function ActivityReportsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
-  const filtered = MOCK_REPORTS.filter((r) => {
+  const { reports: rawReports, isLoading } = useReports();
+
+  // DB'den gelen raporları UI component mock interface'ine eşle 
+  const mappedReports: ActivityReport[] = rawReports.map((r) => {
+    // DB tablosundaki status'u map et
+    let st: ReportStatus = 'TASLAK';
+    if (r.status === 'published' || r.status === 'approved') st = 'ONAYLANDI';
+    if (r.status === 'in_review') st = 'INCELEMEDE';
+
+    // Type DB'de "FAAALİYET", "KOMİTE" vb. mi geliyor yoksa ingilizce mi? DB'yi UI stringlerine parse et
+    let type: ReportType = 'FAAALİYET';
+    if (r.report_type === 'YÖNETİM' || r.report_type === 'BOARD_BRIEF') type = 'YÖNETİM';
+    else if (r.report_type === 'BDDK') type = 'BDDK';
+    else if (r.report_type === 'KOMİTE' || r.report_type === 'COMMITTEE_PRESO') type = 'KOMİTE';
+
+    return {
+      id: r.id,
+      title: r.title,
+      type: type,
+      period: new Date(r.created_at).toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' }),
+      preparedBy: r.published_by ?? 'Denetim Ekibi',
+      committee: type === 'BDDK' ? 'BDDK' : 'Denetim Komitesi',
+      status: st,
+      pageCount: r.description ? Math.ceil(r.description.length / 500) : 10, // Mock dummy data logic placeholder
+      createdAt: r.created_at,
+      approvedAt: r.published_at ?? undefined,
+      findings: r.findings_count,
+      actions: Math.floor(r.findings_count * 1.5), // DB table doesn't have actions directly tied, placeholder multiplier until join
+    };
+  });
+
+  const filtered = mappedReports.filter((r) => {
     const matchesSearch =
       !searchTerm ||
       r.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -207,10 +143,10 @@ export default function ActivityReportsPage() {
       {/* Stats strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
-          { label: 'Toplam Rapor', value: MOCK_REPORTS.length, color: 'text-blue-700', bg: 'from-blue-50 to-blue-100/60' },
-          { label: 'Onaylanan', value: MOCK_REPORTS.filter(r => r.status === 'ONAYLANDI').length, color: 'text-emerald-700', bg: 'from-emerald-50 to-emerald-100/60' },
-          { label: 'İncelemede', value: MOCK_REPORTS.filter(r => r.status === 'INCELEMEDE').length, color: 'text-amber-700', bg: 'from-amber-50 to-amber-100/60' },
-          { label: 'Toplam Bulgu', value: MOCK_REPORTS.reduce((s, r) => s + r.findings, 0), color: 'text-red-700', bg: 'from-red-50 to-red-100/60' },
+          { label: 'Toplam Rapor', value: mappedReports.length, color: 'text-blue-700', bg: 'from-blue-50 to-blue-100/60' },
+          { label: 'Onaylanan', value: mappedReports.filter(r => r.status === 'ONAYLANDI').length, color: 'text-emerald-700', bg: 'from-emerald-50 to-emerald-100/60' },
+          { label: 'İncelemede', value: mappedReports.filter(r => r.status === 'INCELEMEDE').length, color: 'text-amber-700', bg: 'from-amber-50 to-amber-100/60' },
+          { label: 'Toplam Bulgu', value: mappedReports.reduce((s, r) => s + r.findings, 0), color: 'text-red-700', bg: 'from-red-50 to-red-100/60' },
         ].map((stat) => (
           <div
             key={stat.label}
@@ -261,12 +197,16 @@ export default function ActivityReportsPage() {
         </div>
 
         <div className="text-xs text-slate-500 font-medium ml-auto">
-          {filtered.length} / {MOCK_REPORTS.length} rapor
+          {filtered.length} / {mappedReports.length} rapor
         </div>
       </div>
 
       {/* Report list/grid */}
-      {viewMode === 'grid' ? (
+      {isLoading ? (
+        <div className="flex items-center justify-center p-12">
+          <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
+        </div>
+      ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
           {filtered.map((report) => (
             <ReportCard key={report.id} report={report} />

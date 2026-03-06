@@ -16,28 +16,7 @@ interface QACheckItem {
   details?: string;
 }
 
-interface WorkpaperForQA {
-  id: string;
-  title: string;
-  engagement: string;
-  auditor: string;
-  hasEvidence: boolean;
-  hasRootCause: boolean;
-  hasRecommendation: boolean;
-  findingCount: number;
-  testStepCount: number;
-  completedSteps: number;
-  scope: string;
-  conclusion?: string;
-  riskCategory?: string;
-}
-
-const MOCK_WORKPAPERS: WorkpaperForQA[] = [
-  { id: 'wp-001', title: 'Kredi Tahsis Sureci Denetimi', engagement: 'AUD-2025-Q1', auditor: 'Ahmet Yilmaz', hasEvidence: true, hasRootCause: true, hasRecommendation: true, findingCount: 3, testStepCount: 12, completedSteps: 12, scope: 'Kredi tahsis, onay ve kullandirma surecleri', conclusion: 'Yetkilendirme matrisinde onemli zafiyetler tespit edilmistir.', riskCategory: 'Kredi Riski' },
-  { id: 'wp-002', title: 'Kasa Islemleri Kontrolu', engagement: 'AUD-2025-Q1', auditor: 'Zeynep Kara', hasEvidence: true, hasRootCause: false, hasRecommendation: true, findingCount: 2, testStepCount: 8, completedSteps: 7, scope: 'Sube kasa acilis/kapanis islemleri', conclusion: '', riskCategory: 'Operasyonel Risk' },
-  { id: 'wp-003', title: 'BT Yama Yonetimi', engagement: 'AUD-2025-Q1', auditor: 'Can Yildirim', hasEvidence: false, hasRootCause: true, hasRecommendation: false, findingCount: 1, testStepCount: 10, completedSteps: 10, scope: 'Kritik sunucu ve veritabani yama surecleri', conclusion: 'Yama takvimi belirlenmis ancak uygulamada gecikmeler mevcut.', riskCategory: 'BT Riski' },
-  { id: 'wp-004', title: 'MASAK Raporlama Uyumlulugu', engagement: 'AUD-2025-Q2', auditor: 'Mehmet Oz', hasEvidence: true, hasRootCause: true, hasRecommendation: true, findingCount: 4, testStepCount: 15, completedSteps: 15, scope: 'Suphe islem bildirimi ve raporlama surecleri', conclusion: 'Raporlama surelerinde gecikme ve eksik bildirimler tespit edilmistir.', riskCategory: 'Uyumluluk Riski' },
-];
+import { useQAWorkpapers, type WorkpaperForQA } from '@/entities/workpaper/api/qa-api';
 
 function runRuleChecks(wp: WorkpaperForQA): QACheckItem[] {
   const checks: QACheckItem[] = [
@@ -108,15 +87,18 @@ export function QualityAssuranceWidget() {
   const [aiInsight, setAiInsight] = useState<string | null>(null);
   const { loading: aiLoading, generate, configured } = useSentinelAI();
 
+  const { data: dbWorkpapers, isLoading: isDbLoading } = useQAWorkpapers();
+
   const workpaperResults = useMemo(() => {
-    return MOCK_WORKPAPERS.map(wp => {
+    if (!dbWorkpapers) return [];
+    return dbWorkpapers.map((wp: WorkpaperForQA) => {
       const checks = runRuleChecks(wp);
       const score = calculateScore(checks);
       return { wp, checks, score };
     });
-  }, []);
+  }, [dbWorkpapers]);
 
-  const selectedResult = workpaperResults.find(r => r.wp.id === selectedWP);
+  const selectedResult = workpaperResults.find((r: { wp: WorkpaperForQA }) => r.wp.id === selectedWP);
 
   const handleAIReview = useCallback(async (wp: WorkpaperForQA, checks: QACheckItem[], score: number) => {
     setAiInsight(null);
@@ -143,8 +125,19 @@ Kisa ve oz yaz. Turkce yanit ver.`;
     await generate(prompt);
   }, [generate]);
 
-  const avgScore = Math.round(workpaperResults.reduce((s, r) => s + r.score, 0) / workpaperResults.length);
+  const avgScore = workpaperResults.length > 0
+    ? Math.round(workpaperResults.reduce((s: number, r: { score: number }) => s + r.score, 0) / workpaperResults.length)
+    : 0;
   const avgConfig = getScoreConfig(avgScore);
+
+  if (isDbLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12 space-y-4">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+        <p className="text-sm text-slate-500 font-medium">Kalite Güvence verileri yükleniyor...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-5">
@@ -164,9 +157,9 @@ Kisa ve oz yaz. Turkce yanit ver.`;
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {workpaperResults.map(({ wp, checks, score }) => {
+        {workpaperResults.map(({ wp, checks, score }: { wp: WorkpaperForQA; checks: QACheckItem[]; score: number }) => {
           const config = getScoreConfig(score);
-          const failCount = checks.filter(c => c.status === 'fail').length;
+          const failCount = checks.filter((c: QACheckItem) => c.status === 'fail').length;
           const isSelected = selectedWP === wp.id;
 
           return (
@@ -201,7 +194,7 @@ Kisa ve oz yaz. Turkce yanit ver.`;
               </div>
 
               <div className="flex items-center gap-2 mt-2">
-                {checks.map(c => (
+                {checks.map((c: QACheckItem) => (
                   <div key={c.id} className="flex items-center gap-1" title={c.label}>
                     {c.status === 'pass' && <CheckCircle2 size={12} className="text-emerald-500" />}
                     {c.status === 'fail' && <XCircle size={12} className="text-red-500" />}
@@ -241,7 +234,7 @@ Kisa ve oz yaz. Turkce yanit ver.`;
               </div>
 
               <div className="space-y-2">
-                {selectedResult.checks.map(c => (
+                {selectedResult.checks.map((c: QACheckItem) => (
                   <div key={c.id} className={clsx(
                     'flex items-start gap-3 p-3 rounded-lg border',
                     c.status === 'pass' && 'bg-emerald-50/50 border-emerald-100',
