@@ -108,7 +108,7 @@ function TiptapField({ label, fieldKey, content, placeholder, readOnly = false, 
                       className="w-full text-left px-3 py-2.5 hover:bg-blue-50 transition-colors"
                     >
                       <p className="text-xs font-sans font-semibold text-blue-700">{vLabel}</p>
-                      <p className="text-xs font-sans text-slate-500 mt-0.5">{String(smartVariables[id] ?? '—')}</p>
+                      <p className="text-xs font-sans text-slate-500 mt-0.5">{String(smartVariables?.[id] ?? '—')}</p>
                     </button>
                   ))}
                 </div>
@@ -204,13 +204,8 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
   const { activeReport, updateExecutiveSummary, loadReport } = useActiveReportStore();
   const { report: reportFromQuery, generateSummary, isGenerating } = useReportSummary(reportId);
 
-  // #region agent log
-  const defaultEsDefined = typeof DEFAULT_EXECUTIVE_SUMMARY !== 'undefined' && DEFAULT_EXECUTIVE_SUMMARY != null;
-  const esRaw = activeReport?.executiveSummary ?? reportFromQuery?.executiveSummary ?? DEFAULT_EXECUTIVE_SUMMARY;
-  fetch('http://127.0.0.1:7282/ingest/73ddabe5-d152-4199-aa61-31a45c840ef0',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'9f8cd2'},body:JSON.stringify({sessionId:'9f8cd2',location:'ExecutiveSummaryStudio.tsx:entry',message:'es source',data:{activeReportId:activeReport?.id,reportFromQueryNull:reportFromQuery==null,defaultEsDefined,esRawNull:esRaw==null,hasScore:esRaw!=null&&'score' in esRaw},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{});
-  // #endregion
+  const es = activeReport?.executiveSummary ?? reportFromQuery?.executiveSummary ?? DEFAULT_EXECUTIVE_SUMMARY;
   const mgmtResponse = activeReport?.executiveSummary?.managementResponse;
-  const es = esRaw;
   const paperBg = warmthToBg(warmth);
   const layoutType = es?.layoutType ?? 'standard_audit';
 
@@ -266,9 +261,6 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
     updateExecutiveSummary({});
   }, [updateExecutiveSummary]);
 
-  // #region agent log
-  fetch('http://127.0.0.1:7282/ingest/73ddabe5-d152-4199-aa61-31a45c840ef0',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'9f8cd2'},body:JSON.stringify({sessionId:'9f8cd2',location:'ExecutiveSummaryStudio.tsx:displayScore',message:'before read',data:{esNull:es==null,esScoreType:es==null?'n/a':typeof (es as {score?:unknown})?.score},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{});
-  // #endregion
   const trendPositive = (es?.trend ?? 0) > 0;
   const trendNeutral = (es?.trend ?? 0) === 0;
 

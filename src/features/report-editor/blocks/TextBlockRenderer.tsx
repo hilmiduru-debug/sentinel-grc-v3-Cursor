@@ -61,7 +61,7 @@ export function TextBlockRenderer({ block, sectionId = '', readOnly = false, col
 
   const editor = useEditor({
     extensions: buildExtensions(),
-    content: isCollabParagraph ? undefined : (block.content.html ?? ''),
+    content: isCollabParagraph ? undefined : (block?.content?.html ?? block?.content?.text ?? ''),
     editable: isCollabParagraph,
     onSelectionUpdate: ({ editor: ed }) => {
       const { from, to } = ed.state.selection;
@@ -75,7 +75,7 @@ export function TextBlockRenderer({ block, sectionId = '', readOnly = false, col
         updateBlock(
           sectionId,
           block.id,
-          { content: { ...block.content, html: ed.getHTML() } },
+          { content: { ...(block?.content ?? {}), html: ed.getHTML() } },
         );
       }, SAVE_DEBOUNCE_MS);
     },
@@ -84,8 +84,8 @@ export function TextBlockRenderer({ block, sectionId = '', readOnly = false, col
   useEffect(() => {
     if (!editor || !isCollabParagraph || !collabCtx) return;
     const fragment = collabCtx.ydoc.getXmlFragment(block.id);
-    if (!fragment.length && block.content.html) {
-      editor.commands.setContent(block.content.html ?? '');
+    if (!fragment.length && block?.content?.html) {
+      editor.commands.setContent(block?.content?.html ?? '');
     }
   }, [editor]);
 
@@ -129,15 +129,15 @@ export function TextBlockRenderer({ block, sectionId = '', readOnly = false, col
 
   if (!editor) return null;
 
-  if (block.type === 'heading') {
-    const level = block.content.level ?? 2;
-    const text = (block.content.html ?? '').replace(/<[^>]+>/g, '');
+  if (block?.type === 'heading') {
+    const level = block?.content?.level ?? 2;
+    const text = ((block?.content?.html ?? block?.content?.text ?? '') as string).replace(/<[^>]+>/g, '');
     if (level === 1) return <h1 className="font-serif text-3xl font-bold mb-6 text-primary">{text}</h1>;
     if (level === 2) return <h2 className="font-serif text-2xl font-bold mb-4 text-slate-800">{text}</h2>;
     return <h3 className="font-serif text-xl font-semibold mb-3 text-slate-700">{text}</h3>;
   }
 
-  if (block.type === 'ai_summary') {
+  if (block?.type === 'ai_summary') {
     return (
       <div className="border-l-4 border-blue-400 bg-blue-50/60 px-5 py-4 mb-4 rounded-r-xl">
         <div className="flex items-center gap-1.5 mb-2">
@@ -148,7 +148,7 @@ export function TextBlockRenderer({ block, sectionId = '', readOnly = false, col
         </div>
         <div
           className="font-sans text-sm text-blue-900 leading-relaxed"
-          dangerouslySetInnerHTML={{ __html: block.content.html ?? '' }}
+          dangerouslySetInnerHTML={{ __html: (block?.content?.html ?? block?.content?.text ?? '') as string }}
         />
       </div>
     );

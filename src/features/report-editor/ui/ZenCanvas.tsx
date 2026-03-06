@@ -42,10 +42,11 @@ interface BlockRendererProps {
 }
 
 function BlockRenderer({ block, sectionId, readOnly, collabCtx, peers = [] }: BlockRendererProps) {
-  const blockPeers = peers.filter((p) => p.activeBlockId === block.id);
+  if (!block) return null;
+  const blockPeers = (peers ?? []).filter((p) => p?.activeBlockId === block?.id);
 
   const content = (() => {
-    switch (block.type) {
+    switch (block?.type) {
       case 'heading':
       case 'paragraph':
       case 'ai_summary':
@@ -87,6 +88,7 @@ function SectionView({ section, readOnly, collabCtx }: SectionViewProps) {
       </h2>
       <div>
         {(section?.blocks ?? [])
+          .filter(Boolean)
           .slice()
           .sort((a, b) => (a?.orderIndex ?? 0) - (b?.orderIndex ?? 0))
           .map((block) => (
@@ -207,7 +209,7 @@ export function ZenCanvas({ readOnly = false, warmth = 2, externalCollabCtx }: Z
             scrollRef={scrollRef}
           />
         ) : (
-          sections.map((section) => (
+          (sections ?? []).map((section) => (
             <SectionView
               key={section.id}
               section={section}

@@ -217,11 +217,6 @@ function blocksToSections(blocks: DbReportBlock[]): ReportSection[] {
 }
 
 export function mapDbReportToFrontend(dbReport: DbReportRow, blocks: DbReportBlock[]): M6Report {
-  // #region agent log
-  const esRaw = dbReport?.executive_summary;
-  const esType = esRaw === null ? 'null' : esRaw === undefined ? 'undefined' : typeof esRaw;
-  fetch('http://127.0.0.1:7282/ingest/73ddabe5-d152-4199-aa61-31a45c840ef0',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'9f8cd2'},body:JSON.stringify({sessionId:'9f8cd2',location:'report-api.ts:mapDbReportToFrontend',message:'dbReport exec_summary',data:{reportId:dbReport?.id,esType},timestamp:Date.now(),hypothesisId:'H4'})}).catch(()=>{});
-  // #endregion
   const safeBlocks = Array.isArray(blocks) ? blocks.filter(Boolean) : [];
   const sections = blocksToSections(safeBlocks);
   return {
@@ -266,7 +261,7 @@ export async function fetchReportData(reportId: string): Promise<M6Report | null
   if (blocksError) throw blocksError;
 
   const blocks = Array.isArray(blocksRaw) && blocksRaw.length > 0
-    ? (blocksRaw as DbReportBlock[])
+    ? (blocksRaw as DbReportBlock[]).filter(Boolean)
     : getDefaultBlocksForEmptyReport(reportId);
 
   return mapDbReportToFrontend(reportRow as DbReportRow, blocks);

@@ -326,9 +326,6 @@ export const useActiveReportStore = create<ActiveReportState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const report = await fetchReportData(reportId);
-      // #region agent log
-      fetch('http://127.0.0.1:7282/ingest/73ddabe5-d152-4199-aa61-31a45c840ef0',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'9f8cd2'},body:JSON.stringify({sessionId:'9f8cd2',location:'store.ts:loadReport',message:'after fetch',data:{reportId,reportNull:report==null,hasExec:report!=null&&'executiveSummary' in report},timestamp:Date.now(),hypothesisId:'H4'})}).catch(()=>{});
-      // #endregion
       const safeReport: M6Report | null = report
         ? normalizeReportForEditor(report)
         : null;
@@ -340,9 +337,6 @@ export const useActiveReportStore = create<ActiveReportState>((set, get) => ({
   },
 
   setActiveReport: (report) => {
-    // #region agent log
-    fetch('http://127.0.0.1:7282/ingest/73ddabe5-d152-4199-aa61-31a45c840ef0',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'9f8cd2'},body:JSON.stringify({sessionId:'9f8cd2',location:'store.ts:setActiveReport',message:'setActiveReport',data:{reportNull:report==null,hasExec:report!=null&&'executiveSummary' in (report as object)},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
-    // #endregion
     const safe =
       report == null ? null : normalizeReportForEditor(report as M6Report);
     set({ activeReport: safe });
