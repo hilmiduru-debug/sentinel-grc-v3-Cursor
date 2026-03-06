@@ -1,4 +1,5 @@
 import { supabase } from '@/shared/api/supabase';
+import { useQuery } from '@tanstack/react-query';
 import type {
   ActionAgingMetrics,
   CreateEvidenceInput,
@@ -13,6 +14,14 @@ export async function getActionsWithAging(): Promise<ActionAgingMetrics[]> {
 
   if (error) throw error;
   return (data ?? []) as ActionAgingMetrics[];
+}
+
+export function useActions() {
+  return useQuery({
+    queryKey: ['actions-aging'],
+    queryFn: getActionsWithAging,
+    staleTime: 60_000,
+  });
 }
 
 export async function uploadEvidence(
