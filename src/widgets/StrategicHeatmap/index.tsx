@@ -2,11 +2,13 @@ import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Grid3x3, Radar, TrendingDown, X, ChevronRight,
-  AlertTriangle, ArrowUpRight, ArrowDownLeft, Minus, Loader2
+  AlertTriangle, ArrowUpRight, ArrowDownLeft, Minus, Loader2, RefreshCw
 } from 'lucide-react';
 import clsx from 'clsx';
-import { useHeatmapData, type AssessmentWithDetails } from '@/entities/risk/heatmap-api';
+import toast from 'react-hot-toast';
+import { useHeatmapData } from '@/entities/risk/heatmap-api';
 import { useCometData } from '@/entities/risk/velocity-api';
+import type { AssessmentWithDetails } from '@/entities/risk/heatmap-types';
 import { ClassicGrid } from './ClassicGrid';
 import { CometChart } from './CometChart';
 import { TimeTravelSlider } from './TimeTravelSlider';
@@ -15,8 +17,8 @@ type ViewMode = 'classic' | 'radar';
 type MatrixMode = 'inherent' | 'residual';
 
 export function StrategicHeatmap() {
-  const { data: assessments = [], isLoading: loadingAssessments } = useHeatmapData();
-  const { data: comets = [], isLoading: loadingComets } = useCometData();
+  const { data: assessments = [], isLoading: loadingAssessments, isError: assessmentsError, error: assessmentsErr, refetch: refetchAssessments } = useHeatmapData();
+  const { data: comets = [], isLoading: loadingComets, isError: cometsError, refetch: refetchComets } = useCometData();
 
   const [viewMode, setViewMode] = useState<ViewMode>('classic');
   const [matrixMode, setMatrixMode] = useState<MatrixMode>('inherent');
@@ -25,7 +27,7 @@ export function StrategicHeatmap() {
   const [timeProgress, setTimeProgress] = useState(1.0);
 
   const handleCellClick = useCallback((key: string, risks: AssessmentWithDetails[]) => {
-    if (risks.length === 0) return;
+    if ((risks || []).length === 0) return;
     setSelectedCell(prev => prev === key ? null : key);
     setSelectedRisk(null);
   }, []);
@@ -37,30 +39,59 @@ export function StrategicHeatmap() {
   const cellRisks = useMemo(() => {
     if (!selectedCell) return [];
     const [impStr, likStr] = selectedCell.split('-');
-    return assessments.filter(a => {
+    return (assessments || []).filter(a => {
       if (matrixMode === 'inherent') {
-        return a.impact === +impStr && a.likelihood === +likStr;
+        return a?.impact === +impStr && a?.likelihood === +likStr;
       }
-      const ri = Math.max(1, Math.round(a.impact * (1 - a.control_effectiveness)));
-      const rl = Math.max(1, Math.round(a.likelihood * (1 - a.control_effectiveness)));
+      const ri = Math.max(1, Math.round((a?.impact ?? 1) * (1 - (a?.control_effectiveness ?? 0))));
+      const rl = Math.max(1, Math.round((a?.likelihood ?? 1) * (1 - (a?.control_effectiveness ?? 0))));
       return ri === +impStr && rl === +likStr;
     });
   }, [selectedCell, assessments, matrixMode]);
 
   const stats = useMemo(() => {
     let worsening = 0, improving = 0, stable = 0;
-    for (const c of comets) {
-      if (c.direction === 'worsening') worsening++;
-      else if (c.direction === 'improving') improving++;
+    for (const c of (comets || [])) {
+      if (c?.direction === 'worsening') worsening++;
+      else if (c?.direction === 'improving') improving++;
       else stable++;
     }
-    return { worsening, improving, stable, total: comets.length };
+    return { worsening, improving, stable, total: (comets || []).length };
   }, [comets]);
 
   if (loadingAssessments || loadingComets) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="animate-spin text-slate-400" size={32} />
+      </div>
+    );
+  }
+
+  // ─── BDDK CİDDİYETİNDE HATA STATE ────────────────────────────────────────────
+  if (assessmentsError || cometsError) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-xl p-8">
+        <div className="flex flex-col items-center text-center max-w-sm mx-auto">
+          <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mb-4">
+            <AlertTriangle className="text-red-500" size={28} />
+          </div>
+          <h3 className="text-base font-bold text-red-700 mb-2">Risk Verisi Yüklenemedi</h3>
+          <p className="text-sm text-red-600 mb-4">
+            {(assessmentsErr as Error)?.message
+              ?? 'Stratejik ısı haritası verileri veritabanından alınamadı. Lütfen sistem yöneticinizle iletişime geçin.'}
+          </p>
+          <button
+            onClick={() => {
+              refetchAssessments();
+              refetchComets();
+              toast.loading('Veriler yeniden yükleniyor...', { duration: 2000 });
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white text-sm font-bold rounded-lg hover:bg-red-700 transition-colors"
+          >
+            <RefreshCw size={14} />
+            Yeniden Dene
+          </button>
+        </div>
       </div>
     );
   }
