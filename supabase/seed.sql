@@ -228,9 +228,21 @@ INSERT INTO public.audit_findings (id, engagement_id, title, severity, status, s
    '42d72f07-e813-4cff-8218-4a64f7a3baab',
    'Tüzel Müşteri Açılışlarında Gerçek Faydalanıcı (UBO) Belgesinin Sisteme Yüklenmesinde Gecikme',
    'MEDIUM','FINAL','REMEDIATED',
-   '{"condition":"Son 6 ayda açılan 234 tüzel müşteri hesabının 41 adedinde (%17,5) UBO belgesi müşteri açılışından 15+ iş günü sonra sisteme yüklenmiştir. 8 hesapta belge hâlâ eksiktir.","criteria":"5549 Sayılı MASAK Kanunu Md. 3; MASAK Genel Tebliği Sıra No: 19 — Gerçek Faydalanıcının Tespiti","cause":"Şubelerin UBO formunu fiziksel olarak aldığı ancak dijitalleştirme sürecini geciktirdiği tespit edilmiştir. Merkezi takip mekanizması bulunmamaktadır.","consequence":"MASAK tarafından idari yaptırım riski; regülatör denetimde olumsuz bulgu olasılığı.","recommendation":"1) UBO belgesi sisteme yüklenmeden hesap aktifleştirilmesini engelleyen sistem kısıtlaması ekleyin. 2) Haftalık eksik belge raporu oluşturup şubelere otomatik hatırlatma gönderin."}'::jsonb,
+   '{"condition":"Son 6 ayda açılan 234 tüzel müşteri hesabının 41 adedinde (%17,5) UBO belgesi müşteri açılışından 15+ iş günü sonra sisteme yüklenmiştir. 8 hesapta belge hâlâ eksiktir.","criteria":"5549 Sayılı MASAK Kanunu Md. 3; MASAK Genel Tebliği Sıra No: 19 — Gerçek Faydalanıcının Tespiti","cause":"Şubelerin UBO formunu fiziksel olarak aldığı ancak dijitalleştirme sürecini geciktirdiği tespit edilmiştir. Merkezi takip mekanizması bulunmamaktadır.","consequence":"MASAK tarafından idari yaptırım riski; regülatör denetimde olumsuz bulgu olasılığı.","recommendation":"1) UBO belgesi sisteme yüklenmeden hesap aktifleştirilmesini engelleyen sistem kısıtlaması ekle. 2) Haftalık eksik belge raporu oluşturup şubelere otomatik hatırlatma gönder."}'::jsonb,
    2, 3, 'Uyum Riski', 0)
 ON CONFLICT (id) DO NOTHING;
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- 0.7.1. DEMO BAĞIMSIZLIK BEYANLARI (IRON GATE SEED VERİSİ)
+-- ─────────────────────────────────────────────────────────────────────────────
+INSERT INTO public.independence_declarations (engagement_id, auditor_id, status, signed_at, ip_address, declaration_text) VALUES
+  -- ENG-1 (SIGNED)
+  ('42d72f07-e813-4cff-8218-4a64f7a3baab', '00000000-0000-0000-0000-000000000003', 'signed', now() - interval '15 days', '192.168.1.100', 'GIAS 2025 Standart 2.1 uyarınca çıkar çatışmam bulunmamaktadır.'),
+  -- ENG-2 (PENDING) -> E2E Test bu engagement için ("Kritik BT Sistemleri Sızma Testi ve Erişim Denetimi" - assigned to Elif Yıldız: 004) çalışacak
+  ('42d72f07-e813-4cff-8218-4a64f7a3baac', '00000000-0000-0000-0000-000000000004', 'pending', null, null, null),
+  -- ENG-4 (SIGNED)
+  ('42d72f07-e813-4cff-8218-4a64f7a3baae', '00000000-0000-0000-0000-000000000005', 'signed', now() - interval '2 days', '192.168.1.104', 'GIAS 2025 Standart 2.1 uyarınca çıkar çatışmam bulunmamaktadır.')
+ON CONFLICT (engagement_id, auditor_id) DO NOTHING;
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- 0.8. BULGU GİZLİ KATMANI (Finding Secrets — 5 Why RCA)
@@ -325,6 +337,40 @@ INSERT INTO public.finding_signoffs (finding_id, tenant_id, role, user_id, user_
   ('f0000000-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','APPROVER',
    '00000000-0000-0000-0000-000000000001','Dr. Hasan Aksoy','Teftiş Kurulu Başkanı (CAE)','Son onay verildi. Yayın için uygun.')
 ON CONFLICT (finding_id, role) DO NOTHING;
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- 0.13. YÖNETİM KURULU ESKALASYON MASASI
+-- ─────────────────────────────────────────────────────────────────────────────
+INSERT INTO public.escalations (id, tenant_id, finding_id, status, escalation_level, reason, created_by) VALUES
+  -- Escalation 1: Core Banking Privilege Escalation (IT) -> YK'ya eskalasyon
+  ('c0000000-0000-0000-0000-000000000001',
+   '11111111-1111-1111-1111-111111111111',
+   'f0000000-0000-0000-0000-000000000001',
+   'ESCALATED_TO_BOARD',
+   'BOARD_OF_DIRECTORS',
+   'Core Banking sistemindeki DBA yetkileri derhal geri alınmadığı için siber güvenlik riski YK seviyesinde kabul edilemez boyutlara ulaşmıştır.',
+   '00000000-0000-0000-0000-000000000001'), -- CAE (Hasan Aksoy)
+
+  -- Escalation 2: Teverruk Uyumsuzluğu (Şeri Risk) -> Denetim Komitesine / Şeri Kurula
+  ('c0000000-0000-0000-0000-000000000002',
+   '11111111-1111-1111-1111-111111111111',
+   'f0000000-0000-0000-0000-000000000002',
+   'REVIEWING',
+   'AUDIT_COMMITTEE',
+   '147 Teverruk işlemindeki API zafiyeti nedeniyle oluşan şeri uyumsuzluk için Danışma Komitesi retroaktif şeri fetva değerlendirmesi yapmalıdır.',
+   '00000000-0000-0000-0000-000000000002') -- VP CAE (Fatma Erdem)
+ON CONFLICT (finding_id) DO NOTHING;
+
+INSERT INTO public.escalation_logs (escalation_id, tenant_id, actor_id, action_type, notes, created_at) VALUES
+  -- Logs for Escalation 1
+  ('c0000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', '00000000-0000-0000-0000-000000000001', 'CREATED', 'Eskalasyon başlatıldı. Acil müdahale gerektiriyor.', now() - interval '3 days'),
+  ('c0000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', '00000000-0000-0000-0000-000000000001', 'LEVEL_CHANGED', 'İlgili iş biriminin aksiyon almaması sebebiyle konu Yönetim Kuruluna taşınmıştır.', now() - interval '2 days'),
+  ('c0000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', '00000000-0000-0000-0000-000000000007', 'NOTE_ADDED', 'Denetim Komitesi YK sunumu için rapor bekliyor.', now() - interval '1 day'),
+  
+  -- Logs for Escalation 2
+  ('c0000000-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111', '00000000-0000-0000-0000-000000000002', 'CREATED', 'Şeri Kurul incelemesi talep edildi.', now() - interval '5 days'),
+  ('c0000000-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111', '00000000-0000-0000-0000-000000000006', 'STATUS_CHANGED', 'Danışma Komitesi dosyayı incelemeye aldı.', now() - interval '1 day')
+ON CONFLICT DO NOTHING;
 
 -- =============================================================================
 -- 1. RISK CONFIGURATION
@@ -2516,7 +2562,7 @@ ON CONFLICT (id) DO NOTHING;
 -- -----------------------------------------------------------------------------
 -- G5. ESKALASYON KAYITLARI (CAE kararı: COMMITTEE_FLAGGED — YK'ya raporlanmış)
 -- -----------------------------------------------------------------------------
-INSERT INTO public.escalation_logs (id, tenant_id, action_id, escalation_level, cae_decision, justification, triggered_at) VALUES
+INSERT INTO public.sla_escalation_logs (id, tenant_id, action_id, escalation_level, cae_decision, justification, triggered_at) VALUES
   ('e8000000-0000-0000-0000-000000000001'::uuid, '11111111-1111-1111-1111-111111111111'::uuid, 'a8000000-0000-0000-0000-000000000001'::uuid, 3, 'COMMITTEE_FLAGGED', 'Kritik SWIFT kontrolü gecikmesi; Denetim Komitesi ve Yönetim Kuruluna bilgilendirme yapıldı. Takip raporu bir sonraki YK toplantısında sunulacak.', (CURRENT_TIMESTAMP - INTERVAL '10 days')),
   ('e8000000-0000-0000-0000-000000000002'::uuid, '11111111-1111-1111-1111-111111111111'::uuid, 'a8000000-0000-0000-0000-000000000002'::uuid, 3, 'COMMITTEE_FLAGGED', 'Kredi teminat aksiyonu SLA ihlali; CAE kararı ile YK raporuna çekildi. Hazine ve Kredi birimleri ortak aksiyon planı sunacak.', (CURRENT_TIMESTAMP - INTERVAL '5 days'))
 ON CONFLICT (id) DO NOTHING;
@@ -2696,3 +2742,16 @@ VALUES (
 ON CONFLICT (id) DO UPDATE SET
   public          = false,
   file_size_limit = 52428800;
+
+-- ── Wave 13: Strategy & Universe Alignment (Neural Map) ─────────
+INSERT INTO public.strategy_universe_alignment (id, goal_id, universe_node_id, alignment_score) VALUES
+  (gen_random_uuid(), 'b1000000-0000-0000-0000-000000000001', 'e0000000-0000-0000-0000-000000000012', 100), -- Yeşil Sukuk -> Hazine
+  (gen_random_uuid(), 'b1000000-0000-0000-0000-000000000001', 'e0000000-0000-0000-0000-000000000011', 80),  -- Yeşil Sukuk -> Uyum ve MASAK
+  (gen_random_uuid(), 'b1000000-0000-0000-0000-000000000002', 'e0000000-0000-0000-0000-000000000100', 100), -- Dijital Teverruk -> Bireysel Bankacılık
+  (gen_random_uuid(), 'b1000000-0000-0000-0000-000000000002', 'e0000000-0000-0000-0000-000000000102', 90),  -- Dijital Teverruk -> Murabaha
+  (gen_random_uuid(), 'b1000000-0000-0000-0000-000000000006', 'e0000000-0000-0000-0000-000000000100', 95),  -- Dijital Kanallar -> Bireysel Bankacılık
+  (gen_random_uuid(), 'b1000000-0000-0000-0000-000000000006', 'e0000000-0000-0000-0000-000000000101', 85),  -- Dijital Kanallar -> Kredi Kartları
+  (gen_random_uuid(), 'b1000000-0000-0000-0000-000000000007', 'e0000000-0000-0000-0000-000000000103', 100), -- Siber Güvenlik -> Siber Güvenlik Process
+  (gen_random_uuid(), 'b1000000-0000-0000-0000-000000000007', 'e0000000-0000-0000-0000-000000000010', 80)   -- Siber Güvenlik -> Risk Yönetimi
+ON CONFLICT (goal_id, universe_node_id) DO NOTHING;
+
