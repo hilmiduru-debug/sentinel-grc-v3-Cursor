@@ -5755,3 +5755,905 @@ VALUES
     'Büyük kurumsal kredi müşterileri AML risk profilini artırır'
   )
 ON CONFLICT (id) DO NOTHING;
+
+-- =============================================================================
+-- WAVE 46 SEED: Fraud Fingerprint & Behavior Analytics
+-- =============================================================================
+
+-- 1. user_behavior_logs — Anomali İçeren Kullanıcı Davranış Kayıtları
+INSERT INTO public.user_behavior_logs (id, tenant_id, user_id, user_name, session_id, event_type, event_category, ip_address, resource_type, resource_id, metadata, risk_score, occurred_at) VALUES
+  (
+    'bl000000-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    'demo-user-001',
+    'Mustafa Kara',
+    'sess-alpha-001',
+    'BULK_DOWNLOAD',
+    'critical',
+    '185.220.101.47',
+    'customer_data',
+    'customer-batch-2026',
+    '{"file_count": 1847, "total_mb": 2340, "day_of_week": "Saturday", "hour": 23}',
+    91.5,
+    NOW() - INTERVAL '2 days' + INTERVAL '23 hours'
+  ),
+  (
+    'bl000000-0000-0000-0000-000000000002',
+    '11111111-1111-1111-1111-111111111111',
+    'demo-user-002',
+    'Zehra Yıldız',
+    'sess-beta-002',
+    'LOGIN',
+    'suspicious',
+    '91.108.4.188',
+    NULL,
+    NULL,
+    '{"country": "RU", "usual_country": "TR", "vpn_detected": true, "distance_km": 2840}',
+    78.2,
+    NOW() - INTERVAL '6 hours'
+  ),
+  (
+    'bl000000-0000-0000-0000-000000000003',
+    '11111111-1111-1111-1111-111111111111',
+    'demo-user-001',
+    'Mustafa Kara',
+    'sess-alpha-002',
+    'CONFIG_CHANGE',
+    'suspicious',
+    '185.220.101.47',
+    'system_config',
+    'auth-policy-001',
+    '{"changed_field": "mfa_required", "old_value": true, "new_value": false}',
+    85.0,
+    NOW() - INTERVAL '1 day' + INTERVAL '2 hours'
+  ),
+  (
+    'bl000000-0000-0000-0000-000000000004',
+    '11111111-1111-1111-1111-111111111111',
+    'demo-user-003',
+    'Ali Özcan',
+    'sess-gamma-003',
+    'REPORT_VIEW',
+    'normal',
+    '10.0.0.45',
+    'report',
+    'report-uuid-xyz',
+    '{"report_type": "ITGC", "duration_sec": 245}',
+    5.0,
+    NOW() - INTERVAL '3 hours'
+  ),
+  (
+    'bl000000-0000-0000-0000-000000000005',
+    '11111111-1111-1111-1111-111111111111',
+    'demo-user-004',
+    'Elif Şahin',
+    'sess-delta-004',
+    'DATA_EXPORT',
+    'suspicious',
+    '10.0.0.99',
+    'finding',
+    NULL,
+    '{"export_count": 512, "format": "CSV", "after_hours": true, "hour": 2}',
+    67.8,
+    NOW() - INTERVAL '18 hours'
+  ),
+  (
+    'bl000000-0000-0000-0000-000000000006',
+    '11111111-1111-1111-1111-111111111111',
+    'demo-user-002',
+    'Zehra Yıldız',
+    'sess-beta-003',
+    'LOGIN',
+    'suspicious',
+    '95.173.190.200',
+    NULL,
+    NULL,
+    '{"failed_attempts": 7, "locked": false, "country": "UA"}',
+    72.0,
+    NOW() - INTERVAL '4 hours'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- 2. fraud_alerts — Tespit Edilen Suiistimal Uyarıları
+INSERT INTO public.fraud_alerts (id, tenant_id, alert_code, title, description, severity, status, affected_user, affected_user_name, source_log_id, risk_score, evidence) VALUES
+  (
+    'fa000000-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    'BULK_DOWNLOAD',
+    'Hafta Sonu Toplu Veri İndirme Girişimi',
+    'Mustafa Kara kullanıcısı, Cumartesi gecesi 23:00''da 1.847 müşteri kaydını (2.3 GB) sistematik olarak indirmiştir. Bu davranış normal çalışma saatleri ve veri erişim normlarıyla tam anlamıyla çelişmektedir. BDDK Siber Güvenlik Rehberi Madde 14 kapsamında acil soruşturma açılması önerilmektedir.',
+    'critical',
+    'open',
+    'demo-user-001',
+    'Mustafa Kara',
+    'bl000000-0000-0000-0000-000000000001',
+    91.5,
+    '{"ip": "185.220.101.47", "file_count": 1847, "total_mb": 2340, "occurred_at_weekend": true}'
+  ),
+  (
+    'fa000000-0000-0000-0000-000000000002',
+    '11111111-1111-1111-1111-111111111111',
+    'UNUSUAL_IP',
+    'Sıra Dışı IP''den Giriş — Rusya Kaynaklı',
+    'Zehra Yıldız kullanıcısı, alışılmış Türkiye lokasyonundan 2.840 km uzakta, Rusya IP adresi (91.108.4.188) üzerinden VPN kullanarak sisteme erişmiştir. Çoklu başarısız giriş denemeleri tespit edilmiştir.',
+    'high',
+    'investigating',
+    'demo-user-002',
+    'Zehra Yıldız',
+    'bl000000-0000-0000-0000-000000000002',
+    78.2,
+    '{"ip": "91.108.4.188", "country": "RU", "vpn": true, "distance_km": 2840}'
+  ),
+  (
+    'fa000000-0000-0000-0000-000000000003',
+    '11111111-1111-1111-1111-111111111111',
+    'PRIVILEGE_ESCALATION',
+    'Çok Faktörlü Kimlik Doğrulama Devre Dışı Bırakıldı',
+    'Mustafa Kara kullanıcısı, toplu indirme eyleminden 1 saat sonra sistem genelindeki MFA zorunluluğunu devre dışı bırakmıştır. Bu iki eylem arasındaki korelasyon, koordineli bir iç tehdit senaryosuna işaret edebilir.',
+    'critical',
+    'open',
+    'demo-user-001',
+    'Mustafa Kara',
+    'bl000000-0000-0000-0000-000000000003',
+    92.0,
+    '{"config_key": "mfa_required", "changed_to": false, "correlated_with": "fa000000-0000-0000-0000-000000000001"}'
+  ),
+  (
+    'fa000000-0000-0000-0000-000000000004',
+    '11111111-1111-1111-1111-111111111111',
+    'OFF_HOURS_ACCESS',
+    'Gece 02:00 Toplu Bulgu Dışa Aktarımı',
+    'Elif Şahin kullanıcısı gece 02:00''de 512 bulguyu CSV formatında dışa aktarmıştır. Mesai saatleri dışı veri erişimi iç politika ihlali oluşturmaktadır.',
+    'medium',
+    'open',
+    'demo-user-004',
+    'Elif Şahin',
+    'bl000000-0000-0000-0000-000000000005',
+    67.8,
+    '{"export_count": 512, "format": "CSV", "hour": 2}'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================
+-- Wave 47 Seed: Regulatory Radar & Horizon Scanner
+-- BDDK, SPK, MASAK, FATF ve Uluslararası mevzuat bültenleri
+-- ============================================================
+
+INSERT INTO regulatory_bulletins (
+  id, bulletin_code, title, summary, source_authority, category,
+  impact_level, status, published_at, effective_date, comment_deadline,
+  affected_sectors, tags
+) VALUES
+  (
+    'mmmm0001-bull-0000-0000-000000000001',
+    'BDDK-TEBL-2026-03',
+    'Kripto Varlık Hizmet Sağlayıcılarına İlişkin Taslak Tebliğ',
+    'Bankaların kripto varlık saklama, transfer ve ticaret hizmetlerine ilişkin lisanslama, sermaye yeterliliği ve müşteri doğrulama (KYC) yükümlülüklerini düzenleyen taslak tebliğ. Bankalara münhasır platform kurma yetkisi verilmektedir.',
+    'BDDK', 'CONSULTATION',
+    'CRITICAL', 'CONSULTATION',
+    '2026-03-01', '2026-09-01', '2026-04-30',
+    ARRAY['BANKACILIK','FINTECH'],
+    ARRAY['KRİPTO','VARLIK','LISANS','KYC']
+  ),
+  (
+    'mmmm0001-bull-0000-0000-000000000002',
+    'BDDK-CIRC-2026-01',
+    'Likidite Karşılama Oranı (LCR) Hesaplama Metodolojisi Güncellemesi',
+    'LCR hesaplamasında kullanılan yüksek kaliteli likit varlık (HQLA) sınıflandırmasında yapılan değişiklikler. Dijital devlet tahvilleri ve CBDC rezervleri Seviye 1 HQLA olarak tanımlanmaktadır.',
+    'BDDK', 'CIRCULAR',
+    'HIGH', 'PUBLISHED',
+    '2026-02-15', '2026-06-01', NULL,
+    ARRAY['BANKACILIK'],
+    ARRAY['LİKİDİTE','LCR','HQLA','CBDC']
+  ),
+  (
+    'mmmm0001-bull-0000-0000-000000000003',
+    'MASAK-GEN-2026-01',
+    'Kripto Varlık İşlemlerinde Şüpheli İşlem Bildirim Standartları',
+    'Kripto varlık aracı kuruluşları ve bankaların kripto işlem kaynaklı şüpheli işlemleri 24 saat içinde bildirme yükümlülükleri. Zincir analizi sonuçlarının rapora eklenmesi zorunlu kılınmaktadır.',
+    'MASAK', 'REGULATION',
+    'HIGH', 'ENACTED',
+    '2025-12-01', '2026-01-01', NULL,
+    ARRAY['BANKACILIK','FINTECH','KRIPTO_BORSALARI'],
+    ARRAY['MASAK','ŞİB','KRİPTO','AML']
+  ),
+  (
+    'mmmm0001-bull-0000-0000-000000000004',
+    'FATF-REC-2026-R15',
+    'FATF R-15 Kripto Varlık Güncel Rehberi',
+    'FATF ''in kripto varlık hizmet sağlayıcıları (VASP) için yayımladığı güncellenmiş uygulama rehberi. Travel Rule minimum eşiğinin 0 EUR''ya indirilmesini ve KYC süreçlerinin FATF standartlarına entegrasyonunu öngörmektedir.',
+    'FATF', 'GUIDANCE',
+    'HIGH', 'PUBLISHED',
+    '2026-01-10', '2026-07-01', NULL,
+    ARRAY['BANKACILIK','FINTECH','KRIPTO_BORSALARI'],
+    ARRAY['FATF','VASP','TRAVEL_RULE','AML']
+  ),
+  (
+    'mmmm0001-bull-0000-0000-000000000005',
+    'KVKK-GEN-2026-02',
+    'Yapay Zeka Destekli Kredi Kararlarında Kişisel Veri İşleme İlkeleri',
+    'AI/ML tabanlı kredi skorlama ve red kararlarında veri sahibine açık rıza alma, kararın izah edilebilirliği (explainability) ve otomatik karar almaya itiraz hakkı yükümlülüklerini düzenleyen genel kurul kararı.',
+    'KVKK', 'REGULATION',
+    'MEDIUM', 'CONSULTATION',
+    '2026-02-20', '2026-08-01', '2026-05-15',
+    ARRAY['BANKACILIK','SIGORTACILIK','FINTECH'],
+    ARRAY['KVKK','YZ','KREDİ_SKORLAMA','AÇIK_RIVA']
+  ),
+  (
+    'mmmm0001-bull-0000-0000-000000000006',
+    'BDDK-REG-2026-SR',
+    'Sürdürülebilir Finansman ve İklim Riski Açıklama Standartları',
+    'Bankaların iklim riskini kredi portföyüne yansıtma yükümlülükleri ve çevresel stres testi metodolojisi. TCFD ve ISSB S2 standardıyla uyum zorunlu tutulmaktadır.',
+    'BDDK', 'REGULATION',
+    'MEDIUM', 'CONSULTATION',
+    '2026-03-05', '2027-01-01', '2026-06-30',
+    ARRAY['BANKACILIK'],
+    ARRAY['ESG','İKLİM_RİSKİ','TCFD','ISSB','STRES_TESTİ']
+  )
+ON CONFLICT (bulletin_code) DO NOTHING;
+
+-- Politika Etki Uyarıları
+INSERT INTO policy_impact_alerts (
+  id, bulletin_id, bulletin_code, internal_policy_ref, department,
+  impact_description, required_action, action_deadline,
+  priority, status, completion_pct, assigned_to
+) VALUES
+  (
+    'nnnn0001-pia0-0000-0000-000000000001',
+    'mmmm0001-bull-0000-0000-000000000001',
+    'BDDK-TEBL-2026-03',
+    'POL-KRD-001 — Kredi Politikası',
+    'Kredi Risk Yönetim Birimi',
+    'Kripto teminatlı kredi ürünleri için LTV (Loan-to-Value) limitleri ve teminat değerleme prosedürleri yeniden tanımlanmalıdır.',
+    'Kripto teminat LTV limitlerini süreç dokümanına ekle, risk komitesi onayına sun.',
+    '2026-04-15',
+    'CRITICAL', 'IN_PROGRESS', 35,
+    'Kredi Risk Direktörü'
+  ),
+  (
+    'nnnn0001-pia0-0000-0000-000000000002',
+    'mmmm0001-bull-0000-0000-000000000001',
+    'BDDK-TEBL-2026-03',
+    'POL-COMP-003 — AML/KYC Uyum Politikası',
+    'MASAK ve Uyum Birimi',
+    'Kripto varlık müşterilerine yönelik geliştirilmiş müşteri durum tespiti (EDD) prosedürleri oluşturulmalı ve mevcut KYC sistemine entegre edilmelidir.',
+    'EDD iş akışı tasarla, CBS KYC modülüne entegre et.',
+    '2026-04-30',
+    'CRITICAL', 'OPEN', 10,
+    'MASAK Uyum Direktörü'
+  ),
+  (
+    'nnnn0001-pia0-0000-0000-000000000003',
+    'mmmm0001-bull-0000-0000-000000000002',
+    'BDDK-CIRC-2026-01',
+    'POL-HAZ-001 — Hazine ve Likidite Yönetim Politikası',
+    'Hazine ve ALM',
+    'LCR hesaplama modelinde CBDC rezervlerinin Seviye 1 HQLA olarak sınıflandırılması için model güncellemesi gereklidir.',
+    'ALM sisteminde LCR hesaplama parametrelerini güncelle, regülasyon çerçevesine uygunluğu doğrula.',
+    '2026-05-01',
+    'HIGH', 'OPEN', 0,
+    'Hazine Risk Yöneticisi'
+  ),
+  (
+    'nnnn0001-pia0-0000-0000-000000000004',
+    'mmmm0001-bull-0000-0000-000000000003',
+    'MASAK-GEN-2026-01',
+    'POL-COMP-002 — Şüpheli İşlem Raporlama Politikası',
+    'MASAK ve Uyum Birimi',
+    'Kripto kaynaklı işlemlerin 24 saatlik bildirim süresi için otomatik tetik mekanizması ve zincir analizi raporlama entegrasyonu kurulmalıdır.',
+    'İşlem izleme sistemine kripto uyarı kuralları ekle; zincir analizi API bağlantısını kur.',
+    '2026-02-28',
+    'HIGH', 'RESOLVED', 100,
+    'MASAK Analiz Ekibi'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- =============================================================================
+-- WAVE 49 SEED: Dynamic Risk Appetite & KRI Monitor
+-- =============================================================================
+
+INSERT INTO public.risk_appetite_limits (id, tenant_id, kri_code, kri_name, description, category, unit, target_value, warning_threshold, limit_threshold, direction, is_active, regulatory_ref) VALUES
+  ('ral00001-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','NPL_RATIO','Takipteki Kredi Oranı (NPL)','Toplam kredi portföyü içindeki takipteki kredilerin oranı. BDDK 5411 md. 53 kapsamında izlenmektedir.','CREDIT','PERCENT',3.0,4.0,5.0,'LOWER_IS_BETTER',true,'BDDK 5411 md.53; Basel III'),
+  ('ral00001-0000-0000-0000-000000000002','11111111-1111-1111-1111-111111111111','LCR','Likidite Karşılama Oranı (LCR)','30 günlük stres senaryosunda yüksek kaliteli likit varlıkların net nakit çıkışına oranı.','LIQUIDITY','PERCENT',120.0,110.0,100.0,'HIGHER_IS_BETTER',true,'BDDK LCR Yönetmeliği; Basel III LCR'),
+  ('ral00001-0000-0000-0000-000000000003','11111111-1111-1111-1111-111111111111','CAPITAL_RATIO','Sermaye Yeterlilik Oranı (SYO)','Risk ağırlıklı varlıklara göre özkaynak oranı. BDDK asgari %12 sınırı.','CREDIT','PERCENT',15.0,13.0,12.0,'HIGHER_IS_BETTER',true,'BDDK Sermaye Yeterliliği Yönetmeliği; Basel III'),
+  ('ral00001-0000-0000-0000-000000000004','11111111-1111-1111-1111-111111111111','OP_LOSS_RATIO','Operasyonel Kayıp Oranı','Toplam gelir içindeki operasyonel kayıpların oranı.','OPERATIONAL','PERCENT',0.5,1.0,1.5,'LOWER_IS_BETTER',true,'Basel III Operasyonel Risk'),
+  ('ral00001-0000-0000-0000-000000000005','11111111-1111-1111-1111-111111111111','CYBER_INCIDENT_COUNT','Siber Güvenlik Olay Sayısı','Son 30 günde tespit edilen kritik siber güvenlik olaylarının sayısı.','CYBER','COUNT',0.0,2.0,5.0,'LOWER_IS_BETTER',true,'BDDK Siber Güvenlik Rehberi 2023'),
+  ('ral00001-0000-0000-0000-000000000006','11111111-1111-1111-1111-111111111111','KYC_COMPLETION','KYC Tamamlanma Oranı','Aktif müşteri portföyü içinde KYC belgesi tam olan müşterilerin oranı.','COMPLIANCE','PERCENT',98.0,95.0,90.0,'HIGHER_IS_BETTER',true,'MASAK AML Direktifi; FATF R.10')
+ON CONFLICT (tenant_id, kri_code) DO NOTHING;
+
+INSERT INTO public.kri_readings (id, tenant_id, appetite_id, kri_code, reading_value, status, note, measured_by, measured_at) VALUES
+  -- NPL: Uyarı bölgesinde (4.2 > 4.0 eşiği)
+  ('kr000001-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','ral00001-0000-0000-0000-000000000001','NPL_RATIO',4.2,'WARNING','Konut kredisi portföyündeki gecikmeli ödemeler artış trendinde.','RISK_SYSTEM',NOW() - INTERVAL '2 hours'),
+  ('kr000001-0000-0000-0000-000000000002','11111111-1111-1111-1111-111111111111','ral00001-0000-0000-0000-000000000001','NPL_RATIO',3.8,'NORMAL',NULL,'RISK_SYSTEM',NOW() - INTERVAL '1 day'),
+  ('kr000001-0000-0000-0000-000000000003','11111111-1111-1111-1111-111111111111','ral00001-0000-0000-0000-000000000001','NPL_RATIO',3.5,'NORMAL',NULL,'RISK_SYSTEM',NOW() - INTERVAL '7 days'),
+  -- LCR: Limit ihlali (98 < 100 eşiği)
+  ('kr000002-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','ral00001-0000-0000-0000-000000000002','LCR',98.0,'BREACH','Döviz likiditesindeki sıkışma nedeniyle LCR limit altına düştü. Acil aksiyon gerekiyor.','TREASURY',NOW() - INTERVAL '30 minutes'),
+  ('kr000002-0000-0000-0000-000000000002','11111111-1111-1111-1111-111111111111','ral00001-0000-0000-0000-000000000002','LCR',108.0,'WARNING',NULL,'RISK_SYSTEM',NOW() - INTERVAL '1 day'),
+  ('kr000002-0000-0000-0000-000000000003','11111111-1111-1111-1111-111111111111','ral00001-0000-0000-0000-000000000002','LCR',125.0,'NORMAL',NULL,'RISK_SYSTEM',NOW() - INTERVAL '7 days'),
+  -- SYO: Normal bölge
+  ('kr000003-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','ral00001-0000-0000-0000-000000000003','CAPITAL_RATIO',16.8,'NORMAL',NULL,'RISK_SYSTEM',NOW() - INTERVAL '1 hour'),
+  -- Operasyonel Kayıp: Normal
+  ('kr000004-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','ral00001-0000-0000-0000-000000000004','OP_LOSS_RATIO',0.3,'NORMAL',NULL,'RISK_SYSTEM',NOW() - INTERVAL '3 hours'),
+  -- Siber Olay: Uyarı
+  ('kr000005-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','ral00001-0000-0000-0000-000000000005','CYBER_INCIDENT_COUNT',3.0,'WARNING','3 kritik siber olay tespit edildi: API brute-force + 2 insider threat şüphesi.','SIEM',NOW() - INTERVAL '4 hours'),
+  -- KYC: Normal
+  ('kr000006-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','ral00001-0000-0000-0000-000000000006','KYC_COMPLETION',97.4,'NORMAL',NULL,'COMPLIANCE_SYSTEM',NOW() - INTERVAL '6 hours')
+ON CONFLICT (id) DO NOTHING;
+
+-- =============================================================================
+-- WAVE 51 SEED: CAS IDE & Script Scheduler
+-- =============================================================================
+
+-- audit_scripts — Gerçekçi Denetim Scriptleri
+INSERT INTO public.audit_scripts (id, tenant_id, title, description, script_type, category, schedule_cron, is_active, is_scheduled, script_body, last_run_status, last_run_results, total_executions, error_count, avg_duration_ms, created_by) VALUES
+  (
+    'as000000-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    'Atıl Hesap Tarama — Gece 03:00',
+    'Son 90 gün içinde hiç giriş yapılmamış aktif kullanıcı hesaplarını tespit eder. BDDK Siber Güvenlik Rehberi Madde 18 gereğince aylık çalıştırılması zorunludur.',
+    'SQL',
+    'DORMANT_ACCOUNTS',
+    '0 3 * * *',
+    true,
+    true,
+    E'-- SENTINEL CAS: Atıl Hesap Tespiti\n-- Kural: Son 90 gün içinde giriş yok = Atıl\nSELECT\n  u.id          AS kullanici_id,\n  u.username    AS kullanici_adi,\n  u.department  AS departman,\n  u.role        AS yetki_seviyesi,\n  u.last_login  AS son_giris,\n  CURRENT_DATE - u.last_login::date AS bekleme_gun\nFROM users u\nWHERE u.is_active = true\n  AND (u.last_login IS NULL OR u.last_login < NOW() - INTERVAL ''90 days'')\nORDER BY bekleme_gun DESC;',
+    'success',
+    47,
+    128,
+    3,
+    1840,
+    'Sürekli Denetim Motoru'
+  ),
+  (
+    'as000000-0000-0000-0000-000000000002',
+    '11111111-1111-1111-1111-111111111111',
+    'Görevler Ayrılığı (SoD) İhlal Taraması',
+    'Çelişkili yetkilere sahip kullanıcıları tespit eder: Hem ödeme onaylama hem de fatura oluşturma yetkisi olan kişiler Basel III operasyonel risk kurallarını ihlal eder.',
+    'SQL',
+    'SEGREGATION_OF_DUTIES',
+    '0 6 * * 1',
+    true,
+    true,
+    E'-- SENTINEL CAS: Görevler Ayrılığı İhlal Tespiti\n-- Kural: Çelişkili yetki matrisi (OR_MATRIX)\nSELECT\n  ur.user_id,\n  u.username,\n  STRING_AGG(ur.role_name, '', '') AS atanmis_roller\nFROM user_roles ur\nJOIN users u ON u.id = ur.user_id\nWHERE ur.role_name IN (''PAYMENT_APPROVER'', ''INVOICE_CREATOR'', ''GL_POSTER'')\nGROUP BY ur.user_id, u.username\nHAVING COUNT(DISTINCT ur.role_name) >= 2\nORDER BY COUNT(DISTINCT ur.role_name) DESC;',
+    'success',
+    12,
+    89,
+    1,
+    2210,
+    'Sürekli Denetim Motoru'
+  ),
+  (
+    'as000000-0000-0000-0000-000000000003',
+    '11111111-1111-1111-1111-111111111111',
+    'Yüksek Tutarlı İşlem Anomali Tespiti (AML)',
+    'Tek bir iş günü içinde 50.000 TL üzeri birden fazla havale yapan hesapları MASAK uyum kuralları çerçevesinde işaretler.',
+    'SQL',
+    'FRAUD_DETECTION',
+    '0 8 * * *',
+    true,
+    true,
+    E'-- SENTINEL CAS: AML Yüksek Tutar Anomali\n-- Kural: Günlük 50.000 TL+ çoklu havale\nSELECT\n  t.account_id,\n  a.owner_name AS hesap_sahibi,\n  COUNT(*)     AS islem_adedi,\n  SUM(t.amount) AS toplam_tutar_tl,\n  MIN(t.amount) AS min_tutar,\n  MAX(t.amount) AS max_tutar\nFROM transactions t\nJOIN accounts a ON a.id = t.account_id\nWHERE t.transaction_date = CURRENT_DATE\n  AND t.amount > 50000\n  AND t.transaction_type = ''WIRE_TRANSFER''\nGROUP BY t.account_id, a.owner_name\nHAVING COUNT(*) >= 2\nORDER BY toplam_tutar_tl DESC;',
+    'success',
+    3,
+    312,
+    8,
+    950,
+    'Sürekli Denetim Motoru'
+  ),
+  (
+    'as000000-0000-0000-0000-000000000004',
+    '11111111-1111-1111-1111-111111111111',
+    'COSO İç Kontrol Etkinlik Puanı Hesaplama',
+    'COSO 2013 çerçevesinin 5 bileşeni ve 17 prensibi için ağırlıklı etkinlik puanı hesaplar. Yönetim kurulu raporlamasında kullanılır.',
+    'SQL',
+    'COMPLIANCE',
+    '0 7 1 * *',
+    true,
+    false,
+    E'-- SENTINEL CAS: COSO Etkinlik Puanı\n-- Kaynak: COSO 2013 — 5 Bileşen, 17 Prensip\nSELECT\n  cc.component_name  AS coso_bileseni,\n  COUNT(c.id)        AS toplam_kontrol,\n  SUM(CASE WHEN c.status = ''effective'' THEN 1 ELSE 0 END) AS etkin_kontrol,\n  ROUND(\n    100.0 * SUM(CASE WHEN c.status = ''effective'' THEN 1 ELSE 0 END)\n    / NULLIF(COUNT(c.id), 0), 1\n  )                  AS etkinlik_yuzdesi\nFROM controls c\nJOIN coso_components cc ON cc.id = c.coso_component_id\nGROUP BY cc.component_name\nORDER BY etkinlik_yuzdesi ASC;',
+    'success',
+    null,
+    24,
+    0,
+    3400,
+    'COSO Değerlendirme Ekibi'
+  ),
+  (
+    'as000000-0000-0000-0000-000000000005',
+    '11111111-1111-1111-1111-111111111111',
+    'IT Yama Uyum Kontrolü (Patch Compliance)',
+    'Son 30 gün içinde güvenlik yaması uygulanmamış aktif sistemleri listeler. BDDK Siber Güvenlik Rehberi, uygulama süresi: 72 saat.',
+    'SQL',
+    'DATA_QUALITY',
+    '0 9 * * 5',
+    true,
+    true,
+    E'-- SENTINEL CAS: Güvenlik Yaması Uyum Kontrolü\nSELECT\n  s.hostname,\n  s.os_version,\n  s.environment,\n  s.last_patch_date,\n  CURRENT_DATE - s.last_patch_date::date AS gecen_gun,\n  s.criticality\nFROM it_systems s\nWHERE s.is_active = true\n  AND (\n    s.last_patch_date IS NULL\n    OR s.last_patch_date < NOW() - INTERVAL ''30 days''\n  )\nORDER BY s.criticality DESC, gecen_gun DESC;',
+    'error',
+    null,
+    42,
+    6,
+    1230,
+    'BT Denetim Ekibi'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- script_execution_logs — Son Çalıştırma Kayıtları
+INSERT INTO public.script_execution_logs (id, tenant_id, script_id, status, triggered_by, started_at, completed_at, duration_ms, rows_returned, output_preview) VALUES
+  ('el000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', 'as000000-0000-0000-0000-000000000001', 'success', 'scheduler',   NOW() - INTERVAL '1 day' + INTERVAL '3 hours',    NOW() - INTERVAL '1 day' + INTERVAL '3 hours 2 minutes', 1840, 47, 'kullanici_adi: ahmet.sahin@banka.com, departman: BT, bekleme_gun: 127 ...'),
+  ('el000000-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111', 'as000000-0000-0000-0000-000000000001', 'success', 'manual',      NOW() - INTERVAL '3 hours',                          NOW() - INTERVAL '3 hours' + INTERVAL '2 minutes',        1920, 49, 'kullanici_adi: mehmet.demir@banka.com, departman: Operasyon, bekleme_gun: 95 ...'),
+  ('el000000-0000-0000-0000-000000000003', '11111111-1111-1111-1111-111111111111', 'as000000-0000-0000-0000-000000000002', 'success', 'scheduler',   NOW() - INTERVAL '6 days' + INTERVAL '6 hours',    NOW() - INTERVAL '6 days' + INTERVAL '6 hours 3 minutes', 2210, 12, 'user_id: usr-44, username: ali.koc, atanmis_roller: PAYMENT_APPROVER, INVOICE_CREATOR ...'),
+  ('el000000-0000-0000-0000-000000000004', '11111111-1111-1111-1111-111111111111', 'as000000-0000-0000-0000-000000000003', 'success', 'scheduler',   NOW() - INTERVAL '8 hours',                          NOW() - INTERVAL '8 hours' + INTERVAL '1 minute',         950,  3,  'account_id: ACC-9912, hesap_sahibi: Zeynep Ltd., toplam_tutar_tl: 187500 ...'),
+  ('el000000-0000-0000-0000-000000000005', '11111111-1111-1111-1111-111111111111', 'as000000-0000-0000-0000-000000000005', 'error',   'scheduler',   NOW() - INTERVAL '2 days' + INTERVAL '9 hours',    NULL,                                                      NULL, NULL, NULL)
+ON CONFLICT (id) DO NOTHING;
+
+-- =============================================================================
+-- WAVE 50 SEED: Cognitive Interview Assistant
+-- Bilişsel Denetim Mülakat Asistanı — Örnek Transkript & AI Analizi
+-- =============================================================================
+
+INSERT INTO public.interview_sessions (
+  id, title, subject_name, subject_title, subject_department,
+  interviewer_name, purpose, location, status,
+  risk_topics, overall_sentiment, ai_risk_score, duration_seconds,
+  scheduled_at, started_at, ended_at
+) VALUES
+  (
+    'is500000-0000-0000-0000-000000000001',
+    'Hazine İşlemleri Mülakat #1 — Repo Limit Aşımı',
+    'Barış Kaya',
+    'Hazine Uzmanı',
+    'Hazine',
+    'Denetçi Leyla Şahin',
+    'BDDK 2024/1 kapsamında repo işlemi limit aşımının nedenleri ve süreç ihlali araştırması.',
+    'Genel Müdürlük — Kat 12 / Toplantı Odası A',
+    'Tamamlandı',
+    ARRAY['Repo İşlemleri', 'Limit Aşımı', 'BDDK Uyum', 'İç Kontrol'],
+    'Stresli',
+    7.8,
+    1920,
+    '2026-03-10T10:00:00+03:00',
+    '2026-03-10T10:05:00+03:00',
+    '2026-03-10T10:37:00+03:00'
+  ),
+  (
+    'is500000-0000-0000-0000-000000000002',
+    'Operasyon Müdürü Görüşme — IBAN Doğrulama İhlali',
+    'Cengiz Arslan',
+    'Operasyon Müdürü',
+    'Operasyon',
+    'Denetçi Ali Koç',
+    'Müşteri IBAN doğrulama bypass vakasının operasyonel ve sistem kaynaklarının analizi.',
+    'Online — Güvenli Video Konferans',
+    'Tamamlandı',
+    ARRAY['IBAN Doğrulama', 'Operasyonel Risk', 'Sistem Kontrolü', 'İnsan Hatası'],
+    'Savunmacı',
+    6.2,
+    2580,
+    '2026-03-12T14:00:00+03:00',
+    '2026-03-12T14:02:00+03:00',
+    '2026-03-12T14:45:00+03:00'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.transcript_analysis (
+  id, session_id, line_order, speaker, transcript,
+  sentiment, confidence, ai_flag, ai_note, keywords, start_ms, end_ms
+) VALUES
+  -- Oturum 1: Repo Limit Aşımı (is500000...001)
+  (
+    'ta500000-0000-0000-0000-000000000001',
+    'is500000-0000-0000-0000-000000000001', 1,
+    'Denetçi',
+    '3 Mart tarihinde gerçekleştirilen repo işleminin onaylı limit üzerinde olduğu görülmektedir. Bunu fark ettiniz mi?',
+    'Nötr', 0.95, NULL, NULL,
+    ARRAY['repo', 'limit', 'onay'], 0, 12000
+  ),
+  (
+    'ta500000-0000-0000-0000-000000000002',
+    'is500000-0000-0000-0000-000000000001', 2,
+    'Muhatap',
+    'Şey... o gün sistem... yani sistem bazen böyle hatalar verebiliyor. Ben doğrudan onay vermemiştim zaten.',
+    'Kaçamak', 0.88,
+    'Kaçamak Cevap',
+    'Muhatap soruya doğrudan cevap vermek yerine sistemden bahsetti. Pasif sorumluluk reddi davranışı gözlemlendi.',
+    ARRAY['sistem', 'hata', 'sorumluluk'], 12500, 27000
+  ),
+  (
+    'ta500000-0000-0000-0000-000000000003',
+    'is500000-0000-0000-0000-000000000001', 3,
+    'Denetçi',
+    'Peki işlem onay loglarına göre sizin kullanıcı kimliğinizle onaylanmış. Bunu nasıl açıklarsınız?',
+    'Nötr', 0.97, NULL, NULL,
+    ARRAY['log', 'kimlik', 'onay'], 27500, 38000
+  ),
+  (
+    'ta500000-0000-0000-0000-000000000004',
+    'is500000-0000-0000-0000-000000000001', 4,
+    'Muhatap',
+    'O gün... bilmiyorum, belki birileri benim şifremi kullandı. Zaten çok yoğun bir gündü, tam olarak hatırlamıyorum.',
+    'Stresli', 0.91,
+    'Yüksek Stres / Belirsiz Hafıza',
+    'Kısa cümleler, tereddüt belirteçleri ("bilmiyorum", "belki") ve hafıza belirsizliği birlikte stres göstergesidir. Kimlik bilgilerinin paylaşıldığına dair beyan kritik eylem gerektirir.',
+    ARRAY['şifre', 'hafıza', 'yoğunluk', 'başkası'], 38500, 58000
+  ),
+  (
+    'ta500000-0000-0000-0000-000000000005',
+    'is500000-0000-0000-0000-000000000001', 5,
+    'Denetçi',
+    'Şifrenizi başkasıyla paylaştığınızı mı söylüyorsunuz? Bu güvenlik politikası ihlalidir ve ayrıca tutanağa geçmesi gerekiyor.',
+    'Nötr', 0.99, NULL, NULL,
+    ARRAY['güvenlik', 'politika', 'ihlal', 'tutanak'], 58500, 70000
+  ),
+  (
+    'ta500000-0000-0000-0000-000000000006',
+    'is500000-0000-0000-0000-000000000001', 6,
+    'Muhatap',
+    'Hayır, hayır. Öyle bir şey demedim. Yanlış anladınız. Ben sadece... sistemi kastettim.',
+    'Savunmacı', 0.87,
+    'Savunmacı / Geri Adım',
+    'Bir önceki beyanın hızlı reddi ve çelişkili açıklama. Söylem tutarsızlığı yüksek.',
+    ARRAY['inkar', 'tutarsızlık', 'savunma'], 70500, 82000
+  ),
+  -- Oturum 2: IBAN Doğrulama (is500000...002)
+  (
+    'ta500000-0000-0000-0000-000000000007',
+    'is500000-0000-0000-0000-000000000002', 1,
+    'Denetçi',
+    'Operasyon biriminizde müşteri IBAN doğrulama adımının devre dışı bırakıldığına dair kayıt mevcut. Bu kararı kim aldı?',
+    'Nötr', 0.96, NULL, NULL,
+    ARRAY['IBAN', 'doğrulama', 'devre dışı', 'karar'], 0, 14000
+  ),
+  (
+    'ta500000-0000-0000-0000-000000000008',
+    'is500000-0000-0000-0000-000000000002', 2,
+    'Muhatap',
+    'Bu bir sistem geliştirme sürecinin parçasıydı. BT departmanıyla koordineli yapıldı. Operasyon olarak biz sadece kullanıcıyız.',
+    'Savunmacı', 0.83,
+    'Sorumluluk Transferi',
+    'Muhatap kararı BT birimine yönlendiriyor. Operasyonel kararların teknik birime atfedilmesi savunmacı bir örüntü oluşturuyor.',
+    ARRAY['BT', 'koordinasyon', 'sorumluluk', 'transfer'], 14500, 31000
+  ),
+  (
+    'ta500000-0000-0000-0000-000000000009',
+    'is500000-0000-0000-0000-000000000002', 3,
+    'Denetçi',
+    'BT onay belgesi veya değişiklik talebi (Change Request) var mı elimizde?',
+    'Nötr', 0.98, NULL, NULL,
+    ARRAY['CR', 'belge', 'onay', 'BT'], 31500, 40000
+  ),
+  (
+    'ta500000-0000-0000-0000-000000000010',
+    'is500000-0000-0000-0000-000000000002', 4,
+    'Muhatap',
+    'Olması lazım. Yani olmalı. Ben şu an elimin altında değil ama... herhalde arşivdedir.',
+    'Şüpheli', 0.79,
+    'Belirsiz Yanıt / Belge Riski',
+    'Belge mevcudiyeti konusunda kesin ifade yerine "olması lazım", "herhalde" gibi belirsiz ifadeler kullanıldı. Belge yönetimi riski işaretlendi.',
+    ARRAY['belge', 'arşiv', 'belirsizlik'], 40500, 54000
+  )
+ON CONFLICT (id) DO NOTHING;
+
+
+-- =============================================================================
+-- WAVE 48 SEED: BCP & Crisis Management — Veri Merkezi Kesintisi Senaryosu
+-- =============================================================================
+
+-- 1. BCP Scenarios
+INSERT INTO public.bcp_scenarios
+  (id, scenario_code, title, category, severity, rto_minutes, rpo_minutes, description, steps, owner, is_tested, last_test_date, test_result)
+VALUES
+  (
+    'bcp00001-0000-0000-0000-000000000001',
+    'BCP-IT-001',
+    'Veri Merkezi Ana Güç Kesintisi — Tier 1 Sistemler',
+    'IT', 'CRITICAL', 240, 60,
+    'Birincil veri merkezi güç kaynağı tamamen kesildi. Jeneratör UPS desteği ile geçici çalışma sağlanacak, DR siteye devrilme yapılacak.',
+    '[
+      {"id":1,"title":"Kriz Yönetim Ekibini Topla","description":"CAE ve Teknoloji Direktörünü acil bilgilendir","owner":"BT Direktörü"},
+      {"id":2,"title":"DR Site Hazırlığını Kontrol Et","description":"İkincil veri merkezinin hazırlık durumunu doğrula","owner":"Sistem Mimarı"},
+      {"id":3,"title":"Kritik Sistemleri DR Sitede Ayağa Kaldır","description":"Core banking, SWIFT, ödeme sistemleri öncelikli","owner":"BT Operasyon"},
+      {"id":4,"title":"İletişim Kesintisi Sona Eriyor mu Kontrol Et","description":"Ağ bağlantılarını ve WAN linklerini test et","owner":"Ağ Ekibi"},
+      {"id":5,"title":"Kullanıcı Bilgilendirmesi Yap","description":"Tüm kullanıcılara ve müşterilere durum mesajı gönder","owner":"Kurumsal İletişim"},
+      {"id":6,"title":"Sistem Bütünlüğünü Doğrula","description":"Veri kaybı ve tutarlılık kontrolü yap","owner":"Veri Tabanı Ekibi"},
+      {"id":7,"title":"Post-Mortem Başlat","description":"Olay sonrası analiz için log toplanmasını başlat","owner":"Kalite & Risk"}
+    ]'::jsonb,
+    'Bilgi Teknolojileri Direktörü', true, '2025-11-15', 'PASSED'
+  ),
+  (
+    'bcp00001-0000-0000-0000-000000000002',
+    'BCP-CYBER-001',
+    'Fidye Yazılımı Saldırısı — Core Banking Yalıtımı',
+    'CYBER', 'CRITICAL', 480, 120,
+    'Core banking veya SWIFT altyapısına fidye yazılımı saldırısı. Sistemleri yalıtarak veri sızıntısı önlenecek.',
+    '[
+      {"id":1,"title":"Ağ Segmentasyonu Uygula","description":"Etkilenen sistemleri VLAN düzeyinde izole et","owner":"Ağ Güvenliği"},
+      {"id":2,"title":"CERT-TR ve SPK Bildirimi","description":"Yasal bildirim yükümlülüklerini yerine getir","owner":"Uyum Direktörü"},
+      {"id":3,"title":"Temiz Backup Noktasını Tespit Et","description":"Saldırı öncesi son temiz yedekleme noktasını belirle","owner":"BT Operasyon"},
+      {"id":4,"title":"Sistem Temizliği ve Restore","description":"Yedeği izole ortamda test ederek canlıya al","owner":"Güvenlik Ekibi"},
+      {"id":5,"title":"Müşteri Varlıklarının Güvenliğini Doğrula","description":"Hesap bakiyeleri ve işlem bütünlüğünü kontrol et","owner":"İç Denetim"}
+    ]'::jsonb,
+    'Bilgi Güvenliği Direktörü (CISO)', false, NULL, NULL
+  ),
+  (
+    'bcp00001-0000-0000-0000-000000000003',
+    'BCP-NAT-001',
+    'Deprem Sonrası Operasyon Sürekliliği',
+    'NATURAL_DISASTER', 'HIGH', 480, 240,
+    'Şiddetli deprem sonrası ofis binaları ve veri merkezlerinin kullanılması mümkün olmayabilir.',
+    '[
+      {"id":1,"title":"Personel Güvenliğini Kontrol Et","description":"Tüm personel ile iletişime geç ve durumlarını kaydet","owner":"İnsan Kaynakları"},
+      {"id":2,"title":"Uzaktan Çalışma Aktivasyonu","description":"VPN ve uzak masaüstü erişimlerini etkinleştir","owner":"BT Direktörü"},
+      {"id":3,"title":"Fiziksel Varlıkların Durumu","description":"Bina hasarını ve ekipman güvenliğini sat","owner":"İdari İşler"}
+    ]'::jsonb,
+    'CAE', true, '2025-09-10', 'PARTIAL'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- 2. Crisis Events — Aktif senaryo: Veri Merkezi A Kesintisi
+INSERT INTO public.crisis_events
+  (id, scenario_id, event_code, title, description, severity, status,
+   activated_at, rto_target_at, rpo_target_at, affected_systems, crisis_owner, escalated_to_cae)
+VALUES
+  (
+    'ce000001-0000-0000-0000-000000000001',
+    'bcp00001-0000-0000-0000-000000000001',
+    'CRISIS-2026-03-07-VMA1',
+    'Veri Merkezi A Kesintisi — Tier 1 Sistemler İçin Kurtarma Başladı',
+    'Birincil veri merkezinde (İstanbul, Maslak) ana güç dağıtım panosu arızalandı. UPS devrede, jeneratörler çalışıyor. DR site devrilmesi başlatıldı. Core banking %80 kapasitede DR üzerinden çalışıyor.',
+    'CRITICAL',
+    'RECOVERING',
+    NOW() - INTERVAL '2 hours 15 minutes',
+    NOW() - INTERVAL '2 hours 15 minutes' + INTERVAL '4 hours',   -- RTO = 240 min
+    NOW() - INTERVAL '2 hours 15 minutes' + INTERVAL '1 hour',    -- RPO = 60 min
+    ARRAY['Core Banking (Fineksus)','SWIFT Gateway','İnternet Bankacılığı','ATM Ağı','Ödeme Sistemleri'],
+    'Ahmet Yılmaz (BT Direktörü)',
+    true
+  ),
+  (
+    'ce000001-0000-0000-0000-000000000002',
+    'bcp00001-0000-0000-0000-000000000002',
+    'CRISIS-2026-03-07-CERT1',
+    'CERT-TR Uyarısı — Şüpheli Fidye Yazılımı Aktivitesi',
+    'CERT-TR, bankaya yönelik koordineli fidye yazılımı kampanyasında ön tespit bildirdi. SOC Ekibi anomali analizi yapıyor, sistem izolasyonu henüz uygulanmadı.',
+    'HIGH',
+    'ACTIVE',
+    NOW() - INTERVAL '45 minutes',
+    NOW() - INTERVAL '45 minutes' + INTERVAL '8 hours',
+    NOW() - INTERVAL '45 minutes' + INTERVAL '2 hours',
+    ARRAY['SIEM Sistemi','E-posta Sunucuları','Dosya Paylaşım Sunucuları'],
+    'Fatma Demir (CISO)',
+    false
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- 3. Recovery Logs — Veri Merkezi A kesintisi için adımlar
+INSERT INTO public.recovery_logs
+  (id, crisis_id, step_number, action_title, action_detail, status, assigned_to, started_at, completed_at, notes)
+VALUES
+  (
+    'rl000001-0000-0000-0000-000000000001',
+    'ce000001-0000-0000-0000-000000000001',
+    1, 'Kriz Yönetim Ekibini Topla',
+    'CAE ve Teknoloji Direktörünü acil bilgilendir',
+    'COMPLETED', 'BT Direktörü',
+    NOW() - INTERVAL '2 hours 15 minutes',
+    NOW() - INTERVAL '2 hours 5 minutes',
+    'CAE ve YK Başkanı bilgilendirildi. Kriz odası kuruldu.'
+  ),
+  (
+    'rl000001-0000-0000-0000-000000000002',
+    'ce000001-0000-0000-0000-000000000001',
+    2, 'DR Site Hazırlığını Kontrol Et',
+    'İkincil veri merkezinin hazırlık durumunu doğrula',
+    'COMPLETED', 'Sistem Mimarı',
+    NOW() - INTERVAL '2 hours 3 minutes',
+    NOW() - INTERVAL '1 hour 50 minutes',
+    'DR sitesi %95 hazır. Ağ bant genişliği yeterli.'
+  ),
+  (
+    'rl000001-0000-0000-0000-000000000003',
+    'ce000001-0000-0000-0000-000000000001',
+    3, 'Core Banking DR Sitede Ayağa Kaldır',
+    'Core banking, SWIFT, ödeme sistemleri öncelikli',
+    'COMPLETED', 'BT Operasyon',
+    NOW() - INTERVAL '1 hour 48 minutes',
+    NOW() - INTERVAL '1 hour 10 minutes',
+    'Fineksus core banking %80 kapasitede DR üzerinden aktif. SWIFT normal.'
+  ),
+  (
+    'rl000001-0000-0000-0000-000000000004',
+    'ce000001-0000-0000-0000-000000000001',
+    4, 'İnternet Bankacılığı ve ATM Restorasyonu',
+    'Müşteri kanallarını DR üzerinden devreye al',
+    'IN_PROGRESS', 'Kanal Teknolojileri Ekibi',
+    NOW() - INTERVAL '1 hour 5 minutes',
+    NULL,
+    'İnternet bankacılığı %60 hizmette. ATM ağının %40ı DR bağlantısında.'
+  ),
+  (
+    'rl000001-0000-0000-0000-000000000005',
+    'ce000001-0000-0000-0000-000000000001',
+    5, 'Kullanıcı ve Müşteri Bilgilendirmesi',
+    'Tüm kullanıcılara ve müşterilere durum mesajı gönder',
+    'PENDING', 'Kurumsal İletişim',
+    NULL, NULL, NULL
+  ),
+  (
+    'rl000001-0000-0000-0000-000000000006',
+    'ce000001-0000-0000-0000-000000000001',
+    6, 'Sistem Bütünlüğü ve Veri Tutarlılığı',
+    'Veri kaybı ve transaction tutarlılığı kontrolü',
+    'PENDING', 'Veri Tabanı Ekibi',
+    NULL, NULL, NULL
+  ),
+  (
+    'rl000001-0000-0000-0000-000000000007',
+    'ce000001-0000-0000-0000-000000000001',
+    7, 'Post-Mortem Başlat',
+    'Olay sonrası analiz ve BDDK bildirimi',
+    'PENDING', 'CAE / İç Denetim',
+    NULL, NULL, NULL
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================
+-- Wave 52 Seed: Visual CCM Rule Builder
+-- JSON tabanlı görsel kural örnekleri
+-- ============================================================
+
+-- Düğüm Kataloğu
+INSERT INTO rule_nodes (
+  id, node_type, node_subtype, label, description, icon,
+  color_scheme, config_schema, output_type, is_terminal, display_order
+) VALUES
+  (
+    'node0001-cata-0000-0000-000000000001',
+    'TRIGGER', 'TRANSACTION_EVENT',
+    'İşlem Tetikleyicisi',
+    'Yeni bir finansal işlem oluştuğunda veya güncellendiğinde tetiklenir.',
+    'Zap',
+    'purple',
+    '{"fields": ["amount", "transaction_type", "timestamp", "user_id", "channel"]}',
+    'EVENT', FALSE, 1
+  ),
+  (
+    'node0001-cata-0000-0000-000000000002',
+    'CONDITION', 'AMOUNT_THRESHOLD',
+    'Tutar Eşiği Koşulu',
+    'İşlem tutarını belirli bir limitle karşılaştırır.',
+    'TrendingUp',
+    'blue',
+    '{"operator": {"type": "enum", "values": [">",">=","<","<=","=="]}, "threshold": {"type": "number"}, "currency": {"type": "string"}}',
+    'BOOLEAN', FALSE, 2
+  ),
+  (
+    'node0001-cata-0000-0000-000000000003',
+    'CONDITION', 'TIME_WINDOW',
+    'Zaman Penceresi Koşulu',
+    'İşlemin gerçekleştiği saati veya gün/hafta periyodunu kontrol eder.',
+    'Clock',
+    'amber',
+    '{"from_hour": {"type": "number", "min": 0, "max": 23}, "to_hour": {"type": "number", "min": 0, "max": 23}, "days_of_week": {"type": "array"}}',
+    'BOOLEAN', FALSE, 3
+  ),
+  (
+    'node0001-cata-0000-0000-000000000004',
+    'CONDITION', 'FREQUENCY_CHECK',
+    'Frekans Analizi Koşulu',
+    'Belirli bir zaman penceresi içindeki işlem sayısını veya toplamını kontrol eder (Structuring tespiti).',
+    'Activity',
+    'orange',
+    '{"window_hours": {"type": "number"}, "max_count": {"type": "number"}, "max_total": {"type": "number"}}',
+    'BOOLEAN', FALSE, 4
+  ),
+  (
+    'node0001-cata-0000-0000-000000000005',
+    'AGGREGATOR', 'AND_GATE',
+    'VE Kapısı (AND)',
+    'Tüm bağlı koşulların doğru olması gerekir.',
+    'Merge',
+    'slate',
+    '{}',
+    'BOOLEAN', FALSE, 5
+  ),
+  (
+    'node0001-cata-0000-0000-000000000006',
+    'AGGREGATOR', 'OR_GATE',
+    'VEYA Kapısı (OR)',
+    'Bağlı koşullardan en az birinin doğru olması yeterlidir.',
+    'GitMerge',
+    'slate',
+    '{}',
+    'BOOLEAN', FALSE, 6
+  ),
+  (
+    'node0001-cata-0000-0000-000000000007',
+    'ACTION', 'GENERATE_ALERT',
+    'Uyarı Oluştur',
+    'CCM sisteminde yüksek öncelikli uyarı kaydı oluşturur ve ilgili birimleri bildirir.',
+    'AlertTriangle',
+    'red',
+    '{"severity": {"type": "enum", "values": ["CRITICAL","HIGH","MEDIUM","LOW"]}, "message_template": {"type": "string"}, "notify_roles": {"type": "array"}}',
+    'VOID', TRUE, 7
+  ),
+  (
+    'node0001-cata-0000-0000-000000000008',
+    'ACTION', 'FLAG_FOR_REVIEW',
+    'İnceleme Bayrağı Ekle',
+    'Kaydı manuel inceleme kuyruğuna ekler.',
+    'Flag',
+    'amber',
+    '{"reviewer_role": {"type": "string"}, "priority": {"type": "enum", "values": ["URGENT","HIGH","NORMAL"]}}',
+    'VOID', TRUE, 8
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- Görsel Kural 1: Gece Yarısından Sonra Büyük İşlem
+INSERT INTO ccm_visual_rules (
+  id, rule_code, name, description, category, severity, is_active,
+  nodes_json, edges_json, compiled_logic, created_by, version
+) VALUES
+  (
+    'rule0001-ccmr-0000-0000-000000000001',
+    'VR-AML-001',
+    'Gece Yarısı Sonrası Yüksek Tutarlı İşlem',
+    'Saat 23:00-06:00 arasında 1.000.000 TL üzeri herhangi bir işlem MASAK bildirimi için otomatik alarm üretir.',
+    'AML', 'CRITICAL', TRUE,
+    '[
+      {"id":"n1","type":"trigger","position":{"x":50,"y":200},"data":{"label":"İşlem Tetikleyicisi","subtype":"TRANSACTION_EVENT","icon":"Zap","color":"purple"}},
+      {"id":"n2","type":"condition","position":{"x":280,"y":100},"data":{"label":"Tutar > 1.000.000 TL","subtype":"AMOUNT_THRESHOLD","config":{"operator":">","threshold":1000000,"currency":"TRY"},"icon":"TrendingUp","color":"blue"}},
+      {"id":"n3","type":"condition","position":{"x":280,"y":300},"data":{"label":"Saat 23:00 - 06:00","subtype":"TIME_WINDOW","config":{"from_hour":23,"to_hour":6},"icon":"Clock","color":"amber"}},
+      {"id":"n4","type":"aggregator","position":{"x":520,"y":200},"data":{"label":"VE Kapısı","subtype":"AND_GATE","icon":"Merge","color":"slate"}},
+      {"id":"n5","type":"action","position":{"x":750,"y":200},"data":{"label":"KRİTİK Uyarı Oluştur","subtype":"GENERATE_ALERT","config":{"severity":"CRITICAL","message_template":"Gece saatlerinde yüksek tutarlı işlem tespit edildi.","notify_roles":["MASAK_OFFICER","RISK_DIRECTOR"]},"icon":"AlertTriangle","color":"red"}}
+    ]',
+    '[
+      {"id":"e1","source":"n1","target":"n2"},
+      {"id":"e2","source":"n1","target":"n3"},
+      {"id":"e3","source":"n2","target":"n4"},
+      {"id":"e4","source":"n3","target":"n4"},
+      {"id":"e5","source":"n4","target":"n5"}
+    ]',
+    'amount > 1000000 AND hour(timestamp) >= 23 OR hour(timestamp) <= 6',
+    'denetim.baskani@sentinelab.com.tr',
+    1
+  ),
+  (
+    'rule0001-ccmr-0000-0000-000000000002',
+    'VR-STR-001',
+    'Structuring Tespit Kuralı (Parçalı İşlem)',
+    '24 saat içinde aynı kullanıcıdan 3 veya daha fazla işlem geliyorsa ve toplam tutar 50.000 TL eşiğini aşıyorsa yapılandırma (structuring) şüphesi oluştur.',
+    'STRUCTURING', 'HIGH', TRUE,
+    '[
+      {"id":"n1","type":"trigger","position":{"x":50,"y":150},"data":{"label":"İşlem Tetikleyicisi","subtype":"TRANSACTION_EVENT","icon":"Zap","color":"purple"}},
+      {"id":"n2","type":"condition","position":{"x":280,"y":150},"data":{"label":"24s İçinde ≥3 İşlem & Toplam > 50K","subtype":"FREQUENCY_CHECK","config":{"window_hours":24,"max_count":3,"max_total":50000},"icon":"Activity","color":"orange"}},
+      {"id":"n3","type":"action","position":{"x":520,"y":150},"data":{"label":"MASAK Bayrağı + İnceleme","subtype":"FLAG_FOR_REVIEW","config":{"reviewer_role":"MASAK_OFFICER","priority":"URGENT"},"icon":"Flag","color":"amber"}}
+    ]',
+    '[
+      {"id":"e1","source":"n1","target":"n2"},
+      {"id":"e2","source":"n2","target":"n3"}
+    ]',
+    'tx_count_24h >= 3 AND tx_total_24h > 50000',
+    'denetim.baskani@sentinelab.com.tr',
+    1
+  ),
+  (
+    'rule0001-ccmr-0000-0000-000000000003',
+    'VR-BENF-001',
+    'Benford Kanunu Sapma Uyarısı',
+    'Fatura tutarlarının ilk rakam dağılımı chi-kare kritik değerini (%5 anlamlılık) aştığında otomatik anomali uyarısı üretir.',
+    'BENFORD', 'HIGH', TRUE,
+    '[
+      {"id":"n1","type":"trigger","position":{"x":50,"y":150},"data":{"label":"Fatura Batch Tetikleyicisi","subtype":"TRANSACTION_EVENT","icon":"Zap","color":"purple"}},
+      {"id":"n2","type":"condition","position":{"x":280,"y":150},"data":{"label":"χ² > 15.507 (DF=8)","subtype":"AMOUNT_THRESHOLD","config":{"operator":">","threshold":15.507},"icon":"TrendingUp","color":"blue"}},
+      {"id":"n3","type":"action","position":{"x":520,"y":150},"data":{"label":"Yüksek Uyarı Oluştur","subtype":"GENERATE_ALERT","config":{"severity":"HIGH","message_template":"Fatura portföyünde Benford Kanunu sapması tespit edildi. Manuel inceleme gerekli.","notify_roles":["AUDIT_MANAGER"]},"icon":"AlertTriangle","color":"red"}}
+    ]',
+    '[
+      {"id":"e1","source":"n1","target":"n2"},
+      {"id":"e2","source":"n2","target":"n3"}
+    ]',
+    'chi_squared > 15.507',
+    'denetim.baskani@sentinelab.com.tr',
+    1
+  )
+ON CONFLICT (rule_code) DO NOTHING;

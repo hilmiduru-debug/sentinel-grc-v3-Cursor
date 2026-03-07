@@ -16,10 +16,12 @@ import EcosystemImpactPage from '@/pages/action-workbench/EcosystemImpactPage';
 import { RemediationDossier } from '@/features/regulatory-export/ui/RemediationDossier';
 import ExecutionConsolidatedPage from '@/pages/execution-consolidated';
 import ExecutionDetailPage from '@/pages/execution/ExecutionPage';
+import CognitiveInterviewPage from '@/pages/execution/CognitiveInterviewPage';
 import ExecutiveDashboardPage from '@/pages/reporting/ExecutiveDashboardPage';
 import ResourceManagementPage from '@/pages/resources/ResourceManagementPage';
 import GovernancePage from '@/pages/governance';
 import PolicyPage from '@/pages/governance/PolicyPage';
+import BoardResolutionPage from '@/pages/governance/BoardResolutionPage';
 import GovernanceVaultPage from '@/pages/governance-vault';
 import QAIPPage from '@/pages/qaip';
 import SurveysPage from '@/pages/surveys';
@@ -61,9 +63,11 @@ import QuantPage from '@/pages/quant';
 import NegotiationPage from '@/pages/negotiation';
 import RiskHeatmapPage from '@/pages/risk-heatmap';
 import RiskLaboratoryPage from '@/pages/risk-laboratory';
+import RiskAppetitePage from '@/pages/risk-appetite';
 import AuditStartPage from '@/pages/audit-start';
 import TemplateManagerPage from '@/pages/admin/TemplateManagerPage';
 import PBCPage from '@/pages/pbc';
+import BCPCrisisPage from '@/pages/bcp';
 import CompliancePage from '@/pages/compliance';
 import RegulationsPage from '@/pages/compliance/RegulationsPage';
 import GapAnalysisPage from '@/pages/compliance/GapAnalysisPage';
@@ -149,6 +153,7 @@ export const AppRoutes = () => {
       <Route path="/strategy/risk-lab" element={<ProtectedRoute><RiskLaboratoryPage /></ProtectedRoute>} />
       <Route path="/strategy/risk-simulator" element={<ProtectedRoute><RiskSimulationPage /></ProtectedRoute>} />
       <Route path="/strategy/neural-map" element={<ProtectedRoute><NeuralMapPage /></ProtectedRoute>} />
+      <Route path="/risk/appetite" element={<ProtectedRoute><RiskAppetitePage /></ProtectedRoute>} />
 
       <Route path="/governance/board" element={<ProtectedRoute><BoardReportingPage /></ProtectedRoute>} />
       <Route path="/governance/escalation-desk" element={<ProtectedRoute><EscalationDeskPage /></ProtectedRoute>} />
@@ -172,6 +177,8 @@ export const AppRoutes = () => {
       <Route path="/execution/findings/:id/legacy" element={<ProtectedRoute><AuditorFindingDetailPage /></ProtectedRoute>} />
       <Route path="/execution/actions" element={<ProtectedRoute><ActionWorkbenchPage /></ProtectedRoute>} />
       <Route path="/execution/pbc" element={<ProtectedRoute><PBCPage /></ProtectedRoute>} />
+      <Route path="/bcp" element={<ProtectedRoute><BCPCrisisPage /></ProtectedRoute>} />
+
       <Route path="/execution/start" element={<ProtectedRoute><AuditStartPage /></ProtectedRoute>} />
       <Route path="/execution/agile" element={<ProtectedRoute><AgileEngagementsPage /></ProtectedRoute>} />
       <Route path="/execution/agile/:id" element={<ProtectedRoute><AgileTasksPage /></ProtectedRoute>} />
@@ -285,6 +292,10 @@ export const AppRoutes = () => {
       <Route path="/vendor-portal" element={<VendorPortalPage />} />
       <Route path="/vendor-portal/:token" element={<VendorPortalPage />} />
       <Route path="/process-canvas" element={<ProtectedRoute><ProcessCanvasPage /></ProtectedRoute>} />
+
+      <Route path="/governance/board-resolution" element={<ProtectedRoute><BoardResolutionPage /></ProtectedRoute>} />
+
+      <Route path="/execution/cognitive-interview" element={<ProtectedRoute><CognitiveInterviewPage /></ProtectedRoute>} />
 
       <Route path="/governance" element={<Navigate to="/governance/charter" replace />} />
       <Route path="/strategy" element={<Navigate to="/strategy/objectives" replace />} />
