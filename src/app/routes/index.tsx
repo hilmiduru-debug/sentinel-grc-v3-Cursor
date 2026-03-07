@@ -4,6 +4,7 @@ import { usePersonaStore } from '@/entities/user/model/persona-store';
 import DashboardPage from '@/pages/dashboard';
 import StrategicAnalysisPage from '@/pages/dashboard/StrategicAnalysisPage';
 import EcosystemPage from '@/pages/dashboard/EcosystemPage';
+import GodsEyeViewPage from '@/pages/apex/GodsEyeViewPage';
 import StrategyPage from '@/pages/strategy';
 import StrategicPlanningPage from '@/pages/planning/StrategicPlanningPage';
 import RkmLibraryPage from '@/pages/rkm-library';
@@ -20,6 +21,7 @@ import CognitiveInterviewPage from '@/pages/execution/CognitiveInterviewPage';
 import RootCausePage from '@/pages/findings/RootCausePage';
 import ExecutiveDashboardPage from '@/pages/reporting/ExecutiveDashboardPage';
 import ResourceManagementPage from '@/pages/resources/ResourceManagementPage';
+import WellbeingPage from '@/pages/resources/WellbeingPage';
 import GovernancePage from '@/pages/governance';
 import PolicyPage from '@/pages/governance/PolicyPage';
 import BoardResolutionPage from '@/pages/governance/BoardResolutionPage';
@@ -34,6 +36,7 @@ import CyberThreatPage from '@/pages/cyber-threats';
 import SettingsConsolidatedPage from '@/pages/settings-consolidated';
 import FindingCenterPage from '@/pages/findings/FindingCenterPage';
 import RemunerationPage from '@/pages/governance/RemunerationPage';
+import LitigationPage from '@/pages/governance/LitigationPage';
 import FindingStudioPage from '@/pages/findings/FindingStudioPage';
 import { FindingDetailPage as AuditorFindingDetailPage } from '@/pages/auditor/FindingDetailPage';
 import { AuditeePortalPage } from '@/pages/auditee-portal/AuditeePortalPage';
@@ -152,6 +155,7 @@ export const AppRoutes = () => {
       <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
       <Route path="/dashboard/strategic" element={<ProtectedRoute><StrategicAnalysisPage /></ProtectedRoute>} />
       <Route path="/dashboard/ecosystem" element={<ProtectedRoute><EcosystemPage /></ProtectedRoute>} />
+      <Route path="/apex" element={<ProtectedRoute><GodsEyeViewPage /></ProtectedRoute>} />
 
       <Route path="/strategy/objectives" element={<ProtectedRoute><ObjectivesPage /></ProtectedRoute>} />
       <Route path="/strategy/universe" element={<ProtectedRoute><StrategyPage /></ProtectedRoute>} />
@@ -205,6 +209,7 @@ export const AppRoutes = () => {
       <Route path="/surveys" element={<ProtectedRoute><SurveysPage /></ProtectedRoute>} />
 
       <Route path="/resources" element={<ProtectedRoute><ResourceManagementPage /></ProtectedRoute>} />
+      <Route path="/resources/well-being" element={<ProtectedRoute><WellbeingPage /></ProtectedRoute>} />
 
       <Route path="/monitoring/watchtower" element={<ProtectedRoute><WatchtowerPage /></ProtectedRoute>} />
       <Route path="/monitoring/probes" element={<ProtectedRoute><WatchtowerPage /></ProtectedRoute>} />
@@ -312,6 +317,7 @@ export const AppRoutes = () => {
 
       <Route path="/governance/board-resolution" element={<ProtectedRoute><BoardResolutionPage /></ProtectedRoute>} />
       <Route path="/governance/remuneration" element={<ProtectedRoute><RemunerationPage /></ProtectedRoute>} />
+      <Route path="/governance/litigation" element={<ProtectedRoute><LitigationPage /></ProtectedRoute>} />
 
       <Route path="/execution/cognitive-interview" element={<ProtectedRoute><CognitiveInterviewPage /></ProtectedRoute>} />
       <Route path="/execution/root-cause" element={<ProtectedRoute><RootCausePage /></ProtectedRoute>} />

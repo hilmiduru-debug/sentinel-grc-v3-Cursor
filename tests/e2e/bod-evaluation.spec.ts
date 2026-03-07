@@ -33,6 +33,6 @@ test.describe('📊 BoD EVALUATION & SKILL MATRIX E2E TEST', () => {
 
     // Verify individual radar view header matches name
     await expect(page.getByText('Bireysel Yetkinlik Matrisi')).toBeVisible();
-    await expect(page.getByText('Siber Güvenlik')).first().toBeVisible();
+    await expect(page.getByText('Siber Güvenlik').first()).toBeVisible();
   });
 });

@@ -8537,6 +8537,84 @@ INSERT INTO public.contract_vulnerabilities (id, tenant_id, contract_id, vulnera
 ON CONFLICT (id) DO NOTHING;
 
 -- =============================================================================
+-- WAVE 75 SEED: Litigation & Penalty Prediction Engine
+-- =============================================================================
+
+INSERT INTO public.legal_cases (id, tenant_id, case_number, plaintiff, defendant, court, case_type, filing_date, claimed_amount, status) VALUES
+  (
+    'case7500-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    '2025/1142 E.',
+    'ABC Teknoloji A.Ş.',
+    'Sentinel Bank',
+    'İstanbul 3. Asliye Ticaret Mahkemesi',
+    'Ticari Sözleşme İhlali',
+    '2025-08-14',
+    12500000.00,
+    'Açık'
+  ),
+  (
+    'case7500-0000-0000-0000-000000000002',
+    '11111111-1111-1111-1111-111111111111',
+    '2026/045 E.',
+    'Ahmet Yılmaz',
+    'Sentinel Bank',
+    'Ankara 1. İş Mahkemesi',
+    'İşe İade ve Tazminat',
+    '2026-01-10',
+    450000.00,
+    'Karara Bağlandı'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.regulatory_investigations (id, tenant_id, regulator, subject, investigation_date, investigator_lead, status) VALUES
+  (
+    'reg75000-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    'Rekabet Kurumu',
+    'Mevduat Faiz Oranları Kartel Şüphesi',
+    '2025-11-05',
+    'Başmüfettiş O. K.',
+    'Savunma Aşamasında'
+  ),
+  (
+    'reg75000-0000-0000-0000-000000000002',
+    '11111111-1111-1111-1111-111111111111',
+    'MASAK',
+    'Uluslararası Ticaret Finansmanı Ön İnceleme',
+    '2026-02-15',
+    'Uzman Yrd. F. T.',
+    'İncelemede'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.predicted_penalties (id, tenant_id, reference_type, reference_id, predicted_loss_prob, predicted_penalty_amount, ai_confidence, risk_factors, mitigation_strategy) VALUES
+  (
+    'pen75000-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    'INVESTIGATION',
+    'reg75000-0000-0000-0000-000000000001',
+    65.00,
+    50000000.00,
+    88.50,
+    ARRAY['Sektörde benzer soruşturmalarda ceza uygulandı', 'İç yazışmalarda agresif fiyatlama beyanları bulundu', 'Pazar payının büyüklüğü nedeniyle katsayı artışı'],
+    'Rekabet Kurumu uzlaşma ve aktif işbirliği (Leniency) mekanizmasından yararlanılarak cezada %25 indirim talep edilmesi.'
+  ),
+  (
+    'pen75000-0000-0000-0000-000000000002',
+    '11111111-1111-1111-1111-111111111111',
+    'CASE',
+    'case7500-0000-0000-0000-000000000001',
+    85.00,
+    12500000.00,
+    92.00,
+    ARRAY['Sözleşmede yer alan açık fesih tazminat maddesi', 'Bankanın fesih ihtarnamesindeki şekil eksikliği'],
+    'Davacının talep ettiği tutar üzerinden %100 karşılık (provision) ayrılması ve temyiz aşamasında uzlaşma (sulh) aranması.'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+
+-- =============================================================================
 -- WAVE 71 SEED: BoD Evaluation & Skill Matrix
 -- =============================================================================
 
@@ -8592,3 +8670,221 @@ VALUES
   (gen_random_uuid(), '2025-H2', 'Teknoloji ve Dijitalleşme Vizyonu', 7.2, 'BT komitelerinin YK sunumları sıklaştırılmalı.')
 ON CONFLICT (id) DO NOTHING;
 
+-- =============================================================================
+-- WAVE 74 SEED: Auditor Well-Being & Burnout Predictor
+-- =============================================================================
+
+INSERT INTO public.auditor_workload_logs (id, tenant_id, auditor_id, auditor_name, period, total_projects, available_hours, logged_hours, travel_days, complexity_factor) VALUES
+  (
+    'awl74000-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    'usr00000-0000-0000-0000-000000000001',
+    'Ahmet Yılmaz (Kıdemli Müfettiş A)',
+    '2026-Q1',
+    4,
+    480,  -- 3 ay x 160 saat
+    672,  -- 40% Fazla Mesai (672 = 480 * 1.4)
+    25,   -- Yoğun Seyahat
+    1.4   -- Yüksek Zorluk
+  ),
+  (
+    'awl74000-0000-0000-0000-000000000002',
+    '11111111-1111-1111-1111-111111111111',
+    'usr00000-0000-0000-0000-000000000002',
+    'Büşra Demir (Müfettiş)',
+    '2026-Q1',
+    2,
+    480,
+    490,  -- Normal sınırlarda
+    5,
+    1.0
+  ),
+  (
+    'awl74000-0000-0000-0000-000000000003',
+    '11111111-1111-1111-1111-111111111111',
+    'usr00000-0000-0000-0000-000000000003',
+    'Can Öztürk (BT Müfettişi)',
+    '2026-Q1',
+    3,
+    480,
+    580,  -- %20 Fazla Mesai
+    10,
+    1.2
+  )
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.burnout_risk_scores (id, tenant_id, auditor_id, auditor_name, department, risk_score, overtime_percentage, risk_status, ai_recommendation) VALUES
+  (
+    'brs74000-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    'usr00000-0000-0000-0000-000000000001',
+    'Ahmet Yılmaz (Kıdemli Müfettiş A)',
+    'Şube Denetimleri',
+    88.5,
+    40.0,
+    'CRITICAL',
+    'Son 2 Aydır Fazla Mesai: %40. Seyahat gün sayısının yüksekliği (25 gün) mental yorgunluğu artırıyor. Proje atamalarının durdurulması ve minimum 1 hafta zorunlu izin önerilir.'
+  ),
+  (
+    'brs74000-0000-0000-0000-000000000002',
+    '11111111-1111-1111-1111-111111111111',
+    'usr00000-0000-0000-0000-000000000002',
+    'Büşra Demir (Müfettiş)',
+    'Genel Müdürlük Denetimleri',
+    22.0,
+    2.1,
+    'NORMAL',
+    'İş-yaşam dengesi sağlıklı aralıklarda. Mevcut proje temposu korunabilir.'
+  ),
+  (
+    'brs74000-0000-0000-0000-000000000003',
+    '11111111-1111-1111-1111-111111111111',
+    'usr00000-0000-0000-0000-000000000003',
+    'Can Öztürk (BT Müfettişi)',
+    'Bilgi Sistemleri Denetimi',
+    65.0,
+    20.8,
+    'ELEVATED',
+    'Aşırı mesai eğilimi başlamış durumda (%20 sınırı aşıldı). Proje sayısının önümüzdeki ay 3''ten 2''ye düşürülmesi tavsiye edilir.'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- =============================================================================
+-- WAVE 72 SEED: Shadow IT & Shadow AI Hunter
+-- =============================================================================
+
+-- 1. shadow_it_assets — İzinsiz Uygulamalar
+INSERT INTO public.shadow_it_assets (id, tenant_id, app_name, category, risk_score, risk_level, active_users_count, total_traffic_mb, status) VALUES
+  (
+    'sha00000-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    'DeepL Translator',
+    'Generative AI',
+    85.50,
+    'high',
+    142,
+    5840.50,
+    'discovered'
+  ),
+  (
+    'sha00000-0000-0000-0000-000000000002',
+    '11111111-1111-1111-1111-111111111111',
+    'WeTransfer',
+    'Cloud Storage',
+    95.00,
+    'critical',
+    28,
+    145000.00,
+    'blocked'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- 2. unauthorized_ai_logs — İzinsiz Yapay Zeka Trafiği ve Sızıntı Alarmları
+INSERT INTO public.unauthorized_ai_logs (id, tenant_id, asset_id, device_ip, user_email, ai_service_name, payload_size_bytes, alert_type, severity, action_taken, description) VALUES
+  (
+    'ail00000-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    'sha00000-0000-0000-0000-000000000001',
+    '10.55.12.88',
+    'hakan.y@sentinel.bank',
+    'DeepL (Web)',
+    52428800, -- 50 MB
+    'data_exfiltration_risk',
+    'critical',
+    'alerted',
+    'Kurumsal Veri Sızıntısı Şüphesi: Kurum dışı IP adresine (DeepL API) tek seferde 50MB büyüklüğünde metin/dosya verisi gönderildi. Muhtemel sözleşme veya müşteri verisi çevirisi yapılıyor olabilir.'
+  ),
+  (
+    'ail00000-0000-0000-0000-000000000002',
+    '11111111-1111-1111-1111-111111111111',
+    NULL,
+    '10.33.5.101',
+    'dev.team@sentinel.bank',
+    'ChatGPT (OpenAI API)',
+    1048576, -- 1MB
+    'policy_violation',
+    'high',
+    'blocked_by_proxy',
+    'İzinsiz Kod Gönderimi: Proxy üzerinden doğrudan OpenAI API endpointine kaynak kodu (Source Code) upload denemesi yapıldı ve Firewall tarafından bloklandı.'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+
+
+-- ============================================================
+-- Wave 73 Seed: Reputational Risk & Sentiment Oracle
+-- Sosyal Medya Dinleme Logları ve İtibar Krizi Alarmları
+-- ============================================================
+
+-- Duygu Analizi / Sosyal Medya Dinleme Logları
+INSERT INTO social_sentiment_feeds (
+  source_platform, author_handle, content_snippet,
+  sentiment_type, sentiment_score, impact_reach, target_entity, is_flagged, published_at
+) VALUES
+  (
+    'X', '@TechGuruTR', 
+    'Sentinel Bank Mobil şubesi yine çöktü. 2 saattir işlem yapamıyorum. Yazıklar olsun! #sentinelbank #çöktü',
+    'NEGATIVE', 15, 45000, 'Mobil Şube', TRUE, '2026-04-03 14:15:00+03'
+  ),
+  (
+    'FORUM', 'EksiSozluk_User', 
+    'Dün geceki hesaptan para çekilme olayları doğru galiba. Bankadan açıklama bekliyoruz ama ses yok. Paralar gitti mi?',
+    'NEGATIVE', 20, 150000, 'Güvenlik / Veri Mahremiyeti', TRUE, '2026-04-03 15:30:00+03'
+  ),
+  (
+    'LINKEDIN', 'Ahmet Yilmaz (CFO)', 
+    'Sentinel Bank ile gerçekleştirdiğimiz kurumsal finansman anlaşması şirketimize büyük ivme kazandıracak. Teşekkürler.',
+    'POSITIVE', 95, 12000, 'Kurumsal Krediler', FALSE, '2026-04-02 09:00:00+03'
+  ),
+  (
+    'NEWS', 'Finans Gündem', 
+    'BDDK, Sentinel Bank''ın son çeyrekteki yüksek kârlılığını işaret eden raporunu yayımladı.',
+    'POSITIVE', 80, 500000, 'Kurumsal İtibar', FALSE, '2026-04-01 10:00:00+03'
+  ),
+  (
+    'X', '@Troller101', 
+    'Bankanın CEO''su mafya ile anlaşıyormuş yalan dolan her şey.',
+    'TOXIC', 5, 200, 'CEO / Yönetim Kurulu', TRUE, '2026-04-04 01:00:00+03'
+  )
+ON CONFLICT DO NOTHING;
+
+-- İtibar Krizi Alarmları (Sentiment Kahini Çıktıları)
+INSERT INTO reputation_crisis_alerts (
+  alert_title, severity, negative_ratio_pct, total_mentions,
+  crisis_topic, action_plan, status, assigned_to, alert_date
+) VALUES
+  (
+    'X Platformu Trend Alert: Mobil Bankacılık Çöküntüsü', 'HIGH',
+    85.50, 4200, 'Mobil Şube Altyapı Sorunu',
+    'Kurumsal İletişim departmanı X üzerinden resmi özür metni yayınlayacak. Operasyon birimi SLA raporu sunacak.',
+    'PR_RESPONSE_REQUIRED', 'Zeynep K. (Kurumsal İletişim Md.)', '2026-04-03 16:00:00+03'
+  ),
+  (
+    'Söylenti Tespiti: Veri İhlali İddiası', 'CRITICAL',
+    92.00, 15000, 'Güvenlik / Veri Mahremiyeti',
+    'Acil Durum Müdahale Ekibi toplandı. İddialar asılsız. Siber İstihbarat (CTI) raporu eşliğinde BDDK bilgilendirilecek.',
+    'MONITORING', 'Caner T. (CISO)', '2026-04-03 18:30:00+03'
+  )
+ON CONFLICT DO NOTHING;
+
+-- =============================================================================
+-- WAVE 76 SEED: Apex Dashboard (God's Eye View)
+-- =============================================================================
+
+INSERT INTO public.apex_executive_summaries
+  (id, snapshot_date, grc_health_score, trend_direction, active_critical_risks, open_incidents, compliance_ratio, executive_message)
+VALUES
+  (gen_random_uuid(), CURRENT_DATE - INTERVAL '12 days', 815, 'STABLE', 5, 2, 98.40, 'Stabil görünüm. Yaptırım haritası izleniyor.'),
+  (gen_random_uuid(), CURRENT_DATE - INTERVAL '11 days', 820, 'UP', 4, 2, 98.50, 'Regülatif güncellemeler sisteme entegre edildi.'),
+  (gen_random_uuid(), CURRENT_DATE - INTERVAL '10 days', 821, 'UP', 4, 1, 98.50, 'BT altyapı güçlendirmeleri olumlu yansıdı.'),
+  (gen_random_uuid(), CURRENT_DATE - INTERVAL '9 days', 818, 'DOWN', 5, 3, 98.10, 'X Platformu söylentileri (False Positive) geçici dalgalanma yarattı.'),
+  (gen_random_uuid(), CURRENT_DATE - INTERVAL '8 days', 825, 'UP', 4, 2, 98.60, 'Sosyal medya krizi bertaraf edildi. İtibar skorları yükselişte.'),
+  (gen_random_uuid(), CURRENT_DATE - INTERVAL '7 days', 830, 'UP', 3, 2, 98.90, 'Yönetim Kurulu 1. Çeyrek toplantısı tamamlandı. Stratejik CTI bütçesi onaylandı.'),
+  (gen_random_uuid(), CURRENT_DATE - INTERVAL '6 days', 835, 'UP', 2, 1, 99.20, 'Siber İstihbarat zafiyet yamaları globalde devrede.'),
+  (gen_random_uuid(), CURRENT_DATE - INTERVAL '5 days', 836, 'UP', 2, 1, 99.20, 'Olağan operasyon akışı.'),
+  (gen_random_uuid(), CURRENT_DATE - INTERVAL '4 days', 840, 'UP', 1, 0, 99.70, 'Neredeyse kusursuz operasyon. Greenwashing riskleri izleniyor.'),
+  (gen_random_uuid(), CURRENT_DATE - INTERVAL '3 days', 841, 'UP', 1, 0, 99.70, 'Uyum departmanı PBC paketlerini kapattı.'),
+  (gen_random_uuid(), CURRENT_DATE - INTERVAL '2 days', 839, 'DOWN', 2, 1, 99.50, 'API Gateway Limit (Rate) aşımı alarmları inceleniyor.'),
+  (gen_random_uuid(), CURRENT_DATE - INTERVAL '1 day', 840, 'UP', 2, 1, 99.50, 'API anomalisine müdahale edildi. Engelleme (Block) aktif.'),
+  (gen_random_uuid(), CURRENT_DATE, 842, 'STABLE', 1, 0, 99.80, 'Kurumsal GRC Sağlık Skoru: 842/1000 (Stabil, Ancak Jeopolitik Risk Yüksek)')
+ON CONFLICT (tenant_id, snapshot_date) DO NOTHING;
