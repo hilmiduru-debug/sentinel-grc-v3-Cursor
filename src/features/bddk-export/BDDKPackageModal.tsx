@@ -6,6 +6,7 @@
 
 import { useState, useEffect } from 'react';
 import { X, Package, FileText, CheckCircle2, Loader2 } from 'lucide-react';
+import { useGeneratePackage } from '@/features/regulatory-export/api/dossier-api';
 
 interface BDDKPackageModalProps {
   isOpen: boolean;
@@ -31,6 +32,9 @@ export const BDDKPackageModal = ({ isOpen, onClose }: BDDKPackageModalProps) => 
   const [steps, setSteps] = useState<GenerationStep[]>(GENERATION_STEPS);
   const [currentStep, setCurrentStep] = useState(0);
 
+  // Wave 26: DB'ye export log yaz
+  const generatePackageMutation = useGeneratePackage();
+
   useEffect(() => {
     if (status === 'generating') {
       generatePackage();
@@ -52,6 +56,13 @@ export const BDDKPackageModal = ({ isOpen, onClose }: BDDKPackageModalProps) => 
 
     setSteps(prev => prev.map(step => ({ ...step, status: 'completed' })));
     setStatus('completed');
+
+    // Wave 26: Paketi DB'ye kaydet (export_logs + regulatory_dossiers)
+    generatePackageMutation?.mutate({
+      title: `BDDK Paketi — ${new Date().toLocaleDateString('tr-TR')}`,
+      type: 'BDDK',
+      notes: 'Otomatik oluşturulmuş BDDK uyumluluk paketi',
+    });
   };
 
   const handleStartGeneration = () => {

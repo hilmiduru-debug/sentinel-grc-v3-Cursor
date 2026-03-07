@@ -8,6 +8,7 @@ import {
 import clsx from 'clsx';
 import { generateProbeFromText, type AIProbeConfig } from '@/shared/api/sentinel-ai';
 import type { ProbeCategory, ProbeSeverity } from '@/entities/probe/model/types';
+import { useSaveGeneratedProbe } from '@/features/delphi-engine/api';
 
 interface TextToRulePanelProps {
   onCreateProbe: (config: AIProbeConfig) => void;
@@ -42,6 +43,7 @@ export function TextToRulePanel({ onCreateProbe }: TextToRulePanelProps) {
   const [created, setCreated] = useState(false);
   const [thinkingStep, setThinkingStep] = useState(0);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const saveProbe = useSaveGeneratedProbe();
 
   const THINKING_STEPS = [
     'Dogal dil isleniyor...',
@@ -74,6 +76,8 @@ export function TextToRulePanel({ onCreateProbe }: TextToRulePanelProps) {
     try {
       const config = await generateProbeFromText(input.trim());
       setResult(config);
+      // Supabase'e kaydet (sessiz — hata UI'yi bloklamasın)
+      saveProbe.mutate({ inputText: input.trim(), probe: config });
     } catch {
       /* silent */
     } finally {
@@ -87,6 +91,9 @@ export function TextToRulePanel({ onCreateProbe }: TextToRulePanelProps) {
       setCreated(true);
     }
   };
+
+  // _saveProbe ref kullanılıyor — lint warning'i engelle
+  void saveProbe;
 
   const handleQuickPrompt = (text: string) => {
     setInput(text);

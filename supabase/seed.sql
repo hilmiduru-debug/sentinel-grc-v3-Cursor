@@ -3118,3 +3118,574 @@ INSERT INTO scenario_impacts (scenario_id, entity_type, base_score_delta, total_
   ('11111111-2200-0000-0000-000000000005', 'BANK',      30.0, -0.18, 'Yüksek NPL → provizyon zorunluluğu → SYO düşüşü'),
   ('11111111-2200-0000-0000-000000000005', 'LEASING',   22.0, -0.15, 'KGF portföyü + takip edilen kira alacakları')
 ON CONFLICT DO NOTHING;
+
+-- =============================================================================
+-- WAVE 25 SEED: Autonomous Remediation — Otonom Onarım Kampanyaları
+-- =============================================================================
+
+-- 1. Master Action Campaigns (bankacılık bağlamında gerçek kampanyalar)
+INSERT INTO public.master_action_campaigns (id, title, description, root_cause, status) VALUES
+  (
+    'c1000000-0000-0000-0000-000000000001',
+    'Şifre Politikası Merkezi Güncelleme Kampanyası',
+    'BDDK 5411 md.73 kapsamında sistemdeki 12-karakterden kısa şifrelerle faaliyet gösteren 47 servis hesabının politikaya uygun hale getirilmesi.',
+    'Merkezi IAM politikasının dağıtık sisteme yayılmaması sonucu eski konfigurasyon çakışması.',
+    'active'
+  ),
+  (
+    'c1000000-0000-0000-0000-000000000002',
+    'Firewall Kural Seti Uyum Kampanyası',
+    'Core Banking ağında tespit edilen 23 yetkisiz açık port (0.0.0.0/0 kuralları) için otomatik kural iptali ve uyumlu ACL dağıtımı.',
+    'DevOps ekibinin deployment sürecinde manual port açma alışkanlığı ve review gate eksikliği.',
+    'active'
+  ),
+  (
+    'c1000000-0000-0000-0000-000000000003',
+    'Müşteri Verisi Maskeleme Kampanyası (KVKK)',
+    'Prodüksiyon ortamındaki 6 analytics dashboard''ında TC Kimlik No ve IBAN bilgilerinin maskelenmemiş görüntülenmesi bulgusunun düzeltilmesi.',
+    'Analytic katmanında prod replikasının maskeleme pipeline''ından geçirilmeden kullanılması.',
+    'active'
+  ),
+  (
+    'c1000000-0000-0000-0000-000000000004',
+    'Kritik API Erişim Hakları Temizleme Kampanyası',
+    'Ayrılan 18 çalışanın hâlâ aktif olan API anahtarlarının ve OAuth token''larının iptali.',
+    'Offboarding süreci ile IAM entegrasyonunda otomasyon eksikliği. Manuel HR → IT bildirimi.',
+    'completed'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- 2. Auto Fix Log geçmiş kayıtları
+INSERT INTO public.auto_fix_logs (
+  id, tenant_id, campaign_id, fix_type, target_system, status,
+  initiated_by, result_summary, duration_ms, started_at, completed_at
+) VALUES
+  (
+    'fl000000-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    'c1000000-0000-0000-0000-000000000004',
+    'access_revoke',
+    'API Gateway (Kong)',
+    'success',
+    'sentinel-autofix-agent',
+    '18 API anahtarı başarıyla iptal edildi. Affected consumer sayısı: 0.',
+    2340,
+    NOW() - INTERVAL '3 days' + INTERVAL '09:12:00',
+    NOW() - INTERVAL '3 days' + INTERVAL '09:12:02'
+  ),
+  (
+    'fl000000-0000-0000-0000-000000000002',
+    '11111111-1111-1111-1111-111111111111',
+    'c1000000-0000-0000-0000-000000000001',
+    'password_policy',
+    'LDAP / Active Directory',
+    'running',
+    'sentinel-autofix-agent',
+    NULL,
+    NULL,
+    NOW() - INTERVAL '2 hours',
+    NULL
+  ),
+  (
+    'fl000000-0000-0000-0000-000000000003',
+    '11111111-1111-1111-1111-111111111111',
+    'c1000000-0000-0000-0000-000000000002',
+    'firewall_rule',
+    'Checkpoint Firewall Cluster',
+    'failed',
+    'sentinel-autofix-agent',
+    NULL,
+    NULL,
+    NOW() - INTERVAL '1 day',
+    NULL
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================
+-- Wave 23 Seed: TPRM Tedarikçi ve Değerlendirme Verileri
+-- ============================================================
+
+INSERT INTO tprm_vendors (id, name, category, risk_tier, criticality_score, status, contact_person, email, contract_start, contract_end, country, data_access_level, notes) VALUES
+  (
+    'aaaa0001-tprm-0000-0000-000000000001',
+    'SistemOdası Bulut Sağlayıcısı A.Ş.',
+    'Bulut Altyapısı',
+    'Tier 1',
+    94,
+    'Active',
+    'Murat Bulut',
+    'murat.bulut@sistemodasi.com.tr',
+    '2023-01-01',
+    '2026-12-31',
+    'Türkiye',
+    'Full',
+    'Core Banking altyapısının %80i bu tedarikçi üzerinde çalışmaktadır. BDDK denetim kapsamında en kritik tedarikçi.'
+  ),
+  (
+    'aaaa0001-tprm-0000-0000-000000000002',
+    'DataGuard Siber Güvenlik Ltd.',
+    'Siber Güvenlik',
+    'Tier 1',
+    88,
+    'Under Review',
+    'Selin Demir',
+    's.demir@dataguard.com.tr',
+    '2024-03-01',
+    '2027-02-28',
+    'Türkiye',
+    'Full',
+    'SOC hizmetleri ve sızma testi kapsamıyla kritik bağımlılık. Sözleşme yenileme sürecinde.'
+  ),
+  (
+    'aaaa0001-tprm-0000-0000-000000000003',
+    'SwiftNet Ödeme Sistemleri',
+    'Ödeme İşlemleri',
+    'Tier 1',
+    82,
+    'Active',
+    'Ahmet Çelik',
+    'a.celik@swiftnet.com',
+    '2022-07-01',
+    '2025-06-30',
+    'Almanya',
+    'Limited',
+    'Uluslararası SWIFT entegrasyon partneri. Sözleşme yenilenmesi gerekmekte.'
+  ),
+  (
+    'aaaa0001-tprm-0000-0000-000000000004',
+    'DocuSign TR Belge Yönetimi',
+    'Dijital İmza',
+    'Tier 2',
+    61,
+    'Active',
+    'Zeynep Koç',
+    'zeynep.koc@docusigntr.com',
+    '2023-09-01',
+    '2026-08-31',
+    'Türkiye',
+    'Limited',
+    'Sözleşme ve onay süreçlerinde kullanılmakta.'
+  ),
+  (
+    'aaaa0001-tprm-0000-0000-000000000005',
+    'SafeHR İnsan Kaynakları Yazılımı',
+    'İnsan Kaynakları',
+    'Tier 2',
+    55,
+    'Active',
+    'Emre Yıldız',
+    'e.yildiz@safehr.com',
+    '2024-01-01',
+    '2026-12-31',
+    'Türkiye',
+    'Limited',
+    'Personel verisine sınırlı erişim. KVKK uyumluluk denetimi yapılacak.'
+  ),
+  (
+    'aaaa0001-tprm-0000-0000-000000000006',
+    'CleanOffice Temizlik Hizm.',
+    'Tesis Yönetimi',
+    'Tier 3',
+    18,
+    'Active',
+    'Hasan Kaya',
+    'hasan@cleanoffice.com',
+    '2025-01-01',
+    '2025-12-31',
+    'Türkiye',
+    'None',
+    'Fiziksel tesis erişimi var ancak sistem erişimi yok.'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- Tedarikçi Değerlendirmeleri
+INSERT INTO tprm_assessments (id, vendor_id, title, status, risk_score, due_date, assessor) VALUES
+  ('bbbb0001-tprm-0000-0000-000000000001', 'aaaa0001-tprm-0000-0000-000000000001', 'SistemOdası 2026 Yıllık BDDK Uyumluluk Denetimi', 'In Progress', NULL, '2026-03-31', 'Denetim Komitesi'),
+  ('bbbb0001-tprm-0000-0000-000000000002', 'aaaa0001-tprm-0000-0000-000000000001', 'SistemOdası 2025 BCP/DR Testi', 'Completed', 72, '2025-09-30', 'BT Risk Ekibi'),
+  ('bbbb0001-tprm-0000-0000-000000000003', 'aaaa0001-tprm-0000-0000-000000000002', 'DataGuard Sızma Testi Sonuç Değerlendirmesi', 'Review Needed', NULL, '2026-04-15', 'Bilgi Güvenliği Birimi'),
+  ('bbbb0001-tprm-0000-0000-000000000004', 'aaaa0001-tprm-0000-0000-000000000003', 'SwiftNet AML & Fraud Kontrol Gözden Geçirme', 'Sent', NULL, '2026-05-01', 'Uyum Müdürü'),
+  ('bbbb0001-tprm-0000-0000-000000000005', 'aaaa0001-tprm-0000-0000-000000000004', 'DocuSign KVKK Uyumluluk Anketi', 'Completed', 88, '2025-12-15', 'Hukuk Departmanı')
+ON CONFLICT (id) DO NOTHING;
+
+-- Değerlendirme Soruları (SistemOdası 2026 için)
+INSERT INTO tprm_assessment_answers (assessment_id, question_text, category) VALUES
+  ('bbbb0001-tprm-0000-0000-000000000001', 'Tedarikçinin ISO 27001 sertifikası güncel mi? Son denetim tarihini ve sertifikayı paylaşınız.', 'Bilgi Güvenliği'),
+  ('bbbb0001-tprm-0000-0000-000000000001', 'SLA çerçevesinde sistem kesinti süresi (downtime) son 12 ayda kaç saatti? Raporlayınız.', 'Hizmet Sürekliliği'),
+  ('bbbb0001-tprm-0000-0000-000000000001', 'BDDK Bulut Bilişim Yönetmeliği kapsamında veri yerelleştirme (data residency) uyumluluğu nasıl sağlanmaktadır?', 'Regülasyon'),
+  ('bbbb0001-tprm-0000-0000-000000000001', 'Tedarikçinin alt yüklenicileri (sub-processors) kimlerdir ve bunlara uygulanan güvenlik kontrolleri nelerdir?', 'Tedarik Zinciri')
+ON CONFLICT DO NOTHING;
+
+-- ============================================================================
+-- WAVE 24 SEED: ESG & PLANET PULSE (Çevresel, Sosyal, Yönetişim)
+-- ============================================================================
+
+-- ---------------------------------------------------------------------------
+-- ESG-1. FRAMEWORKS (Raporlama Çerçeveleri)
+-- ---------------------------------------------------------------------------
+INSERT INTO public.esg_frameworks (id, tenant_id, name, version, category, is_active) VALUES
+  ('e1000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', 'GRI Standards (Katılım Bankası)', '2021', 'Integrated', true),
+  ('e1000000-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111', 'EU Taxonomy (Çevre)', '2022', 'Environmental', true),
+  ('e1000000-0000-0000-0000-000000000003', '11111111-1111-1111-1111-111111111111', 'TCFD Finansal İklim', '2023', 'Environmental', true),
+  ('e1000000-0000-0000-0000-000000000004', '11111111-1111-1111-1111-111111111111', 'UN SDG Hedefleri', '2030', 'Integrated', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- ---------------------------------------------------------------------------
+-- ESG-2. METRIC DEFINITIONS (GRI, EU Taxonomy, TCFD metrikleri)
+-- ---------------------------------------------------------------------------
+INSERT INTO public.esg_metric_definitions
+  (id, tenant_id, framework_id, code, name, pillar, unit, data_type, target_value, target_direction)
+VALUES
+  -- ÇEVRE (E) Metrikleri
+  ('e2000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', 'e1000000-0000-0000-0000-000000000001',
+   'GRI 305-1', 'Kapsam 1 Sera Gazı Emisyonu (Doğrudan)', 'E', 'tCO2e', 'Number', 12000, 'below'),
+  ('e2000000-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111', 'e1000000-0000-0000-0000-000000000001',
+   'GRI 305-2', 'Kapsam 2 Sera Gazı Emisyonu (Satın Alınan Enerji)', 'E', 'tCO2e', 'Number', 8000, 'below'),
+  ('e2000000-0000-0000-0000-000000000003', '11111111-1111-1111-1111-111111111111', 'e1000000-0000-0000-0000-000000000001',
+   'GRI 302-1', 'Toplam Enerji Tüketimi', 'E', 'MWh', 'Number', 45000, 'below'),
+  ('e2000000-0000-0000-0000-000000000004', '11111111-1111-1111-1111-111111111111', 'e1000000-0000-0000-0000-000000000001',
+   'GRI 303-5', 'Su Tüketimi', 'E', 'm³', 'Number', 15000, 'below'),
+  ('e2000000-0000-0000-0000-000000000005', '11111111-1111-1111-1111-111111111111', 'e1000000-0000-0000-0000-000000000002',
+   'EU-TAX-GAR', 'Yeşil Varlık Oranı (GAR)', 'E', '%', 'Percentage', 35, 'above'),
+  -- SOSYAL (S) Metrikleri
+  ('e2000000-0000-0000-0000-000000000006', '11111111-1111-1111-1111-111111111111', 'e1000000-0000-0000-0000-000000000001',
+   'GRI 405-2', 'Cinsiyet Ücret Farklılığı', 'S', '%', 'Percentage', 5, 'below'),
+  ('e2000000-0000-0000-0000-000000000007', '11111111-1111-1111-1111-111111111111', 'e1000000-0000-0000-0000-000000000001',
+   'GRI 404-1', 'Çalışan Başına Eğitim Saati', 'S', 'saat', 'Number', 40, 'above'),
+  ('e2000000-0000-0000-0000-000000000008', '11111111-1111-1111-1111-111111111111', 'e1000000-0000-0000-0000-000000000001',
+   'GRI 403-9', 'İş Kazası Sayısı', 'S', 'adet', 'Number', 0, 'equal'),
+  -- YÖNETİŞİM (G) Metrikleri
+  ('e2000000-0000-0000-0000-000000000009', '11111111-1111-1111-1111-111111111111', 'e1000000-0000-0000-0000-000000000001',
+   'GRI 205-3', 'Doğrulanan Yolsuzluk Vakası', 'G', 'adet', 'Number', 0, 'equal'),
+  ('e2000000-0000-0000-0000-000000000010', '11111111-1111-1111-1111-111111111111', 'e1000000-0000-0000-0000-000000000001',
+   'GRI 419-1', 'Mevzuat İhlali Cezası', 'G', 'TRY', 'Currency', 0, 'equal'),
+  ('e2000000-0000-0000-0000-000000000011', '11111111-1111-1111-1111-111111111111', 'e1000000-0000-0000-0000-000000000003',
+   'TCFD-RISK', 'İklim Riski Limiti Kullanım Oranı', 'G', '%', 'Percentage', 80, 'below')
+ON CONFLICT (id) DO NOTHING;
+
+-- ---------------------------------------------------------------------------
+-- ESG-3. DATA POINTS (Gerçek Q1 2026 Veri Noktaları — Cryo-Chamber)
+-- ---------------------------------------------------------------------------
+INSERT INTO public.esg_data_points
+  (id, tenant_id, metric_id, period, value, previous_value, submitted_by, department,
+   ai_validation_status, ai_notes, ai_confidence, snapshot_json, record_hash, is_frozen)
+VALUES
+  -- KAPSAM 1 (GRI 305-1): Şüpheli artış → Flagged
+  ('e3000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111',
+   'e2000000-0000-0000-0000-000000000001', '2026-Q1', 13450, 11200,
+   'İklim ve Sürdürülebilirlik Ekibi', 'Kurumsal Yönetim',
+   'Flagged',
+   'UYARI: Kapsam 1 emisyonları bir önceki çeyreğe göre %20.1 artmıştır. BDDK/TCFD limit eşiği olan %15 aşılmıştır. Araç filosu büyümesi ve şube genişlemesi raporlanmış olmakla birlikte, yakıt tüketimi belgeleri doğrulanamamıştır. Lütfen yükleme belgelerini paylaşın.',
+   62, '{"scope": "direct_combustion", "fleet_growth": "+8_percent", "branches_newly_opened": 3}',
+   'a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8', false),
+
+  -- KAPSAM 2 (GRI 305-2): Hedefte → Validated
+  ('e3000000-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111',
+   'e2000000-0000-0000-0000-000000000002', '2026-Q1', 7320, 7850,
+   'Enerji Yönetim Birimi', 'İdari İşler',
+   'Validated',
+   'Satın alınan elektrik emisyonu hedef altında. Yenilenebilir enerji anlaşması (PPA) etkisi doğrulandı.',
+   91, '{"ppa_kwh": 12000000, "renewable_pct": 48, "grid_factor": "0.61"}',
+   'b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9', true),
+
+  -- ENERJİ TÜKETİMİ (GRI 302-1)
+  ('e3000000-0000-0000-0000-000000000003', '11111111-1111-1111-1111-111111111111',
+   'e2000000-0000-0000-0000-000000000003', '2026-Q1', 41200, 44100,
+   'Enerji Yönetim Birimi', 'İdari İşler',
+   'Validated',
+   'Enerji tasarrufu projesi (LED dönüşümü ve BMS sistemi) sonucunda hedef altında kaldı.',
+   88, '{"led_conversion_branches": 45, "bms_savings_mwh": 2900}',
+   'c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0', true),
+
+  -- SU TÜKETİMİ (GRI 303-5)
+  ('e3000000-0000-0000-0000-000000000004', '11111111-1111-1111-1111-111111111111',
+   'e2000000-0000-0000-0000-000000000004', '2026-Q1', 14200, 15800,
+   'İdari İşler', 'İdari İşler',
+   'Validated', null, 85,
+   '{"source": "ISKI_invoice", "recycling_pct": 12}',
+   'd4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1', true),
+
+  -- YEŞİL VARLIK ORANI (EU-TAX-GAR): Flagged (hedefin altında)
+  ('e3000000-0000-0000-0000-000000000005', '11111111-1111-1111-1111-111111111111',
+   'e2000000-0000-0000-0000-000000000005', '2026-Q1', 28.4, 24.1,
+   'Sürdürülebilir Finans', 'Hazine & Yatırım',
+   'Flagged',
+   'UYARI: GAR %28.4 ile AB Taksonomisi hedefi olan %35 altında. İklim uyumlu finansman büyümesi ivme kazanmış olmakla birlikte Transition Finance sınıflandırması yetersiz kalmaktadır.',
+   55, '{"taxonomy_eligible_eur": 1240000000, "total_portfolio_eur": 4365000000}',
+   'e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2', false),
+
+  -- CİNSİYET ÜCRET FARKI (GRI 405-2): Hedefte → Validated
+  ('e3000000-0000-0000-0000-000000000006', '11111111-1111-1111-1111-111111111111',
+   'e2000000-0000-0000-0000-000000000006', '2026-Q1', 4.2, 5.8,
+   'İnsan Kaynakları', 'İnsan Kaynakları',
+   'Validated',
+   '2025 maaş denge projesi sonuçlarına göre cinsiyet ücret uçurumu hedef altına düşmüştür.',
+   93, '{"methodology": "ILO_equal_pay", "audit_firm": "PwC_HR_Advisory"}',
+   'f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3', true),
+
+  -- EĞİTİM SAATİ (GRI 404-1): Hedefte → Validated
+  ('e3000000-0000-0000-0000-000000000007', '11111111-1111-1111-1111-111111111111',
+   'e2000000-0000-0000-0000-000000000007', '2026-Q1', 47.3, 38.2,
+   'İnsan Kaynakları', 'İnsan Kaynakları',
+   'Validated', null, 90,
+   '{"digital_training_pct": 68, "mandatory_compliance_hrs": 12}',
+   'a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4', true),
+
+  -- İŞ KAZASI (GRI 403-9): Hedefte sıfır → Validated
+  ('e3000000-0000-0000-0000-000000000008', '11111111-1111-1111-1111-111111111111',
+   'e2000000-0000-0000-0000-000000000008', '2026-Q1', 0, 1,
+   'İş Sağlığı ve Güvenliği', 'İnsan Kaynakları',
+   'Validated', null, 99,
+   '{}', 'b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5', true),
+
+  -- YOLSUZLUK VAKASI (GRI 205-3)
+  ('e3000000-0000-0000-0000-000000000009', '11111111-1111-1111-1111-111111111111',
+   'e2000000-0000-0000-0000-000000000009', '2026-Q1', 0, 0,
+   'İç Denetim', 'Risk ve Uyum',
+   'Validated', null, 98,
+   '{}', 'c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6', true),
+
+  -- MEVZUAT CEZASI (GRI 419-1)
+  ('e3000000-0000-0000-0000-000000000010', '11111111-1111-1111-1111-111111111111',
+   'e2000000-0000-0000-0000-000000000010', '2026-Q1', 125000, 0,
+   'Hukuk', 'Risk ve Uyum',
+   'Flagged',
+   'UYARI: 125,000 TRY BDDK idari para cezası — KVKK veri işleme ihlali nedeniyle. Önceki dönemde hiç ceza yoktu. Aksiyon planı hazırlanmış, KVKK uyumu için EDP güncelleniyor.',
+   78, '{"ceza_tipi": "KVKK_ihlali", "aksiyonlar": "EDP_guncellemesi", "son_tarih": "2026-06-30"}',
+   'd0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7', false),
+
+  -- İKLİM RİSKİ KULLANIM (TCFD-RISK)
+  ('e3000000-0000-0000-0000-000000000011', '11111111-1111-1111-1111-111111111111',
+   'e2000000-0000-0000-0000-000000000011', '2026-Q1', 62.3, 58.1,
+   'Risk Yönetimi', 'Risk ve Uyum',
+   'Validated',
+   'İklim senaryosu analizleri (RCP 2.6 / RCP 4.5) güncellenmiş ve limit eşiği altında görülmektedir.',
+   84, '{"scenario_rcp26_loss": "2.1B_TRY", "scenario_rcp45_loss": "5.8B_TRY"}',
+   'e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- ---------------------------------------------------------------------------
+-- ESG-4. SOCIAL METRICS (HR Trend Verileri — 4 Çeyrek)
+-- ---------------------------------------------------------------------------
+INSERT INTO public.esg_social_metrics
+  (id, tenant_id, period, total_employees, women_total, women_management, women_board,
+   gender_pay_gap_pct, training_hours_per_employee, employee_turnover_pct, workplace_injuries, community_investment_try)
+VALUES
+  ('e4000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111',
+   '2025-Q2', 4820, 2168, 621, 3, 5.8, 34.2, 9.4, 1, 2800000),
+  ('e4000000-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111',
+   '2025-Q3', 4890, 2201, 638, 3, 5.5, 36.8, 8.9, 0, 3200000),
+  ('e4000000-0000-0000-0000-000000000003', '11111111-1111-1111-1111-111111111111',
+   '2025-Q4', 4950, 2228, 652, 3, 5.1, 40.5, 8.2, 1, 3500000),
+  ('e4000000-0000-0000-0000-000000000004', '11111111-1111-1111-1111-111111111111',
+   '2026-Q1', 5020, 2284, 681, 4, 4.2, 47.3, 7.8, 0, 4100000)
+ON CONFLICT (id) DO NOTHING;
+
+-- ---------------------------------------------------------------------------
+-- ESG-5. GREEN ASSETS (Yeşil Varlık Oranı — GAR Trend)
+-- ---------------------------------------------------------------------------
+INSERT INTO public.esg_green_assets
+  (id, tenant_id, period, total_loan_portfolio_try, green_loans_try, green_bonds_try, taxonomy_aligned_pct, transition_finance_try)
+VALUES
+  ('e5000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111',
+   '2025-Q2', 42000000000, 8400000000, 3200000000, 24.1, 1500000000),
+  ('e5000000-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111',
+   '2025-Q3', 44500000000, 9500000000, 3800000000, 25.8, 1800000000),
+  ('e5000000-0000-0000-0000-000000000003', '11111111-1111-1111-1111-111111111111',
+   '2025-Q4', 46800000000, 11200000000, 4500000000, 27.1, 2100000000),
+  ('e5000000-0000-0000-0000-000000000004', '11111111-1111-1111-1111-111111111111',
+   '2026-Q1', 48200000000, 12900000000, 5800000000, 28.4, 2500000000)
+ON CONFLICT (id) DO NOTHING;
+
+-- =============================================================================
+-- WAVE 27. DELPHI ENGINE — Natural Language Queries & AI Generated Probes
+-- =============================================================================
+
+INSERT INTO public.delphi_queries (id, tenant_id, input_text, status, created_at) VALUES
+  ('d7000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111',
+   'Sistemdeki hareketsiz kullanıcıları bul', 'ACCEPTED', NOW() - INTERVAL '5 days'),
+  ('d7000000-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111',
+   'Çift ödemeleri yakala ve alarm üret', 'ACCEPTED', NOW() - INTERVAL '4 days'),
+  ('d7000000-0000-0000-0000-000000000003', '11111111-1111-1111-1111-111111111111',
+   'Haftasonu yapılan yüksek tutarlı işlemleri izle', 'ACCEPTED', NOW() - INTERVAL '3 days'),
+  ('d7000000-0000-0000-0000-000000000004', '11111111-1111-1111-1111-111111111111',
+   'KVKK kapsamında toplu veri erişimi taraması yap', 'GENERATED', NOW() - INTERVAL '2 days'),
+  ('d7000000-0000-0000-0000-000000000005', '11111111-1111-1111-1111-111111111111',
+   'Sahte tedarikçi kayıtlarını tespit et', 'PENDING', NOW() - INTERVAL '1 day')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.generated_probes (id, tenant_id, query_id, title, description, category, severity, source, query_payload, schedule_cron, risk_threshold, reasoning, status, created_at) VALUES
+  (
+    'e7000000-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    'd7000000-0000-0000-0000-000000000001',
+    'Hareketsiz Hesap Aktivasyon Alarmı',
+    '6 aydan uzun süredir işlem görmeyen hesaplardaki ani aktiviteleri izler. Hesap devralma (account takeover) ve kara para aklama riski açısından kritik kontrol.',
+    'FRAUD',
+    'HIGH',
+    'core_banking',
+    'SELECT a.id, a.account_number, a.last_activity_date,
+  t.amount, t.channel, t.ip_address, t.created_at as reactivation_date,
+  (now() - a.last_activity_date) as dormancy_period
+FROM accounts a
+JOIN transactions t ON a.id = t.account_id
+WHERE a.last_activity_date < now() - interval ''180 days''
+  AND t.created_at > now() - interval ''48h''
+ORDER BY t.amount DESC;',
+    '0 6 * * *',
+    2,
+    'Uzun süre hareketsiz kalan hesapların aniden aktive edilmesi, hesap devralma (account takeover) veya para aklama amacıyla kullanıma işaret edebilir. Özellikle farklı IP adresleri veya cihazlardan erişim durumunda risk artar. MASAK rehberine göre şüpheli işlem göstergesidir.',
+    'DEPLOYED',
+    NOW() - INTERVAL '5 days'
+  ),
+  (
+    'e7000000-0000-0000-0000-000000000002',
+    '11111111-1111-1111-1111-111111111111',
+    'd7000000-0000-0000-0000-000000000002',
+    'Mükerrer Ödeme Tespiti',
+    'Aynı fatura numarasına veya tutara sahip tekrar eden ödemeleri tespit eder. 24 saatlik zaman penceresi içinde benzer işlemleri tarar.',
+    'FRAUD',
+    'HIGH',
+    'sap_gl',
+    'SELECT t1.id, t1.invoice_id, t1.amount, t1.vendor_id, t1.posting_date
+FROM transactions t1
+INNER JOIN transactions t2
+  ON t1.invoice_id = t2.invoice_id
+  AND t1.amount = t2.amount
+  AND t1.id != t2.id
+  AND t1.posting_date BETWEEN t2.posting_date - interval ''24h''
+    AND t2.posting_date + interval ''24h''
+WHERE t1.posting_date > now() - interval ''30 days''
+ORDER BY t1.posting_date DESC;',
+    '0 */4 * * *',
+    1,
+    'Mükerrer ödeme tespiti için aynı fatura numarası + aynı tutar + 24 saat penceresi kombinasyonunu kullanıyorum. BDDK yönetmeliği gereği her bankanın bu kontrolü çalıştırması zorunludur.',
+    'DEPLOYED',
+    NOW() - INTERVAL '4 days'
+  ),
+  (
+    'e7000000-0000-0000-0000-000000000003',
+    '11111111-1111-1111-1111-111111111111',
+    'd7000000-0000-0000-0000-000000000003',
+    'Mesai Dışı İşlem İzleyici',
+    'Haftasonu, resmi tatil ve mesai saatleri dışında gerçekleştirilen yüksek tutarlı işlemleri tespit eder. İç dolandırıcılık ve yetkisiz erişim göstergesi.',
+    'FRAUD',
+    'HIGH',
+    'core_banking',
+    'SELECT id, account_id, amount, channel, created_at,
+  EXTRACT(DOW FROM created_at) as day_of_week,
+  EXTRACT(HOUR FROM created_at) as hour_of_day
+FROM transactions
+WHERE (
+  EXTRACT(DOW FROM created_at) IN (0, 6)
+  OR EXTRACT(HOUR FROM created_at) NOT BETWEEN 8 AND 18
+)
+AND amount > 100000
+AND created_at > now() - interval ''7 days''
+ORDER BY amount DESC;',
+    '0 8 * * 1-5',
+    3,
+    'Mesai dışı işlemler fraud göstergelerinin başında gelir. Özellikle yüksek tutarlı işlemlerin normal çalışma saatleri dışında yapılması, yetkisiz erişim veya iç dolandırıcılık işaretleridir. MASAK rehberine göre bu bir şüpheli işlem göstergesidir.',
+    'ACCEPTED',
+    NOW() - INTERVAL '3 days'
+  ),
+  (
+    'e7000000-0000-0000-0000-000000000004',
+    '11111111-1111-1111-1111-111111111111',
+    'd7000000-0000-0000-0000-000000000004',
+    'Hassas Veri Erişim Denetimi',
+    'Yüksek gizlilik seviyeli verilere yapılan toplu erişimleri izler ve anomalileri raporlar. KVKK Madde 12 uyum kontrolü.',
+    'COMPLIANCE',
+    'MEDIUM',
+    'core_banking',
+    'SELECT user_id, resource_type, resource_id,
+  action, ip_address, user_agent, created_at
+FROM access_logs
+WHERE data_classification IN (''SENSITIVE'', ''HIGHLY_SENSITIVE'')
+  AND created_at > now() - interval ''24h''
+  AND (
+    action = ''EXPORT''
+    OR action = ''BULK_READ''
+    OR EXTRACT(HOUR FROM created_at) NOT BETWEEN 8 AND 18
+  )
+ORDER BY created_at DESC;',
+    '0 0 * * *',
+    5,
+    'KVKK Madde 12 gereği veri sorumlusu, kişisel verilere yetkisiz erişimi tespit etmekle yükümlüdür. Toplu veri çekme (bulk export), hassas veri erişimi ve mesai dışı erişimler özellikle izlenmelidir.',
+    'PENDING',
+    NOW() - INTERVAL '2 days'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- =============================================================================
+-- WAVE 26 SEED: Regulatory Export — BDDK Dosya Paketleri
+-- =============================================================================
+INSERT INTO public.regulatory_dossiers (id, dossier_ref, title, type, status, notes, exported_at) VALUES
+  (
+    'rd000000-0000-0000-0000-000000000001',
+    'BDDK-2026-Q1-001',
+    'BDDK 2026 Q1 Bilgi Sistemleri Denetim Paketi',
+    'BDDK',
+    'SUBMITTED',
+    'BANKACILIK KANUNU 5411 md.28 kapsamında çeyreklik BT ve Bilgi Sistemleri denetim rapor paketi.',
+    NOW() - INTERVAL '10 days'
+  ),
+  (
+    'rd000000-0000-0000-0000-000000000002',
+    'BDDK-2026-KRD-002',
+    'BDDK 2026 Kredi Prosedürleri Murabaha Uyumluluk Paketi',
+    'BDDK',
+    'GENERATED',
+    'Murabaha tahsis süreçlerinde tespit edilen bulgulara ait kanıt ve iyileştirme dosya paketi.',
+    NOW() - INTERVAL '3 days'
+  ),
+  (
+    'rd000000-0000-0000-0000-000000000003',
+    'MASAK-2026-AML-003',
+    'MASAK 2026 AML Risk Değerlendirme Dosyası',
+    'MASAK',
+    'DRAFT',
+    'Mali Suçları Araştırma Kurulu için hazırlanan yıllık AML risk değerlendirme dosyası.',
+    NULL
+  ),
+  (
+    'rd000000-0000-0000-0000-000000000004',
+    'KVKK-2026-001',
+    'KVKK 2026 Kişisel Veri Envanter Dosyası',
+    'KVKK',
+    'APPROVED',
+    'KVK Kurulu talebiyle hazırlanan veri envanter ve işleme faaliyetleri kayıt dosyası.',
+    NOW() - INTERVAL '30 days'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.export_logs (id, dossier_id, action, status, metadata) VALUES
+  (
+    'el000000-0000-0000-0000-000000000001',
+    'rd000000-0000-0000-0000-000000000001',
+    'GENERATE',
+    'SUCCESS',
+    '{"steps": 4, "duration_ms": 7800, "file_size_kb": 2430}'::jsonb
+  ),
+  (
+    'el000000-0000-0000-0000-000000000002',
+    'rd000000-0000-0000-0000-000000000001',
+    'SUBMIT',
+    'SUCCESS',
+    '{"recipient": "BDDK e-Devlet Portal", "ref_no": "BDDK-2026-Q1-001"}'::jsonb
+  ),
+  (
+    'el000000-0000-0000-0000-000000000003',
+    'rd000000-0000-0000-0000-000000000002',
+    'GENERATE',
+    'SUCCESS',
+    '{"steps": 4, "duration_ms": 8200}'::jsonb
+  ),
+  (
+    'el000000-0000-0000-0000-000000000004',
+    'rd000000-0000-0000-0000-000000000004',
+    'GENERATE',
+    'SUCCESS',
+    '{"steps": 3, "duration_ms": 5100}'::jsonb
+  )
+ON CONFLICT (id) DO NOTHING;
+

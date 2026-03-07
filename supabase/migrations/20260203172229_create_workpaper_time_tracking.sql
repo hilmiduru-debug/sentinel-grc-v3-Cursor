@@ -12,22 +12,26 @@ CREATE TABLE IF NOT EXISTS time_logs (
 
 ALTER TABLE time_logs ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view all time logs" ON time_logs;
 CREATE POLICY "Users can view all time logs"
   ON time_logs FOR SELECT
   TO authenticated
   USING (true);
 
+DROP POLICY IF EXISTS "Users can insert their own time logs" ON time_logs;
 CREATE POLICY "Users can insert their own time logs"
   ON time_logs FOR INSERT
   TO authenticated
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own time logs" ON time_logs;
 CREATE POLICY "Users can update their own time logs"
   ON time_logs FOR UPDATE
   TO authenticated
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete their own time logs" ON time_logs;
 CREATE POLICY "Users can delete their own time logs"
   ON time_logs FOR DELETE
   TO authenticated
