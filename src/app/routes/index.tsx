@@ -33,6 +33,7 @@ import PqcRadarPage from '@/pages/monitoring/PqcRadarPage';
 import CyberThreatPage from '@/pages/cyber-threats';
 import SettingsConsolidatedPage from '@/pages/settings-consolidated';
 import FindingCenterPage from '@/pages/findings/FindingCenterPage';
+import RemunerationPage from '@/pages/governance/RemunerationPage';
 import FindingStudioPage from '@/pages/findings/FindingStudioPage';
 import { FindingDetailPage as AuditorFindingDetailPage } from '@/pages/auditor/FindingDetailPage';
 import { AuditeePortalPage } from '@/pages/auditee-portal/AuditeePortalPage';
@@ -74,6 +75,7 @@ import PBCPage from '@/pages/pbc';
 import BCPCrisisPage from '@/pages/bcp';
 import RedTeamPage from '@/pages/red-team';
 import DataPrivacyPage from '@/pages/data-privacy';
+import OpenBankingApiPage from '@/pages/open-banking';
 import CompliancePage from '@/pages/compliance';
 import RegulationsPage from '@/pages/compliance/RegulationsPage';
 import GapAnalysisPage from '@/pages/compliance/GapAnalysisPage';
@@ -187,6 +189,7 @@ export const AppRoutes = () => {
       <Route path="/bcp" element={<ProtectedRoute><BCPCrisisPage /></ProtectedRoute>} />
       <Route path="/red-team" element={<ProtectedRoute><RedTeamPage /></ProtectedRoute>} />
       <Route path="/data-privacy" element={<ProtectedRoute><DataPrivacyPage /></ProtectedRoute>} />
+      <Route path="/open-banking" element={<ProtectedRoute><OpenBankingApiPage /></ProtectedRoute>} />
 
       <Route path="/execution/start" element={<ProtectedRoute><AuditStartPage /></ProtectedRoute>} />
       <Route path="/execution/agile" element={<ProtectedRoute><AgileEngagementsPage /></ProtectedRoute>} />
@@ -305,6 +308,7 @@ export const AppRoutes = () => {
       <Route path="/process-canvas" element={<ProtectedRoute><ProcessCanvasPage /></ProtectedRoute>} />
 
       <Route path="/governance/board-resolution" element={<ProtectedRoute><BoardResolutionPage /></ProtectedRoute>} />
+      <Route path="/governance/remuneration" element={<ProtectedRoute><RemunerationPage /></ProtectedRoute>} />
 
       <Route path="/execution/cognitive-interview" element={<ProtectedRoute><CognitiveInterviewPage /></ProtectedRoute>} />
       <Route path="/execution/root-cause" element={<ProtectedRoute><RootCausePage /></ProtectedRoute>} />

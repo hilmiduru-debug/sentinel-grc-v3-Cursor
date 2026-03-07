@@ -7943,6 +7943,72 @@ INSERT INTO market_manipulation_alerts (
 ON CONFLICT (alert_code) DO NOTHING;
 
 -- =============================================================================
+-- WAVE 65 SEED: Executive Remuneration & Clawback Tracker (Yönetişim)
+-- =============================================================================
+
+INSERT INTO public.executive_bonuses (id, tenant_id, executive_name, title, department, performance_year, base_salary, target_bonus, awarded_bonus, deferred_amount, vesting_date, risk_adjusted_rating, status) VALUES
+  (
+    'rem65000-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    'Hakan Yılmaz',
+    'Kurumsal Krediler Direktörü',
+    'Kredi Tahsis',
+    2025,
+    3500000.00,
+    1750000.00,
+    1800000.00,
+    600000.00,
+    '2028-03-01',
+    'C-',
+    'İptal Edildi (Clawback)'
+  ),
+  (
+    'rem65000-0000-0000-0000-000000000002',
+    '11111111-1111-1111-1111-111111111111',
+    'Banu Çelik',
+    'Hazine Yönetimi Başkanı',
+    'Hazine',
+    2025,
+    4200000.00,
+    2100000.00,
+    2600000.00,
+    800000.00,
+    '2028-03-01',
+    'A+',
+    'Tahakkuk Edildi'
+  ),
+  (
+    'rem65000-0000-0000-0000-000000000003',
+    '11111111-1111-1111-1111-111111111111',
+    'Cem Arslan',
+    'Dijital Kanallar VP',
+    'Dijital Bankacılık',
+    2025,
+    2800000.00,
+    1000000.00,
+    1100000.00,
+    0.00,
+    NULL,
+    'B+',
+    'Ödendi'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.clawback_events (id, tenant_id, bonus_id, trigger_event, clawback_amount, justification, board_resolution_ref, recovery_status) VALUES
+  (
+    'claw6500-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    'rem65000-0000-0000-0000-000000000001',
+    'Aşırı Riskli NPL (Takipteki Alacaklar) Portföy Artışı',
+    600000.00,
+    '2025 yılında tahsis edilen kurumsal kredi portföyünün %18 oranında batık (NPL) durumuna düşmesi sebebiyle, risk-getiri dengesinin kurumu zarara uğrattığı tespit edilmiş ve 600.000 TL ertelenmiş prime iptal (malus) uygulanmıştır.',
+    'YK-2026/089',
+    'Karara Bağlandı'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+
+-- =============================================================================
 -- WAVE 62 SEED: Geopolitical Risk & Sanctions Radar
 -- =============================================================================
 
@@ -8129,3 +8195,262 @@ VALUES
   )
 ON CONFLICT (id) DO NOTHING;
 
+
+-- ============================================================
+-- Wave 66 Seed: Enterprise Digital Twin & Process Mining
+-- Kredi Tahsis Süreci Dijital İkizi ve Gerçekleşen Vakalar
+-- ============================================================
+
+-- 1. Dijital İkiz (Örnek: Kredi Tahsis Süreci)
+INSERT INTO digital_twin_models (
+  id, process_code, name, department, owner,
+  ideal_steps, ideal_duration_hours, is_active,
+  nodes_json, edges_json
+) VALUES
+  (
+    '33330001-dtwn-0000-0000-000000000001',
+    'PROC-CREDIT-001',
+    'Kurumsal Kredi Tahsis Süreci (End-to-End)',
+    'Kredi Tahsis',
+    'Ayşe Yılmaz (Tahsis Direktörü)',
+    5, 24.0, TRUE,
+    '[
+      {"id":"n1","type":"default","position":{"x":100,"y":100},"data":{"label":"1. Kredi Başvurusu Alınması","metadata":{"dept":"Şube","sla_hrs":2}}},
+      {"id":"n2","type":"default","position":{"x":350,"y":100},"data":{"label":"2. KKB & İstihbarat Kontrolü","metadata":{"dept":"Risk Yönetimi","sla_hrs":4}}},
+      {"id":"n3","type":"default","position":{"x":600,"y":100},"data":{"label":"3. Finansal Analiz & Rating","metadata":{"dept":"Tahsis","sla_hrs":8}}},
+      {"id":"n4","type":"default","position":{"x":850,"y":100},"data":{"label":"4. Kredi Komitesi Onayı","metadata":{"dept":"Komite","sla_hrs":8}}},
+      {"id":"n5","type":"default","position":{"x":1100,"y":100},"data":{"label":"5. Sisteme Giriş & Kullandırım","metadata":{"dept":"Operasyon","sla_hrs":2}}}
+    ]',
+    '[
+      {"id":"e1","source":"n1","target":"n2","animated":true,"data":{"expected_time":"2h"}},
+      {"id":"e2","source":"n2","target":"n3","animated":true,"data":{"expected_time":"4h"}},
+      {"id":"e3","source":"n3","target":"n4","animated":true,"data":{"expected_time":"8h"}},
+      {"id":"e4","source":"n4","target":"n5","animated":true,"data":{"expected_time":"8h"}}
+    ]'
+  )
+ON CONFLICT (process_code) DO NOTHING;
+
+-- 2. Process Mining Logları (Gerçekleşen Vakalar / Process Variants)
+INSERT INTO process_mining_logs (
+  model_id, case_id, start_time, end_time,
+  actual_steps, actual_duration_hrs, compliance_status,
+  bypass_details, bottleneck_node_id, risk_score, handled_by, is_audited
+) VALUES
+  (
+    '33330001-dtwn-0000-0000-000000000001',
+    'CREDIT-APP-2026-99932',
+    '2026-04-01 09:00:00+03', '2026-04-02 11:30:00+03',
+    5, 26.5, 'MINOR_DEVIATION',
+    NULL, 'n3', 15, 'Mehmet K.', FALSE
+  ),
+  (
+    '33330001-dtwn-0000-0000-000000000001',
+    'CREDIT-APP-2026-99945',
+    '2026-04-03 14:00:00+03', '2026-04-04 10:00:00+03',
+    3, 20.0, 'BYPASS_DETECTED',
+    'Sistem Loglarına Göre 2. Adım (KKB/İstihbarat) ve 3. Adım (Finansal Analiz) sistem üzerinden BİLEREK ATLANMIŞTIR. Kredi limit girişi manuel yapılmıştır.',
+    NULL, 95, 'Ahmet Y.', TRUE
+  ),
+  (
+    '33330001-dtwn-0000-0000-000000000001',
+    'CREDIT-APP-2026-99950',
+    '2026-04-05 08:30:00+03', '2026-04-07 17:00:00+03',
+    5, 56.5, 'BOTTLENECK',
+    'Kredi Komitesi Onayı (Düğüm n4) adımında evrak eksikliği nedeniyle 40 saat bekleme yaşandı.',
+    'n4', 40, 'Elif B.', FALSE
+  ),
+  (
+    '33330001-dtwn-0000-0000-000000000001',
+    'CREDIT-APP-2026-99961',
+    '2026-04-08 10:00:00+03', '2026-04-09 09:30:00+03',
+    5, 23.5, 'COMPLIANT',
+    NULL, NULL, 0, 'Caner T.', FALSE
+  )
+ON CONFLICT (case_id) DO NOTHING;
+
+-- =============================================================================
+-- WAVE 68 SEED: Zero-Knowledge Ethics Vault (ZKP Whistleblower)
+-- =============================================================================
+
+-- 1. zkp_encrypted_reports — Şifrelenmiş Etik İhbar Raporları
+INSERT INTO public.zkp_encrypted_reports (id, tenant_id, tracking_code, category, severity, encrypted_payload, zk_proof_hash, status, decryption_attempts) VALUES
+  (
+    'zkp00000-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    'ZKP-9982-FXA',
+    'rüşvet_yolsuzluk',
+    'critical',
+    'U2FsdGVkX1+Vb8L1jJk/lJ+kO2rZ2y/3Z9A4...[ENCRYPTED_PAYLOAD_SIMULATION]...',
+    '0x72a5b6c934d98a0f12c...',
+    'reviewing',
+    1
+  ),
+  (
+    'zkp00000-0000-0000-0000-000000000002',
+    '11111111-1111-1111-1111-111111111111',
+    'ZKP-1144-KPL',
+    'mobbing',
+    'high',
+    'U2FsdGVkX1+Vb8L1jJk/lJ+kO2rZ2y/3Z9A4...[ENCRYPTED_PAYLOAD_SIMULATION]...',
+    '0x83b2a1c778f99b0c23d...',
+    'submitted',
+    0
+  )
+ON CONFLICT (tracking_code) DO NOTHING;
+
+-- 2. vault_access_logs — Kasa Erişim Logları
+INSERT INTO public.vault_access_logs (id, tenant_id, report_id, accessed_by_role, accessed_by_email, access_reason, access_status) VALUES
+  (
+    'val00000-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    'zkp00000-0000-0000-0000-000000000001',
+    'Etik_Kurul_Uyesi',
+    'etica@sentinel.bank',
+    'Yetkili Ön İnceleme Talebi (Private Key Match)',
+    'success'
+  ),
+  (
+    'val00000-0000-0000-0000-000000000002',
+    '11111111-1111-1111-1111-111111111111',
+    'zkp00000-0000-0000-0000-000000000001',
+    'System_Admin',
+    'admin@sentinel.bank',
+    'DB Dump Attempt',
+    'key_mismatch'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- =============================================================================
+-- WAVE 67 SEED: Open Banking & API Security Auditor
+-- =============================================================================
+
+-- 1. PSD2 TOKENS
+INSERT INTO public.psd2_tokens
+  (id, tpp_name, client_id, scopes, status, issued_at, expires_at)
+VALUES
+  (
+    'psd00000-0000-0000-0000-000000000001',
+    'Fintek X Ödeme Sistemleri',
+    'client_fx_9921',
+    ARRAY['accounts', 'payments'],
+    'ACTIVE',
+    NOW() - INTERVAL '30 days',
+    NOW() + INTERVAL '60 days'
+  ),
+  (
+    'psd00000-0000-0000-0000-000000000002',
+    'Açık Bankacılık Aggregator',
+    'client_agg_0012',
+    ARRAY['accounts'],
+    'EXPIRED',
+    NOW() - INTERVAL '100 days',
+    NOW() - INTERVAL '10 days'
+  ),
+  (
+    'psd00000-0000-0000-0000-000000000003',
+    'Kripto Borsası Z',
+    'client_cry_443',
+    ARRAY['payments'],
+    'REVOKED',
+    NOW() - INTERVAL '15 days',
+    NOW() + INTERVAL '75 days'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- 2. API BREACHES
+INSERT INTO public.api_breaches
+  (id, anomaly_type, description, source_ip, tpp_name, severity, status, detected_at)
+VALUES
+  (
+    'brc00000-0000-0000-0000-000000000001',
+    'EXPIRED_TOKEN_USE',
+    'Açık Bankacılık Aggregator TPPsi süresi dolmuş PSD2 yetki belirteci ile 15 defa ardışık müşteri bakiye (/accounts/balances) sorgulama girişiminde bulundu.',
+    '193.10.22.45',
+    'Açık Bankacılık Aggregator',
+    'HIGH',
+    'INVESTIGATING',
+    NOW() - INTERVAL '2 hours'
+  ),
+  (
+    'brc00000-0000-0000-0000-000000000002',
+    'RATE_LIMIT_EXCEEDED',
+    'Fintek X Ödeme Sistemleri TPPsi tanımlı 500/dakika eşiğini aşarak 429 HTTP hatası aldı. Olası bir DDoS veya Retry-Storm hatası inceleniyor.',
+    '212.156.44.11',
+    'Fintek X Ödeme Sistemleri',
+    'MEDIUM',
+    'OPEN',
+    NOW() - INTERVAL '15 minutes'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- 3. API GATEWAY LOGS
+INSERT INTO public.api_gateway_logs
+  (id, endpoint, method, consumer_app, ip_address, status_code, response_time_ms, is_rate_limited, timestamp)
+VALUES
+  (gen_random_uuid(), '/api/v1/accounts/balances', 'GET', 'Fintek X Ödeme Sistemleri', '212.156.44.11', 200, 145, false, NOW() - INTERVAL '5 minutes'),
+  (gen_random_uuid(), '/api/v1/accounts/transactions', 'GET', 'Fintek X Ödeme Sistemleri', '212.156.44.11', 200, 210, false, NOW() - INTERVAL '4 minutes 30 seconds'),
+  (gen_random_uuid(), '/api/v1/payments/initiate', 'POST', 'Fintek X Ödeme Sistemleri', '212.156.44.11', 429, 45, true, NOW() - INTERVAL '4 minutes'),
+  (gen_random_uuid(), '/api/v1/payments/initiate', 'POST', 'Fintek X Ödeme Sistemleri', '212.156.44.11', 429, 42, true, NOW() - INTERVAL '3 minutes 50 seconds'),
+  (gen_random_uuid(), '/api/v1/accounts/balances', 'GET', 'Açık Bankacılık Aggregator', '193.10.22.45', 401, 80, false, NOW() - INTERVAL '2 hours'),
+  (gen_random_uuid(), '/api/v1/accounts/balances', 'GET', 'Açık Bankacılık Aggregator', '193.10.22.45', 401, 78, false, NOW() - INTERVAL '1 hour 59 minutes'),
+  (gen_random_uuid(), '/api/v1/consents/status', 'GET', 'Kripto Borsası Z', '88.243.12.99', 403, 110, false, NOW() - INTERVAL '10 hours'),
+  (gen_random_uuid(), '/api/v1/accounts/balances', 'GET', 'Fintek X Ödeme Sistemleri', '212.156.44.11', 502, 1850, false, NOW() - INTERVAL '1 minute')
+ON CONFLICT (id) DO NOTHING;
+
+
+-- ============================================================
+-- Wave 69 Seed: Basel IV RWA & Capital Adequacy Simulator
+-- RWA Hesaplamaları ve Sermaye Yeterlilik Rasyosu (CAR) Özetleri
+-- ============================================================
+
+-- RWA Hesaplama Detayları (Basel Standardized Approach)
+INSERT INTO rwa_calculations (
+  calc_code, calculation_date, asset_class, exposure_amount, ccf_pct, risk_weight_pct,
+  crm_applied, crm_details, analyst, is_approved
+) VALUES
+  (
+    'RWA-2026-Q1-CORP-01', '2026-03-31', 'CORPORATE', 
+    500000000.00, 100, 100, FALSE, NULL, 'Caner T. (Risk Analisti)', TRUE
+  ),
+  (
+    'RWA-2026-Q1-CORP-02', '2026-03-31', 'CORPORATE', 
+    250000000.00, 100, 75, TRUE, 'Hazine Bonosu Teminatı - %25 RWA İndirimi', 'Caner T. (Risk Analisti)', TRUE
+  ),
+  (
+    'RWA-2026-Q1-RETAIL-01', '2026-03-31', 'RETAIL', 
+    1200000000.00, 100, 75, FALSE, NULL, 'Elif B. (Bireysel Risk)', TRUE
+  ),
+  (
+    'RWA-2026-Q1-MORTG-01', '2026-03-31', 'MORTGAGE', 
+    800000000.00, 100, 35, TRUE, 'LTV < %80, Birinci Derece İpotekli', 'Elif B. (Bireysel Risk)', TRUE
+  ),
+  (
+    'RWA-2026-Q1-SOV-01', '2026-03-31', 'SOVEREIGN', 
+    3000000000.00, 100, 0, TRUE, 'T.C. Hazine Tahvilleri - %0 Risk Ağırlığı', 'Hazine Masası', TRUE
+  ),
+  (
+    'RWA-2026-Q2-CORP-DRAFT', '2026-06-30', 'CORPORATE', 
+    45000000.00, 50, 150, FALSE, 'Gelecek çeyrek, yüksek riskli teminatsız kredi tahmini (CCF %50)', 'Taslak Bot', FALSE
+  )
+ON CONFLICT (calc_code) DO NOTHING;
+
+-- Sermaye Yeterlilik Rasyosu Raporları (CAR)
+INSERT INTO capital_adequacy_ratios (
+  report_period, report_date,
+  cet1_capital, tier1_capital, tier2_capital,
+  credit_rwa, market_rwa, operational_rwa,
+  min_required_ratio, capital_buffer_pct, status
+) VALUES
+  (
+    '2026-Q1', '2026-03-31',
+    1850000000.00, 1850000000.00, 350000000.00,    -- Toplam Sermaye: 2.2 Milyar
+    9000000000.00, 2500000000.00, 4000000000.00,   -- Toplam RWA: 15.5 Milyar -> Rasyo: %14.19
+    12.00, 2.50, 'APPROVED'
+  ),
+  (
+    '2025-Q4', '2025-12-31',
+    1700000000.00, 1700000000.00, 300000000.00,    -- Toplam Sermaye: 2.0 Milyar
+    8500000000.00, 2200000000.00, 3800000000.00,   -- Toplam RWA: 14.5 Milyar -> Rasyo: %13.79
+    12.00, 2.50, 'APPROVED'
+  )
+ON CONFLICT (report_period) DO NOTHING;
