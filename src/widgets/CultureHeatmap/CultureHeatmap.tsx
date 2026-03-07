@@ -202,7 +202,7 @@ export function CultureHeatmap() {
             <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-500"></div>Pozitif (80+)</div>
             <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-slate-300"></div>Nötr (65-79)</div>
             <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-orange-500"></div>Negatif (50-64)</div>
-            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-600"></div>Kritik (<50)</div>
+            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-600"></div>Kritik (&lt;50)</div>
           </div>
         </div>
 

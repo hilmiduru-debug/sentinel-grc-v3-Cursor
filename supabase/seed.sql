@@ -7895,3 +7895,237 @@ VALUES
   )
 ON CONFLICT (id) DO NOTHING;
 
+
+-- ============================================================
+-- Wave 63 Seed: Algo-Trading & Flash Crash Sentinel
+-- HFT Logları ve Piyasa Manipülasyon (Spoofing) Alarmları
+-- ============================================================
+
+-- Örnek HFT Emir Logları (Spoofing simülasyonu için aynı saniyede çok sayıda Limit alım emri, sonra iptal)
+INSERT INTO algo_trading_logs (
+  trade_code, desk, instrument, order_type, side,
+  price, volume, algo_strategy_id, execution_ms, is_canceled, timestamp
+) VALUES
+  ('TRD-USDTRY-20260401-001','FX_DESK','USD/TRY','LIMIT','BUY', 33.15000, 1500000, 'BOT-SPOOF-01', 2, TRUE, '2026-04-01 10:15:00.120+03'),
+  ('TRD-USDTRY-20260401-002','FX_DESK','USD/TRY','LIMIT','BUY', 33.15100, 2000000, 'BOT-SPOOF-01', 1, TRUE, '2026-04-01 10:15:00.125+03'),
+  ('TRD-USDTRY-20260401-003','FX_DESK','USD/TRY','LIMIT','BUY', 33.15200, 1800000, 'BOT-SPOOF-01', 3, TRUE, '2026-04-01 10:15:00.130+03'),
+  ('TRD-USDTRY-20260401-004','FX_DESK','USD/TRY','LIMIT','BUY', 33.15300, 2500000, 'BOT-SPOOF-01', 2, TRUE, '2026-04-01 10:15:00.135+03'),
+  ('TRD-USDTRY-20260401-005','FX_DESK','USD/TRY','MARKET','SELL',33.15400, 500000,  'BOT-SPOOF-01', 4, FALSE,'2026-04-01 10:15:00.150+03'), -- Fiyatı yukarı çekip satış
+  
+  -- Normal Arbitraj İşlemleri
+  ('TRD-EURUSD-20260401-010','FX_DESK','EUR/USD','LIMIT','BUY',  1.08500, 100000,  'ARB-BOT-09',   12,FALSE,'2026-04-01 10:30:15.000+03'),
+  ('TRD-EURUSD-20260401-011','FX_DESK','EUR/USD','LIMIT','SELL', 1.08520, 100000,  'ARB-BOT-09',   8, FALSE,'2026-04-01 10:30:15.800+03'),
+  
+  -- Flash Crash tetikleyici devasa piyasa satışı
+  ('TRD-XAUUSD-20260401-020','COMMODITY_DESK','XAU/USD','MARKET','SELL', 2310.50, 150000000, 'MOMENTUM-BOT-X', 5, FALSE, '2026-04-01 14:00:00.000+03')
+ON CONFLICT (trade_code) DO NOTHING;
+
+-- Piyasa Manipülasyonu Alarmları
+INSERT INTO market_manipulation_alerts (
+  alert_code, detection_time, anomaly_type, instrument, severity,
+  description, affected_volume, triggering_algo, status, investigator
+) VALUES
+  (
+    'MAL-2026-001', '2026-04-01 10:15:05+03', 'SPOOFING', 'USD/TRY', 'CRITICAL',
+    'Hazine Döviz Masası - 50 milisaniye içinde 4 adet büyük limit alım emri girilip iptal edildi (toplam 7.8M USD hacim). Ardından 33.154 seviyesinden piyasa satış emri (500K USD) gerçekleştirildi. Tipik Spoofing/Layering patterni.',
+    7800000.00, 'BOT-SPOOF-01', 'INVESTIGATING', 'Gökhan Yılmaz (Piyasa Gözetim)'
+  ),
+  (
+    'MAL-2026-002', '2026-04-01 14:00:01+03', 'FLASH_CRASH', 'XAU/USD', 'HIGH',
+    'Olağandışı Hacim - Saniyeler içinde altın tahtasına 150M USD nominal değerinde piyasa satışı geldi. Derinlik boşaldığı için fiyat 12 dolar aşağı kaydı. Algoritma hatası şüphesi.',
+    150000000.00, 'MOMENTUM-BOT-X', 'OPEN', NULL
+  ),
+  (
+    'MAL-2026-003', '2026-04-01 09:30:00+03', 'QUOTE_STUFFING', 'EUR/TRY', 'MEDIUM',
+    'Eşleştirme motorunu yavaşlatma girişimi. 1 saniye içinde 500 adet çok küçük lotlu al-sat emri bombardımanı.',
+    250000.00, 'HFT-ARB-LATENCY', 'RESOLVED', 'Sistem Otokontrol'
+  )
+ON CONFLICT (alert_code) DO NOTHING;
+
+-- =============================================================================
+-- WAVE 62 SEED: Geopolitical Risk & Sanctions Radar
+-- =============================================================================
+
+-- 1. sanction_lists — Ambargo ve Yaptırım Listeleri
+INSERT INTO public.sanction_lists (id, tenant_id, entity_name, entity_type, country_code, list_source, sanction_type, risk_level, notes) VALUES
+  (
+    'sl000000-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    'Kuzey Yıldızı Lojistik A.Ş.',
+    'COMPANY',
+    'RU',
+    'OFAC',
+    'SDN',
+    'critical',
+    'OFAC Güncellemesi: Askeri teçhizat lojistiği sağladığı gerekçesiyle X Şirketine (Kuzey Yıldızı Lojistik) ambargo uygulanmıştır.'
+  ),
+  (
+    'sl000000-0000-0000-0000-000000000002',
+    '11111111-1111-1111-1111-111111111111',
+    'Saeed Energy Corp',
+    'COMPANY',
+    'IR',
+    'UN',
+    'SSI',
+    'high',
+    'BM Güvenlik Konseyi Kararı: Petrol ambargosunu delme eylemleri.'
+  ),
+  (
+    'sl000000-0000-0000-0000-000000000003',
+    '11111111-1111-1111-1111-111111111111',
+    'Alexey Volkov',
+    'PERSON',
+    'RU',
+    'EU',
+    'SDN',
+    'critical',
+    'AB Yaptırım Listesi: Finansal kurumlara yasadışı fon sağlama.'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- 2. aml_alerts — Şüpheli İşlem Alarmları (AML)
+INSERT INTO public.aml_alerts (id, tenant_id, alert_code, title, description, alert_type, severity, status, customer_id, customer_name, transaction_amount, origin_country, destination_country, total_transactions, risk_score) VALUES
+  (
+    'aml00000-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    'AML-SWIFT-001',
+    'Şüpheli Fon Transferi (SWIFT) Alarmı',
+    'Dubai merkezli bir aracı kurum üzerinden, yaptırım listesindeki Kuzey Yıldızı Lojistik A.Ş. ile bağlantılı olduğu düşünülen bir hesaba parça parça toplam 1.2M USD transfer girişimi.',
+    'SWIFT_TRANSFER',
+    'critical',
+    'open',
+    'CUST-88992',
+    'Global Trading LLC',
+    1250000.00,
+    'AE',
+    'RU',
+    4,
+    95.5
+  ),
+  (
+    'aml00000-0000-0000-0000-000000000002',
+    '11111111-1111-1111-1111-111111111111',
+    'AML-CASH-002',
+    'Nakdi İşlem Bölünmesi (Smurfing)',
+    'Aynı gün içinde 3 farklı şubeden MASAK bildirim sınırı olan 50.000 TL''nin hemen altında (49.500 TL) 5 adet nakit yatırma işlemi.',
+    'CASH_DEPOSIT',
+    'high',
+    'investigating',
+    'CUST-11223',
+    'Mehmet Yılmaz',
+    247500.00,
+    'TR',
+    'TR',
+    5,
+    82.0
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- 3. geopolitical_events — Makro Rizikolar (Harita)
+INSERT INTO public.geopolitical_events (id, tenant_id, title, description, region, country_code, coordinates, event_type, impact_level) VALUES
+  (
+    'geo00000-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    'Süveyş Kanalı Geçiş Kısıtlaması',
+    'Bölgedeki çatışmalar nedeniyle kargo gemilerine yönelik artan tehdit, tedarik zinciri finansmanında (Trade Finance) yüksek risk.',
+    'Middle East',
+    'EG',
+    '{"lat": 30.0444, "lng": 31.2357}',
+    'CONFLICT',
+    'critical'
+  ),
+  (
+    'geo00000-0000-0000-0000-000000000002',
+    '11111111-1111-1111-1111-111111111111',
+    'Doğu Avrupa Rejim Değişikliği Sinyali',
+    'Bölgesel istikrarsızlık, yerel para birimlerinde volatilite ve sermaye çıkışları riski taşıyor.',
+    'Eastern Europe',
+    'UA',
+    '{"lat": 50.4501, "lng": 30.5234}',
+    'REGIME_CHANGE',
+    'high'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- =============================================================================
+-- WAVE 64 SEED: Data Privacy & PII Flow Mapper
+-- =============================================================================
+
+-- 1. PII DATA FLOWS
+INSERT INTO public.pii_data_flows
+  (id, system_source, system_destination, data_categories, transfer_method, is_encrypted, is_cross_border, legal_basis, risk_level)
+VALUES
+  (
+    'pdt00000-0000-0000-0000-000000000001',
+    'Yurtiçi Core Banking (Finexus)',
+    'Global Analytics Cloud (Frankfurt)',
+    ARRAY['Kimlik', 'Finansal', 'İletişim'],
+    'REST_API_BATCH',
+    false,    -- ŞİFRESİZ
+    true,     -- YURTDIŞI
+    'EXPLICIT_CONSENT',
+    'CRITICAL'
+  ),
+  (
+    'pdt00000-0000-0000-0000-000000000002',
+    'CRM Sistemi (Salesforce)',
+    'Çağrı Merkezi IVR Sunucusu',
+    ARRAY['İletişim', 'Ses Kaydı'],
+    'SECURE_SOAP',
+    true,
+    false,
+    'LEGITIMATE_INTEREST',
+    'LOW'
+  ),
+  (
+    'pdt00000-0000-0000-0000-000000000003',
+    'Mobil Uygulama Gateway',
+    'AWS Frankfurt Reklam Ağı',
+    ARRAY['Cihaz ID', 'Konum'],
+    'KAFKA_STREAM',
+    true,
+    true,
+    'EXPLICIT_CONSENT',
+    'MEDIUM'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- 2. CONSENT RECORDS
+INSERT INTO public.consent_records
+  (id, context, total_users, consented_users, revoked_users)
+VALUES
+  (
+    'con00000-0000-0000-0000-000000000001',
+    'Pazarlama ve Üçüncü Taraf Veri Paylaşımı KVKK Onayı',
+    1250000,
+    980000,
+    145000     -- %11 civarı revocation
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- 3. PRIVACY BREACHES
+INSERT INTO public.privacy_breaches
+  (id, incident_title, description, affected_records, affected_data_types, severity, status, detected_at)
+VALUES
+  (
+    'pbr00000-0000-0000-0000-000000000001',
+    'Müşteri Kimlik Verisinin Bulut Sağlayıcıya Şifresiz Aktarımı',
+    'Core Banking sisteminden Global Analytics Cloud paneline gece devirlerinde çalışan batch servislerin veriyi maskelemeden ve HTTPS pinning olmadan EU/Frankfurt bölgesine çıkardığı tespit edildi.',
+    42500,
+    ARRAY['TCKN', 'Ad-Soyad', 'Bakiye'],
+    'CRITICAL',
+    'INVESTIGATING',
+    NOW() - INTERVAL '2 days'
+  ),
+  (
+    'pbr00000-0000-0000-0000-000000000002',
+    'Geliştirici Ortamında Canlı Veri Pozlaması',
+    'UAT ortamına alınan veritabanı yedeğinde maskeleme algoritmalarının başarısız olduğu, dış kaynaklı geliştiricilerin maskesiz gerçek müşteri telefon numaralarına erişebildiği tespit edildi.',
+    1200,
+    ARRAY['Telefon'],
+    'MEDIUM',
+    'MITIGATED',
+    NOW() - INTERVAL '15 days'
+  )
+ON CONFLICT (id) DO NOTHING;
+

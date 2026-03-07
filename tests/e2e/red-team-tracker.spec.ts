@@ -32,7 +32,7 @@ test.describe('🎯 RED TEAM & BAS TRACKER E2E TEST', () => {
       await page.waitForTimeout(1000);
       
       // Inside logs, should see T1566.002
-      await expect(page.getByText('T1566.002')).first().toBeVisible();
+      await expect(page.getByText('T1566.002').first()).toBeVisible();
     }
   });
 });

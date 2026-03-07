@@ -73,6 +73,7 @@ import TemplateManagerPage from '@/pages/admin/TemplateManagerPage';
 import PBCPage from '@/pages/pbc';
 import BCPCrisisPage from '@/pages/bcp';
 import RedTeamPage from '@/pages/red-team';
+import DataPrivacyPage from '@/pages/data-privacy';
 import CompliancePage from '@/pages/compliance';
 import RegulationsPage from '@/pages/compliance/RegulationsPage';
 import GapAnalysisPage from '@/pages/compliance/GapAnalysisPage';
@@ -185,6 +186,7 @@ export const AppRoutes = () => {
       <Route path="/execution/pbc" element={<ProtectedRoute><PBCPage /></ProtectedRoute>} />
       <Route path="/bcp" element={<ProtectedRoute><BCPCrisisPage /></ProtectedRoute>} />
       <Route path="/red-team" element={<ProtectedRoute><RedTeamPage /></ProtectedRoute>} />
+      <Route path="/data-privacy" element={<ProtectedRoute><DataPrivacyPage /></ProtectedRoute>} />
 
       <Route path="/execution/start" element={<ProtectedRoute><AuditStartPage /></ProtectedRoute>} />
       <Route path="/execution/agile" element={<ProtectedRoute><AgileEngagementsPage /></ProtectedRoute>} />
