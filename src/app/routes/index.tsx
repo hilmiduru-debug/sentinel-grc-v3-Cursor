@@ -1,8 +1,16 @@
 import { usePersonaStore } from '@/entities/user/model/persona-store';
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom';
 
 import { lazy, Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
+
+// Redirect helper: properly resolves :id param at runtime
+const FindingRedirect = () => {
+  const { id } = useParams<{ id: string }>();
+  return <Navigate to={`/execution/findings/${id}`} replace />;
+};
+
+
 
 const RemediationDossier = lazy(() => import('@/features/regulatory-export/ui/RemediationDossier').then(module => ({ default: module.RemediationDossier })));
 const ActionWorkbenchPage = lazy(() => import('@/pages/action-workbench'));
@@ -351,7 +359,7 @@ export const AppRoutes = () => {
  <Route path="/resources/capacity" element={<Navigate to="/resources?tab=capacity" replace />} />
  <Route path="/findings" element={<Navigate to="/execution/findings" replace />} />
  <Route path="/findings/new" element={<Navigate to="/execution/findings/new" replace />} />
- <Route path="/findings/:id" element={<Navigate to="/execution/findings/:id" replace />} />
+ <Route path="/findings/:id" element={<FindingRedirect />} />
 
  <Route path="*" element={<NotFoundPage />} />
  </Routes>

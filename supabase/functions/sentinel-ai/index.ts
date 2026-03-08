@@ -10,14 +10,19 @@ const corsHeaders = {
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 const GEMINI_FALLBACK = "gemini-1.5-flash";
 
+// Groq: OpenAI-uyumlu ücretsiz API
+const GROQ_BASE_URL = "https://api.groq.com/openai/v1";
+
 interface RequestBody {
   action: "ping" | "generate" | "stream";
-  provider: "gemini" | "openai";
+  provider: "gemini" | "openai" | "groq" | "local";
   apiKey: string;
   model: string;
   prompt: string;
   systemPrompt?: string;
   contextData?: string;
+  /** On-Premise / Groq için özel endpoint (isteğe bağlı) */
+  baseUrl?: string;
 }
 
 function sanitizeGeminiModel(raw: string): string {
@@ -84,6 +89,16 @@ function geminiErrorMessage(status: number, rawBody: string): string {
   return rawBody || `Gemini API hatasi: ${status}`;
 }
 
+function openAIErrorMessage(status: number, rawBody: string): string {
+  if (status === 401) return "Gecersiz API anahtari. Lutfen anahtari kontrol edin.";
+  if (status === 429) return "API kotasi doldu (429). Rate limit asildi.";
+  if (status === 404) return "Model bulunamadi (404). Model adini kontrol edin.";
+  if (status === 403) return "Erisim reddedildi (403). Yetki hatasi.";
+  return rawBody || `API hatasi: ${status}`;
+}
+
+// ─── Gemini Handlers ──────────────────────────────────────────────────────────
+
 async function handleGeminiGenerate(body: RequestBody): Promise<Response> {
   const model = sanitizeGeminiModel(body.model);
   const payload = buildGeminiPayload(
@@ -101,7 +116,6 @@ async function handleGeminiGenerate(body: RequestBody): Promise<Response> {
 
   if (!resp.ok) {
     const err = await resp.text();
-
     if ((resp.status === 404 || resp.status === 429) && model !== GEMINI_FALLBACK) {
       const fallbackUrl = `${GEMINI_BASE}/${GEMINI_FALLBACK}:generateContent?key=${body.apiKey}`;
       const fallbackResp = await fetch(fallbackUrl, {
@@ -117,7 +131,6 @@ async function handleGeminiGenerate(body: RequestBody): Promise<Response> {
         });
       }
     }
-
     const msg = geminiErrorMessage(resp.status, err);
     return new Response(
       JSON.stringify({ error: true, message: msg, status: resp.status }),
@@ -126,9 +139,7 @@ async function handleGeminiGenerate(body: RequestBody): Promise<Response> {
   }
 
   const data = await resp.json();
-  const text =
-    data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-
+  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
   return new Response(JSON.stringify({ text }), {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
@@ -151,7 +162,6 @@ async function handleGeminiStream(body: RequestBody): Promise<Response> {
 
   if (!resp.ok) {
     const err = await resp.text();
-
     if ((resp.status === 404 || resp.status === 429) && model !== GEMINI_FALLBACK) {
       const fallbackUrl = `${GEMINI_BASE}/${GEMINI_FALLBACK}:streamGenerateContent?alt=sse&key=${body.apiKey}`;
       const fallbackResp = await fetch(fallbackUrl, {
@@ -170,7 +180,6 @@ async function handleGeminiStream(body: RequestBody): Promise<Response> {
         });
       }
     }
-
     const msg = geminiErrorMessage(resp.status, err);
     return new Response(
       JSON.stringify({ error: true, message: msg, status: resp.status }),
@@ -188,7 +197,14 @@ async function handleGeminiStream(body: RequestBody): Promise<Response> {
   });
 }
 
-async function handleOpenAIGenerate(body: RequestBody): Promise<Response> {
+// ─── OpenAI-Compatible Handler (OpenAI + Groq + Local) ──────────────────────
+// Groq ve Local da OpenAI formatını kullandığından tek bir handler yeter.
+// baseEndpoint parametresi ile endpoint dinamik olarak belirlenir.
+
+async function handleOpenAICompatibleGenerate(
+  body: RequestBody,
+  baseEndpoint: string
+): Promise<Response> {
   const payload = buildOpenAIPayload(
     body.prompt,
     body.systemPrompt,
@@ -196,7 +212,7 @@ async function handleOpenAIGenerate(body: RequestBody): Promise<Response> {
     false
   );
 
-  const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+  const resp = await fetch(`${baseEndpoint}/chat/completions`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -207,21 +223,24 @@ async function handleOpenAIGenerate(body: RequestBody): Promise<Response> {
 
   if (!resp.ok) {
     const err = await resp.text();
+    const msg = openAIErrorMessage(resp.status, err);
     return new Response(
-      JSON.stringify({ error: true, message: err, status: resp.status }),
+      JSON.stringify({ error: true, message: msg, status: resp.status }),
       { status: resp.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 
   const data = await resp.json();
   const text = data?.choices?.[0]?.message?.content || "";
-
   return new Response(JSON.stringify({ text }), {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 }
 
-async function handleOpenAIStream(body: RequestBody): Promise<Response> {
+async function handleOpenAICompatibleStream(
+  body: RequestBody,
+  baseEndpoint: string
+): Promise<Response> {
   const payload = buildOpenAIPayload(
     body.prompt,
     body.systemPrompt,
@@ -229,7 +248,7 @@ async function handleOpenAIStream(body: RequestBody): Promise<Response> {
     true
   );
 
-  const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+  const resp = await fetch(`${baseEndpoint}/chat/completions`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -240,8 +259,9 @@ async function handleOpenAIStream(body: RequestBody): Promise<Response> {
 
   if (!resp.ok) {
     const err = await resp.text();
+    const msg = openAIErrorMessage(resp.status, err);
     return new Response(
-      JSON.stringify({ error: true, message: err, status: resp.status }),
+      JSON.stringify({ error: true, message: msg, status: resp.status }),
       { status: resp.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
@@ -256,6 +276,23 @@ async function handleOpenAIStream(body: RequestBody): Promise<Response> {
   });
 }
 
+// ─── Provider → BaseURL Router ───────────────────────────────────────────────
+
+function resolveBaseUrl(body: RequestBody): string {
+  switch (body.provider) {
+    case "groq":
+      return body.baseUrl || GROQ_BASE_URL;
+    case "local":
+      return body.baseUrl || "http://localhost:1234/v1";
+    case "openai":
+      return body.baseUrl || "https://api.openai.com/v1";
+    default:
+      return "https://api.openai.com/v1";
+  }
+}
+
+// ─── Main Handler ─────────────────────────────────────────────────────────────
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
@@ -264,13 +301,24 @@ Deno.serve(async (req: Request) => {
   try {
     const body: RequestBody = await req.json();
 
-    if (!body.apiKey || !body.model || !body.provider) {
+    // Local provider API key gerektirmez
+    const requiresApiKey = body.provider !== "local";
+    if (requiresApiKey && !body.apiKey) {
       return new Response(
-        JSON.stringify({ error: true, message: "apiKey, model ve provider zorunlu." }),
+        JSON.stringify({ error: true, message: "apiKey zorunlu." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    if (!body.model || !body.provider) {
+      return new Response(
+        JSON.stringify({ error: true, message: "model ve provider zorunlu." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
+    const baseUrl = resolveBaseUrl(body);
+
+    // ── PING ──────────────────────────────────────────────────────────────────
     if (body.action === "ping") {
       body.prompt = 'Merhaba. Sadece "OK" yaz.';
 
@@ -287,25 +335,28 @@ Deno.serve(async (req: Request) => {
           }),
           { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
-      } else {
-        const result = await handleOpenAIGenerate(body);
-        const data = await result.json();
-        const ok = !data.error && !!data.text;
-        return new Response(
-          JSON.stringify({ ok, text: data.text || "", error: data.message || null }),
-          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
       }
+
+      // OpenAI / Groq / Local
+      const result = await handleOpenAICompatibleGenerate(body, baseUrl);
+      const data = await result.json();
+      const ok = !data.error && !!data.text;
+      return new Response(
+        JSON.stringify({ ok, text: data.text || "", error: data.message || null }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
+    // ── GENERATE ──────────────────────────────────────────────────────────────
     if (body.action === "generate") {
       if (body.provider === "gemini") return handleGeminiGenerate(body);
-      return handleOpenAIGenerate(body);
+      return handleOpenAICompatibleGenerate(body, baseUrl);
     }
 
+    // ── STREAM ────────────────────────────────────────────────────────────────
     if (body.action === "stream") {
       if (body.provider === "gemini") return handleGeminiStream(body);
-      return handleOpenAIStream(body);
+      return handleOpenAICompatibleStream(body, baseUrl);
     }
 
     return new Response(

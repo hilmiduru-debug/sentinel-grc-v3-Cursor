@@ -9,13 +9,7 @@ import { ShieldCheck } from 'lucide-react';
 import { useRef } from 'react';
 import { useCollaboration, type CollabContext, type PeerInfo } from '../hooks/useCollaboration';
 
-function warmthToBg(w: number): string {
- const t = w / 10;
- const r = Math.round(255 - 5 * t);
- const g = Math.round(255 - 20 * t);
- const b = Math.round(255 - 60 * t);
- return `rgb(${r},${g},${b})`;
-}
+import { getPaperStyle } from '@/shared/utils/warmth';
 
 function PeerBlockBadge({ peers }: { peers: PeerInfo[] }) {
  if (!peers.length) return null;
@@ -167,15 +161,15 @@ interface ZenCanvasProps {
  externalCollabCtx?: CollabContext;
 }
 
-export function ZenCanvas({ readOnly = false, warmth = 2, externalCollabCtx }: ZenCanvasProps) {
- const { activeReport } = useActiveReportStore();
- const ownCtx = useCollaboration(externalCollabCtx ? '' : (activeReport?.id ?? 'no-report'));
- const collabCtx = externalCollabCtx ?? ownCtx;
- const scrollRef = useRef<HTMLElement | null>(null);
+export function ZenCanvas({ readOnly = false, warmth = 20, externalCollabCtx }: ZenCanvasProps) {
+  const { activeReport } = useActiveReportStore();
+  const ownCtx = useCollaboration(externalCollabCtx ? '' : (activeReport?.id ?? 'no-report'));
+  const collabCtx = externalCollabCtx ?? ownCtx;
+  const scrollRef = useRef<HTMLElement | null>(null);
 
- const paperBg = warmthToBg(warmth);
- const isLocked = activeReport?.status === 'published' || activeReport?.status === 'archived';
- const useVirtual = isLocked;
+  const paperStyle = getPaperStyle(warmth); // SSOT warmth.ts
+  const isLocked = activeReport?.status === 'published' || activeReport?.status === 'archived';
+  const useVirtual = isLocked;
 
  if (!activeReport) {
  return (
@@ -199,7 +193,7 @@ export function ZenCanvas({ readOnly = false, warmth = 2, externalCollabCtx }: Z
  className="max-w-4xl mx-auto min-h-[1056px] p-10 lg:p-16 rounded-sm
  shadow-[0_8px_48px_rgba(0,0,0,0.13),0_2px_12px_rgba(0,0,0,0.07)]
  ring-1 ring-slate-200/40 transition-colors duration-300"
- style={{ backgroundColor: paperBg }}
+ style={{ ...paperStyle, transition: 'background-color 0.3s ease' }}
  >
  {useVirtual ? (
  <VirtualizedSections

@@ -14,6 +14,7 @@ import {
  Building,
  Calendar,
  ChevronDown,
+ Loader2,
  Minus,
  Sparkles,
  TrendingDown,
@@ -21,13 +22,9 @@ import {
  UserCheck,
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
-function getWarmthBg(w: number): string {
- const r = 255;
- const g = Math.max(240, Math.floor(255 - (w * 0.2)));
- const b = Math.max(220, Math.floor(255 - (w * 0.6)));
- return `rgb(${r}, ${g}, ${b})`;
-}
+import { getWarmthStyle } from '@/shared/utils/warmth';
 
 const GRADE_OPTIONS = ['A+', 'A', 'B+', 'B', 'C', 'D'];
 const ASSURANCE_OPTIONS = ['Tam Güvence', 'Kısmi Güvence', 'Güvence Verilmedi'];
@@ -194,18 +191,19 @@ function SkeletonBlock({ lines = 3 }: { lines?: number }) {
 }
 
 interface ExecutiveSummaryStudioProps {
- readOnly?: boolean;
- warmth?: number;
+  readOnly?: boolean;
+  warmth?: number;
+  nightMode?: boolean;
 }
 
-export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: ExecutiveSummaryStudioProps) {
+export function ExecutiveSummaryStudio({ readOnly = false, warmth = 20, nightMode = false }: ExecutiveSummaryStudioProps) {
  const reportId = useActiveReportStore((s) => s.activeReport?.id);
  const { activeReport, updateExecutiveSummary, loadReport } = useActiveReportStore();
  const { report: reportFromQuery, generateSummary, isGenerating } = useReportSummary(reportId);
 
  const es = activeReport?.executiveSummary ?? reportFromQuery?.executiveSummary ?? DEFAULT_EXECUTIVE_SUMMARY;
  const mgmtResponse = activeReport?.executiveSummary?.managementResponse;
- const paperBg = getWarmthBg(warmth);
+ const paperStyle = getWarmthStyle(warmth, nightMode);
  const layoutType = es?.layoutType ?? 'standard_audit';
 
  const handleManagementResponseChange = useCallback(
@@ -220,15 +218,40 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
  [activeReport, updateExecutiveSummary],
  );
 
- const handleAIDraft = useCallback(async () => {
- if (!reportId) return;
- try {
- await generateSummary({ reportId });
- await loadReport(reportId);
- } catch {
- /* toast / error handled by mutation or store */
- }
- }, [reportId, generateSummary, loadReport]);
+  const handleAIDraft = useCallback(async () => {
+    if (!reportId) return;
+    const toastId = toast.loading('Sentinel AI Yönetici Özeti hazırlıyor...', { duration: 60000 });
+    try {
+      const result = await generateSummary({ reportId });
+
+      // AI metnini local store'a hemen uygula (DB başarısız olsa bile)
+      if (result?.aiText) {
+        const aiHtml = `<p>${(result.aiText || '').replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br />')}</p>`;
+        updateExecutiveSummary({
+          briefingNote: result.aiText,
+          sections: {
+            auditOpinion: aiHtml,
+            criticalRisks: '',
+            strategicRecommendations: '',
+            managementAction: '',
+          },
+        });
+      }
+
+      if (result?.dbSaved) {
+        await loadReport(reportId);
+        toast.success('Yönetici Özeti AI ile üretildi ve kaydedildi.', { id: toastId });
+      } else {
+        toast.success('Yönetici Özeti AI ile üretildi. (Otomatik kayıt başarısız — manuel kaydet)', {
+          id: toastId,
+          duration: 6000,
+        });
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'AI özet üretilemedi.';
+      toast.error(msg, { id: toastId, duration: 6000 });
+    }
+  }, [reportId, generateSummary, loadReport, updateExecutiveSummary]);
 
  const handleSectionChange = useCallback(
  (key: keyof ExecutiveSummarySections, html: string) => {
@@ -275,24 +298,30 @@ export function ExecutiveSummaryStudio({ readOnly = false, warmth = 2 }: Executi
  <div className="min-h-full bg-slate-50 overflow-y-auto py-8 px-4 lg:px-8">
  <div className="max-w-4xl mx-auto">
  <div
+          id="executive-summary-content"
+          data-report-content="true"
  className="w-full rounded-sm shadow-[0_25px_60px_-15px_rgba(0,0,0,0.2)] ring-1 ring-black/5 transition-colors duration-300 px-8 lg:px-14 py-10"
- style={{ backgroundColor: paperBg }}
+ style={{ ...paperStyle, transition: "background-color 0.3s ease" }}
  >
  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
  <div>
  <h2 className="font-serif text-2xl font-bold text-primary">Yönetici Özeti Stüdyosu</h2>
  <p className="text-sm text-slate-500 mt-1 font-sans">GIAS 2024 · Standart 2400 uyumlu</p>
  </div>
- {!readOnly && (
- <button
- onClick={handleAIDraft}
- disabled={isGenerating || !reportId}
- className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white rounded-xl text-sm font-sans font-semibold transition-colors shadow-sm flex-shrink-0"
- >
- <Sparkles size={16} />
- {isGenerating ? 'Sentinel Prime Yazıyor...' : 'Yapay Zeka ile Oluştur'}
- </button>
- )}
+    {!readOnly && (
+        <button
+          onClick={handleAIDraft}
+          disabled={isGenerating || !reportId}
+          className="flex items-center gap-2 bg-indigo-50 text-indigo-600 border border-indigo-100 px-4 py-2.5 rounded-xl hover:bg-indigo-100 hover:border-indigo-200 transition-all font-sans font-bold text-sm shadow-sm disabled:opacity-50 flex-shrink-0"
+        >
+          {isGenerating ? (
+            <Loader2 size={16} className="animate-spin" />
+          ) : (
+            <Sparkles size={16} />
+          )}
+          {isGenerating ? 'Sentinel AI Analiz Ediyor...' : 'Yapay Zeka ile Oluştur'}
+        </button>
+      )}
  </div>
 
  {layoutType !== 'info_note' && (

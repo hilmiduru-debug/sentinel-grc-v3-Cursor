@@ -2,13 +2,15 @@ import { useFindingStore } from '@/entities/finding/model/store';
 import type { FindingRefBlock, M6ReportStatus } from '@/entities/report';
 import { useActiveReportStore } from '@/entities/report';
 import clsx from 'clsx';
-import { ArrowLeft, Download, GitBranch, Loader2, Search, Send, Sparkles, Zap } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { ArrowLeft, ChevronDown, Download, FileText, GitBranch, Loader2, Lock, Search, Send, Sparkles, Zap } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import type { CollabContext } from '../hooks/useCollaboration';
 import { PresenceBar } from './PresenceBar';
 import { SearchPalette } from './SearchPalette';
+import { logReportExport } from '../api/export-audit';
+import { exportToWord as engineExportWord, exportToForensicPDF as engineExportPDF } from '../utils/export-engine';
 
 const STATUS_CONFIG: Record<M6ReportStatus, { label: string; className: string }> = {
  draft: { label: 'Taslak', className: 'bg-slate-100 text-slate-600 border-slate-200' },
@@ -35,8 +37,20 @@ export function LiquidGlassToolbar({ collabCtx, traceabilityOpen, onTraceability
  const navigate = useNavigate();
  const { activeReport, publishReport } = useActiveReportStore();
  const updateFindingScore = useFindingStore((s) => s.updateFindingScore);
- const [pdfLoading, setPdfLoading] = useState(false);
+ const [isExporting, setIsExporting] = useState(false);
+ const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
  const [searchOpen, setSearchOpen] = useState(false);
+ const dropdownRef = useRef<HTMLDivElement>(null);
+
+ useEffect(() => {
+ const handleClickOutside = (event: MouseEvent) => {
+ if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+ setIsExportMenuOpen(false);
+ }
+ };
+ document.addEventListener('mousedown', handleClickOutside);
+ return () => document.removeEventListener('mousedown', handleClickOutside);
+ }, []);
 
  useEffect(() => {
  const handler = (e: KeyboardEvent) => {
@@ -49,33 +63,33 @@ export function LiquidGlassToolbar({ collabCtx, traceabilityOpen, onTraceability
  return () => window.removeEventListener('keydown', handler);
  }, []);
 
- const handlePdfExport = async () => {
- if (!activeReport) return;
- setPdfLoading(true);
- try {
- const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
- const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
- const url = `${supabaseUrl}/functions/v1/pdf-export?reportId=${activeReport.id}`;
- const res = await fetch(url, {
- headers: { Authorization: `Bearer ${anonKey}`, Apikey: anonKey },
- });
- if (!res.ok) throw new Error(await res.text());
- const html = await res.text();
- const blob = new Blob([html], { type: 'text/html' });
- const objectUrl = URL.createObjectURL(blob);
- const win = window.open(objectUrl, '_blank');
- if (win) {
- win.addEventListener('load', () => {
- setTimeout(() => win.print(), 300);
- });
- }
- setTimeout(() => URL.revokeObjectURL(objectUrl), 10000);
- } catch (err: any) {
- toast.error('PDF oluşturulamadı: ' + (err?.message ?? 'Bilinmeyen hata'));
- } finally {
- setPdfLoading(false);
- }
- };
+  const exportToForensicPDF = async () => {
+    if (!activeReport) return;
+    setIsExportMenuOpen(false);
+    setIsExporting(true);
+    try {
+      const el = document.getElementById('report-editor-container') || document.body;
+      await engineExportPDF(activeReport, el);
+    } catch (err: any) {
+      toast.error('PDF oluşturulamadı: ' + (err?.message ?? 'Bilinmeyen hata'));
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const exportToWord = async () => {
+    if (!activeReport) return;
+    setIsExportMenuOpen(false);
+    setIsExporting(true);
+    try {
+      const el = document.getElementById('report-editor-container') || document.body;
+      await engineExportWord(activeReport, el.innerHTML);
+    } catch (err: any) {
+      toast.error('Word oluşturulamadı: ' + (err?.message ?? 'Bilinmeyen hata'));
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
  const statusCfg = activeReport
  ? STATUS_CONFIG[activeReport.status]
@@ -179,14 +193,46 @@ export function LiquidGlassToolbar({ collabCtx, traceabilityOpen, onTraceability
  <span className="hidden md:inline">AI ile Özetle</span>
  </button>
 
+ <div className="relative" ref={dropdownRef}>
  <button
- onClick={handlePdfExport}
- disabled={pdfLoading}
+ onClick={() => setIsExportMenuOpen(!isExportMenuOpen)}
+ disabled={isExporting}
  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-sans font-medium text-slate-600 hover:bg-slate-100 hover:text-primary transition-colors disabled:opacity-50"
  >
- {pdfLoading ? <Loader2 size={15} className="animate-spin" /> : <Download size={15} />}
- <span className="hidden md:inline">PDF İndir</span>
+ {isExporting ? <Loader2 size={15} className="animate-spin" /> : <Download size={15} />}
+ <span className="hidden md:inline">Dışa Aktar</span>
+ <ChevronDown size={14} className={clsx("transition-transform", isExportMenuOpen && "rotate-180")} />
  </button>
+
+ {isExportMenuOpen && (
+ <div className="absolute top-full right-0 mt-2 w-64 bg-white/80 backdrop-blur-xl border border-slate-200 shadow-xl rounded-xl overflow-hidden py-1 z-50">
+ <button
+ onClick={exportToWord}
+ className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm font-medium text-slate-700 hover:bg-slate-100/80 transition-colors"
+ >
+ <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
+ <FileText size={16} className="text-blue-600" />
+ </div>
+ <div>
+ <p className="font-semibold text-slate-800">Taslak Olarak İndir</p>
+ <p className="text-[10px] text-slate-500">Word (.docx) formatında</p>
+ </div>
+ </button>
+ <button
+ onClick={exportToForensicPDF}
+ className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm font-medium text-slate-700 hover:bg-slate-100/80 transition-colors border-t border-slate-100"
+ >
+ <div className="w-8 h-8 rounded-lg bg-rose-50 border border-rose-100 flex items-center justify-center shrink-0">
+ <Lock size={16} className="text-rose-600" />
+ </div>
+ <div>
+ <p className="font-semibold text-slate-800">Adli Kopya İndir</p>
+ <p className="text-[10px] text-slate-500">Mühürlü PDF formatında</p>
+ </div>
+ </button>
+ </div>
+ )}
+ </div>
 
  <button
  onClick={publishReport}

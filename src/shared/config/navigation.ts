@@ -100,6 +100,12 @@ export const navigationConfig: NavigationItem[] = [
  path: '/dashboard',
  icon: LayoutDashboard,
  },
+    {
+      id: 'board-reporting',
+      label: 'Yönetim Kurulu Raporlama',
+      path: '/reporting/executive-dashboard',
+      icon: ShieldAlert,
+    },
  {
  id: 'audit-leadership',
  label: 'Teftiş Liderliği Özeti',
@@ -407,12 +413,6 @@ export const navigationConfig: NavigationItem[] = [
  label: 'Iron Vault Raporları',
  path: '/reporting/library',
  icon: Archive,
- },
- {
- id: 'executive-summaries',
- label: 'Yönetici Özetleri',
- path: '/reporting/executive-dashboard',
- icon: LayoutDashboard,
  },
  {
  id: 'board-reporting',

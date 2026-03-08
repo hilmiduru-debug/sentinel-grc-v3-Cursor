@@ -16,9 +16,10 @@ import { ReportSealerModal } from '@/features/reporting/ui/ReportSealerModal';
 import { TraceabilityDrawer } from '@/widgets/TraceabilityDrawer';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { BookOpen, FileText, Layout, Lock, MessageSquare, Monitor, Plus, ShieldCheck, Sun, Sunrise, X } from 'lucide-react';
+import { BookOpen, FileText, Layout, Lock, MessageSquare, Monitor, Plus, ShieldCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { WarmthControl } from '@/shared/ui/WarmthControl';
 
 type TabId = 'executive' | 'canvas' | 'board';
 
@@ -79,95 +80,7 @@ const FALLBACK_FINDINGS: ComprehensiveFinding[] = [
  },
 ];
 
-function WarmthControl({ warmth, onChange }: { warmth: number; onChange: (v: number) => void }) {
- const [open, setOpen] = useState(false);
 
- const warmthLabel = warmth === 0
- ? 'Beyaz'
- : warmth <= 3
- ? 'Krem'
- : warmth <= 6
- ? 'Sıcak'
- : 'Bej';
-
- return (
- <div className="relative flex items-center">
- <button
- onClick={() => setOpen((v) => !v)}
- title="Kağıt sıcaklığını ayarla"
- className={clsx(
- 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-sans font-medium border transition-all',
- open
- ? 'bg-amber-500 border-amber-400 text-white'
- : warmth > 5
- ? 'bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100'
- : 'bg-canvas border-slate-200 text-slate-600 hover:bg-slate-100',
- )}
- >
- <Sun size={13} />
- <span className="hidden sm:inline">{warmthLabel}</span>
- </button>
-
- {open && (
- <>
- <div
- className="fixed inset-0 z-40"
- onClick={() => setOpen(false)}
- />
- <div className="absolute right-0 top-full mt-2 bg-surface rounded-2xl shadow-2xl border border-slate-200 p-4 w-64 z-50">
- <div className="flex items-center justify-between mb-3">
- <div className="flex items-center gap-2">
- <Sunrise size={15} className="text-amber-500" />
- <span className="text-xs font-sans font-semibold text-slate-700">Kağıt Sıcaklığı</span>
- </div>
- <button
- onClick={() => setOpen(false)}
- className="p-0.5 rounded text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
- >
- <X size={13} />
- </button>
- </div>
-
- <input
- type="range"
- min="0"
- max="10"
- step="1"
- value={warmth}
- onChange={(e) => onChange(Number(e.target.value))}
- className="w-full h-2 bg-gradient-to-r from-slate-200 via-amber-100 to-amber-400 rounded-full appearance-none cursor-pointer
- [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4
- [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-surface
- [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-amber-300
- [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full
- [&::-moz-range-thumb]:bg-surface [&::-moz-range-thumb]:shadow-md [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-amber-300"
- />
-
- <div className="flex items-center justify-between mt-2 text-xs">
- <span className="text-slate-400">Beyaz</span>
- <span className={clsx('font-semibold', warmth > 5 ? 'text-amber-600' : 'text-slate-600')}>
- {warmthLabel}
- </span>
- <span className="text-amber-500">Bej</span>
- </div>
-
- <p className="mt-2 pt-2 border-t border-slate-100 text-xs text-slate-400 leading-relaxed">
- {warmth === 0
- ? 'Dijital beyaz — klasik ekran'
- : warmth <= 3
- ? 'Hafif krem — gündüz okuma'
- : warmth <= 6
- ? 'Orta sıcak — göz dostu'
- : warmth <= 8
- ? 'Sıcak bej — akşam okuma'
- : 'Kindle modu — gece okuma'}
- </p>
- </div>
- </>
- )}
- </div>
- );
-}
 
 export default function ReportEditorPage() {
  const { id } = useParams<{ id: string }>();
@@ -176,7 +89,8 @@ export default function ReportEditorPage() {
  const setFindings = useFindingStore((s) => s.setFindings);
  const [activeTab, setActiveTab] = useState<TabId>('executive');
  const [rightPanel, setRightPanel] = useState<'blocks' | 'notes'>('blocks');
- const [warmth, setWarmth] = useState(2);
+  const [warmth, setWarmth] = useState(20);
+  const [nightMode, setNightMode] = useState(false);
  const [traceabilityOpen, setTraceabilityOpen] = useState(false);
  const [sealerModalOpen, setSealerModalOpen] = useState(false);
  const collabCtx = useCollaboration(id ?? 'no-report');
@@ -291,7 +205,7 @@ export default function ReportEditorPage() {
  Nihai Raporu Mühürle
  </button>
  )}
- <WarmthControl warmth={warmth} onChange={setWarmth} />
+ <WarmthControl warmth={warmth} nightMode={nightMode} onChange={(w, n) => { setWarmth(w); setNightMode(n); }} />
  </div>
  </div>
  </div>
@@ -299,7 +213,7 @@ export default function ReportEditorPage() {
  <div className="flex-1 min-h-0 overflow-hidden">
  {activeTab === 'executive' && (
  <div className="h-full overflow-y-auto pb-20">
- <ExecutiveSummaryStudio readOnly={!isEditable} warmth={warmth} />
+ <ExecutiveSummaryStudio readOnly={!isEditable} warmth={warmth} nightMode={nightMode} />
  </div>
  )}
 
@@ -358,7 +272,7 @@ export default function ReportEditorPage() {
 
  {activeTab === 'board' && activeReport && (
  <div className="h-full overflow-y-auto pb-20">
- <BoardBriefingCard report={activeReport} warmth={warmth} />
+ <BoardBriefingCard report={activeReport} warmth={warmth} nightMode={nightMode} />
  </div>
  )}
  </div>

@@ -15,16 +15,12 @@ import {
  TrendingUp,
 } from 'lucide-react';
 
-function getWarmthBg(w: number): string {
- const r = 255;
- const g = Math.max(240, Math.floor(255 - (w * 0.2)));
- const b = Math.max(220, Math.floor(255 - (w * 0.6)));
- return `rgb(${r}, ${g}, ${b})`;
-}
+import { getWarmthStyle } from '@/shared/utils/warmth';
 
 interface Props {
- report: M6Report;
- warmth?: number;
+  report: M6Report;
+  warmth?: number;
+  nightMode?: boolean;
 }
 
 function gradeStyle(grade: string): { bg: string; color: string } {
@@ -140,7 +136,7 @@ function FindingBadgeRow({ findingCounts }: { findingCounts: M6Report['executive
  );
 }
 
-function StandardAuditLayout({ report, warmth }: Props) {
+function StandardAuditLayout({ report, warmth, nightMode = false }: Props) {
  const es = report?.executiveSummary ?? DEFAULT_EXECUTIVE_SUMMARY;
  const title = report?.title ?? '';
  const currentGradeStyle = gradeStyle(es?.grade ?? 'N/A');
@@ -148,14 +144,14 @@ function StandardAuditLayout({ report, warmth }: Props) {
  const assStyle = assuranceStyle(es?.assuranceLevel ?? '');
  const trendPositive = (es?.trend ?? 0) > 0;
  const trendNeutral = (es?.trend ?? 0) === 0;
- const paperBg = getWarmthBg(warmth ?? 2);
+ const paperStyle = getWarmthStyle(warmth ?? 20, nightMode);
  const preciseScore = (report as { precise_score?: number | null })?.precise_score;
  const displayScore = preciseScore != null ? preciseScore : (es?.score ?? 0);
 
  return (
  <div
  className="rounded-sm overflow-hidden shadow-[0_25px_60px_-15px_rgba(0,0,0,0.2)] ring-1 ring-black/5 transition-colors duration-300"
- style={{ backgroundColor: paperBg }}
+ style={{ ...paperStyle, transition: "background-color 0.3s ease" }}
  >
  <div className="flex items-start justify-between px-8 pt-8 pb-6 border-b border-slate-100">
  <div>
@@ -287,16 +283,16 @@ function StandardAuditLayout({ report, warmth }: Props) {
  );
 }
 
-function InvestigationLayout({ report, warmth }: Props) {
+function InvestigationLayout({ report, warmth, nightMode = false }: Props) {
  const es = report?.executiveSummary ?? DEFAULT_EXECUTIVE_SUMMARY;
  const title = report?.title ?? '';
- const paperBg = getWarmthBg(warmth ?? 2);
+ const paperStyle = getWarmthStyle(warmth ?? 20, nightMode);
  const dm = es?.dynamicMetrics ?? {};
 
  return (
  <div
  className="rounded-sm overflow-hidden shadow-[0_25px_60px_-15px_rgba(0,0,0,0.2)] ring-1 ring-red-900/10 transition-colors duration-300"
- style={{ backgroundColor: paperBg }}
+ style={{ ...paperStyle, transition: "background-color 0.3s ease" }}
  >
  <div className="bg-gradient-to-r from-[#700000] to-[#1a0000] px-8 pt-8 pb-6">
  <div className="flex items-center gap-3 mb-3">
@@ -370,15 +366,15 @@ function InvestigationLayout({ report, warmth }: Props) {
  );
 }
 
-function InfoNoteLayout({ report, warmth }: Props) {
+function InfoNoteLayout({ report, warmth, nightMode = false }: Props) {
  const es = report?.executiveSummary ?? DEFAULT_EXECUTIVE_SUMMARY;
  const title = report?.title ?? '';
- const paperBg = getWarmthBg(warmth ?? 2);
+ const paperStyle = getWarmthStyle(warmth ?? 20, nightMode);
 
  return (
  <div
  className="rounded-sm overflow-hidden shadow-[0_25px_60px_-15px_rgba(0,0,0,0.2)] ring-1 ring-black/5 transition-colors duration-300"
- style={{ backgroundColor: paperBg }}
+ style={{ ...paperStyle, transition: "background-color 0.3s ease" }}
  >
  <div className="flex items-start justify-between px-8 pt-8 pb-6 border-b border-slate-100">
  <div>
@@ -414,7 +410,7 @@ function InfoNoteLayout({ report, warmth }: Props) {
  );
 }
 
-export function BoardBriefingCard({ report, warmth = 2 }: Props) {
+export function BoardBriefingCard({ report, warmth = 20, nightMode = false }: Props) {
  if (!report) return null;
  const layoutType = report?.executiveSummary?.layoutType ?? 'standard_audit';
 
@@ -422,11 +418,11 @@ export function BoardBriefingCard({ report, warmth = 2 }: Props) {
  <div className="bg-slate-50 min-h-screen py-8 px-4 lg:px-8">
  <div className="max-w-4xl mx-auto">
  {layoutType === 'investigation' ? (
- <InvestigationLayout report={report} warmth={warmth} />
+ <InvestigationLayout report={report} warmth={warmth} nightMode={nightMode} />
  ) : layoutType === 'info_note' ? (
- <InfoNoteLayout report={report} warmth={warmth} />
+ <InfoNoteLayout report={report} warmth={warmth} nightMode={nightMode} />
  ) : (
- <StandardAuditLayout report={report} warmth={warmth} />
+ <StandardAuditLayout report={report} warmth={warmth} nightMode={nightMode} />
  )}
  </div>
  </div>

@@ -148,3 +148,40 @@ export function useBoardEscalations() {
  staleTime: 2 * 60 * 1000,
  });
 }
+
+
+/** Sadece statüsü YAYINLANMIŞ/KAPATILMIŞ olan nihai raporlar (Read-Only List) */
+export interface PublishedReportRow {
+  id: string;
+  title: string;
+  status: string;
+  report_date: string;
+  version: number;
+  executive_summary?: string | null;
+}
+
+export function usePublishedReports() {
+  return useQuery({
+    queryKey: ['board-briefing', 'published-reports'],
+    queryFn: async (): Promise<PublishedReportRow[]> => {
+      const { data, error } = await supabase
+        .from('reports')
+        .select('id, title, status, created_at, version, executive_summary')
+        .in('status', ['published', 'closed', 'PUBLISHED', 'CLOSED'])
+        .order('created_at', { ascending: false });
+        
+      if (error) throw error;
+      
+      const rows = data || [];
+      return rows.map((r: any) => ({
+        id: r.id,
+        title: r.title,
+        status: r.status,
+        report_date: r.created_at,
+        version: r.version || 1,
+        executive_summary: r.executive_summary ?? null,
+      }));
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+}
