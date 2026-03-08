@@ -1,5 +1,5 @@
 export { AgentCard } from './AgentCard';
+export { InvestigatorTerminal } from './InvestigatorTerminal';
 export { LiveTerminal } from './LiveTerminal';
 export type { TerminalLine } from './LiveTerminal';
-export { InvestigatorTerminal } from './InvestigatorTerminal';
 export { NegotiatorChat } from './NegotiatorChat';

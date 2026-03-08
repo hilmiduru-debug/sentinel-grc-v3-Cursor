@@ -13,14 +13,14 @@ test.describe('🎯 RED TEAM & BAS TRACKER E2E TEST', () => {
 
   test('Red Team Tracker page loads without WSOD', async ({ page }) => {
     await page.goto('/red-team');
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(500);
     await expect(page.locator('body')).not.toBeEmpty();
     await expect(page.getByText('Red Team & BAS Tracker')).toBeVisible({ timeout: 10000 });
   });
 
   test('Campaigns and BAS Dashboard logs are loaded from Supabase', async ({ page }) => {
     await page.goto('/red-team');
-    await page.waitForTimeout(3500);
+    await page.waitForTimeout(500);
 
     // Look for the loaded Phishing simulation campaign
     await expect(page.getByText('SWIFT Altyapısı Phishing Simülasyonu')).toBeVisible({ timeout: 10000 });

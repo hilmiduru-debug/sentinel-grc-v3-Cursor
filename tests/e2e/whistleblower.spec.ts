@@ -60,7 +60,7 @@ test.describe('🔐 Whistleblower Portal — WSOD Koruması', () => {
     const errors = collectErrors(page);
     await loginAs(page);
 
-    await page.goto(`${BASE}/governance/whistleblower`);
+    await page.goto(`${BASE}/governance/voice`);
     await page.waitForLoadState('networkidle', { timeout: 12000 });
 
     await assertNoWSoD(page);
@@ -82,7 +82,7 @@ test.describe('🔐 Whistleblower Portal — WSOD Koruması', () => {
 test.describe('📊 İhbar İstatistikleri — Supabase Canlı Veri', () => {
   test('Dört istatistik kartı render edilmeli (canlı Supabase sayıları)', async ({ page }) => {
     await loginAs(page);
-    await page.goto(`${BASE}/governance/whistleblower`);
+    await page.goto(`${BASE}/governance/voice`);
     await page.waitForLoadState('networkidle', { timeout: 12000 });
 
     // Stats kartları data-testid ile seçilir
@@ -101,7 +101,7 @@ test.describe('📊 İhbar İstatistikleri — Supabase Canlı Veri', () => {
 
   test('İstatistikler numeric veya loading state göstermeli — crash yok', async ({ page }) => {
     await loginAs(page);
-    await page.goto(`${BASE}/governance/whistleblower`);
+    await page.goto(`${BASE}/governance/voice`);
     await page.waitForLoadState('networkidle', { timeout: 12000 });
 
     // Tüm sayılar ya digit ya '—' içermeli
@@ -120,7 +120,7 @@ test.describe('📊 İhbar İstatistikleri — Supabase Canlı Veri', () => {
 test.describe('📝 İhbar Formu — Supabase Insert & Başarı Ekranı', () => {
   test('Form doldurulup gönderilince başarı ekranı görünmeli', async ({ page }) => {
     await loginAs(page);
-    await page.goto(`${BASE}/governance/whistleblower`);
+    await page.goto(`${BASE}/governance/voice`);
     await page.waitForLoadState('networkidle', { timeout: 12000 });
 
     // Başlık alanını doldur
@@ -173,7 +173,7 @@ test.describe('📝 İhbar Formu — Supabase Insert & Başarı Ekranı', () => 
 
   test('Form boş gönderilince hata mesajı görünmeli — crash yok', async ({ page }) => {
     await loginAs(page);
-    await page.goto(`${BASE}/governance/whistleblower`);
+    await page.goto(`${BASE}/governance/voice`);
     await page.waitForLoadState('networkidle', { timeout: 12000 });
 
     // Formu boş bırak ve gönder
@@ -205,7 +205,7 @@ test.describe('📝 İhbar Formu — Supabase Insert & Başarı Ekranı', () => 
 test.describe('📋 İhbar Listesi — Seed Verileri', () => {
   test('Açık olaylar listesi görünmeli (seed.sql den gelen veriler)', async ({ page }) => {
     await loginAs(page);
-    await page.goto(`${BASE}/governance/whistleblower`);
+    await page.goto(`${BASE}/governance/voice`);
     await page.waitForLoadState('networkidle', { timeout: 12000 });
 
     await assertNoWSoD(page);
@@ -245,14 +245,14 @@ test.describe('📋 İhbar Listesi — Seed Verileri', () => {
       route.fulfill({ status: 500, contentType: 'application/json', body: JSON.stringify({ error: 'Simulated error' }) });
     });
 
-    await page.goto(`${BASE}/governance/whistleblower`);
+    await page.goto(`${BASE}/governance/voice`);
     await page.waitForLoadState('networkidle', { timeout: 12000 });
 
     // WSOD olmamalı — error boundary devreye girmeli
     await assertNoWSoD(page);
 
     // Sayfa başlığı hala görünmeli
-    const title = page.locator('text=İhbar Hattı, text=Whistleblower').first();
+    const title = page.locator('h1').filter({ hasText: /İhbar Hattı|Whistleblower/ }).first();
     await expect(title).toBeVisible({ timeout: 8000 });
   });
 });
@@ -271,13 +271,13 @@ test.describe('🧭 Routing — Governance Modülü', () => {
     await assertNoWSoD(page);
 
     // Doğrudan whistleblower URL'sine git
-    await page.goto(`${BASE}/governance/whistleblower`);
+    await page.goto(`${BASE}/governance/voice`);
     await page.waitForLoadState('networkidle', { timeout: 10000 });
 
     await assertNoWSoD(page);
 
     // Sayfa içeriği doğru yüklenmiş
-    const pageContent = page.locator('text=İhbar, h1, h2').first();
+    const pageContent = page.locator('h1').filter({ hasText: 'İhbar' }).first();
     await expect(pageContent).toBeVisible({ timeout: 8000 });
   });
 });

@@ -1,300 +1,308 @@
-import { useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Zap, ShieldCheck, ShieldAlert, ShieldOff, Loader2,
-  Play, BarChart3, Clock, AlertTriangle, History, TrendingUp,
-} from 'lucide-react';
-import clsx from 'clsx';
 import { runSmurfingTest } from '@/features/chaos/ChaosMonkey';
 import { persistChaosResult, useChaosResults, useChaosStats } from '@/features/chaos/api';
-import type { ChaosTestResult, ChaosStep, ControlReaction } from '@/features/chaos/types';
-import { SCENARIO_LABELS, SCENARIO_DESCRIPTIONS } from '@/features/chaos/types';
+import type { ChaosStep, ChaosTestResult, ControlReaction } from '@/features/chaos/types';
+import { SCENARIO_DESCRIPTIONS, SCENARIO_LABELS } from '@/features/chaos/types';
+import clsx from 'clsx';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+ AlertTriangle,
+ BarChart3, Clock,
+ History,
+ Loader2,
+ Play,
+ ShieldAlert,
+ ShieldCheck,
+ ShieldOff,
+ TrendingUp,
+ Zap,
+} from 'lucide-react';
+import { useCallback, useState } from 'react';
 
 const REACTION_CONFIG: Record<ControlReaction, { icon: typeof ShieldCheck; color: string; label: string; bg: string }> = {
-  BLOCKED: { icon: ShieldCheck, color: 'text-emerald-600', label: 'ENGELLENDI (Basarili)', bg: 'bg-emerald-50 border-emerald-200' },
-  DETECTED: { icon: ShieldAlert, color: 'text-amber-600', label: 'TESPIT EDILDI (Basarili)', bg: 'bg-amber-50 border-amber-200' },
-  MISSED: { icon: ShieldOff, color: 'text-red-600', label: 'KACIRILDI (Basarisiz)', bg: 'bg-red-50 border-red-200' },
+ BLOCKED: { icon: ShieldCheck, color: 'text-emerald-600', label: 'ENGELLENDI (Basarili)', bg: 'bg-emerald-50 border-emerald-200' },
+ DETECTED: { icon: ShieldAlert, color: 'text-amber-600', label: 'TESPIT EDILDI (Basarili)', bg: 'bg-amber-50 border-amber-200' },
+ MISSED: { icon: ShieldOff, color: 'text-red-600', label: 'KACIRILDI (Basarisiz)', bg: 'bg-red-50 border-red-200' },
 };
 
 export function ChaosTestCard() {
-  const [steps, setSteps] = useState<ChaosStep[]>([]);
-  const [result, setResult] = useState<ChaosTestResult | null>(null);
-  const [running, setRunning] = useState(false);
+ const [steps, setSteps] = useState<ChaosStep[]>([]);
+ const [result, setResult] = useState<ChaosTestResult | null>(null);
+ const [running, setRunning] = useState(false);
 
-  const handleRun = useCallback(async () => {
-    if (running) return;
-    setRunning(true);
-    setResult(null);
-    setSteps([]);
+ const handleRun = useCallback(async () => {
+ if (running) return;
+ setRunning(true);
+ setResult(null);
+ setSteps([]);
 
-    try {
-      const outcome = await runSmurfingTest((step) => {
-        setSteps((prev) => {
-          const idx = prev.findIndex((s) => s.label === step.label);
-          if (idx >= 0) {
-            const next = [...prev];
-            next[idx] = step;
-            return next;
-          }
-          return [...prev, step];
-        });
-      });
-      setResult(outcome);
-      // Supabase'e sessizce kaydet — hata UI'yi bloklamasın
-      await persistChaosResult('ce000000-0000-0000-0000-000000000001', outcome);
-    } catch (err) {
-      console.error('Chaos test failed:', err);
-      setSteps((prev) => [...prev, { label: 'Test basarisiz oldu', status: 'error', detail: String(err) }]);
-    } finally {
-      setRunning(false);
-    }
-  }, [running]);
+ try {
+ const outcome = await runSmurfingTest((step) => {
+ setSteps((prev) => {
+ const idx = prev.findIndex((s) => s.label === step.label);
+ if (idx >= 0) {
+ const next = [...prev];
+ next[idx] = step;
+ return next;
+ }
+ return [...prev, step];
+ });
+ });
+ setResult(outcome);
+ // Supabase'e sessizce kaydet — hata UI'yi bloklamasın
+ await persistChaosResult('ce000000-0000-0000-0000-000000000001', outcome);
+ } catch (err) {
+ console.error('Chaos test failed:', err);
+ setSteps((prev) => [...prev, { label: 'Test basarisiz oldu', status: 'error', detail: String(err) }]);
+ } finally {
+ setRunning(false);
+ }
+ }, [running]);
 
-  return (
-    <div className="space-y-4">
-      <div className="bg-surface border border-slate-200 rounded-xl p-5">
-        <div className="flex items-start gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center shrink-0">
-            <Zap size={20} className="text-amber-400" />
-          </div>
-          <div>
-            <h3 className="text-sm font-bold text-primary">{SCENARIO_LABELS.SMURFING_TEST}</h3>
-            <p className="text-xs text-slate-500 mt-0.5">{SCENARIO_DESCRIPTIONS.SMURFING_TEST}</p>
-          </div>
-          <button
-            onClick={handleRun}
-            disabled={running}
-            className={clsx(
-              'ml-auto flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all',
-              running
-                ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                : 'bg-slate-900 text-white hover:bg-slate-800',
-            )}
-          >
-            {running ? (
-              <>
-                <Loader2 size={14} className="animate-spin" />
-                Calisiyor...
-              </>
-            ) : (
-              <>
-                <Play size={14} />
-                Testi Baslat
-              </>
-            )}
-          </button>
-        </div>
+ return (
+ <div className="space-y-4">
+ <div className="bg-surface border border-slate-200 rounded-xl p-5">
+ <div className="flex items-start gap-3 mb-4">
+ <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center shrink-0">
+ <Zap size={20} className="text-amber-400" />
+ </div>
+ <div>
+ <h3 className="text-sm font-bold text-primary">{SCENARIO_LABELS.SMURFING_TEST}</h3>
+ <p className="text-xs text-slate-500 mt-0.5">{SCENARIO_DESCRIPTIONS.SMURFING_TEST}</p>
+ </div>
+ <button
+ onClick={handleRun}
+ disabled={running}
+ className={clsx(
+ 'ml-auto flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all',
+ running
+ ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+ : 'bg-slate-900 text-white hover:bg-slate-800',
+ )}
+ >
+ {running ? (
+ <>
+ <Loader2 size={14} className="animate-spin" />
+ Calisiyor...
+ </>
+ ) : (
+ <>
+ <Play size={14} />
+ Testi Baslat
+ </>
+ )}
+ </button>
+ </div>
 
-        <div className="grid grid-cols-3 gap-3 mb-4">
-          <div className="bg-canvas rounded-lg p-3 text-center">
-            <span className="text-[10px] text-slate-500 block">Islem Sayisi</span>
-            <span className="text-lg font-black text-primary">10</span>
-          </div>
-          <div className="bg-canvas rounded-lg p-3 text-center">
-            <span className="text-[10px] text-slate-500 block">Islem Basina</span>
-            <span className="text-lg font-black text-primary">&lt;5K TL</span>
-          </div>
-          <div className="bg-canvas rounded-lg p-3 text-center">
-            <span className="text-[10px] text-slate-500 block">Toplam</span>
-            <span className="text-lg font-black text-primary">&gt;50K TL</span>
-          </div>
-        </div>
+ <div className="grid grid-cols-3 gap-3 mb-4">
+ <div className="bg-canvas rounded-lg p-3 text-center">
+ <span className="text-[10px] text-slate-500 block">Islem Sayisi</span>
+ <span className="text-lg font-black text-primary">10</span>
+ </div>
+ <div className="bg-canvas rounded-lg p-3 text-center">
+ <span className="text-[10px] text-slate-500 block">Islem Basina</span>
+ <span className="text-lg font-black text-primary">&lt;5K TL</span>
+ </div>
+ <div className="bg-canvas rounded-lg p-3 text-center">
+ <span className="text-[10px] text-slate-500 block">Toplam</span>
+ <span className="text-lg font-black text-primary">&gt;50K TL</span>
+ </div>
+ </div>
 
-        <AnimatePresence>
-          {steps.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              className="overflow-hidden"
-            >
-              <div className="bg-slate-950 rounded-lg border border-slate-800 p-3 space-y-1.5 font-mono text-xs mb-4">
-                {steps.map((step, i) => (
-                  <motion.div
-                    key={`${step.label}-${i}`}
-                    initial={{ opacity: 0, x: -6 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="flex items-start gap-2"
-                  >
-                    {step.status === 'running' ? (
-                      <Loader2 size={12} className="animate-spin text-cyan-400 mt-0.5 shrink-0" />
-                    ) : step.status === 'error' ? (
-                      <AlertTriangle size={12} className="text-red-400 mt-0.5 shrink-0" />
-                    ) : (
-                      <span className="text-emerald-400 mt-0.5 shrink-0">✓</span>
-                    )}
-                    <div>
-                      <span className={clsx(
-                        step.status === 'running' ? 'text-cyan-400' :
-                        step.status === 'error' ? 'text-red-400' :
-                        'text-slate-400',
-                      )}>
-                        {step.label}
-                      </span>
-                      {step.detail && (
-                        <span className="text-slate-500 block">{step.detail}</span>
-                      )}
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+ <AnimatePresence>
+ {steps.length > 0 && (
+ <motion.div
+ initial={{ opacity: 0, height: 0 }}
+ animate={{ opacity: 1, height: 'auto' }}
+ className="overflow-hidden"
+ >
+ <div className="bg-slate-950 rounded-lg border border-slate-800 p-3 space-y-1.5 font-mono text-xs mb-4">
+ {(steps || []).map((step, i) => (
+ <motion.div
+ key={`${step.label}-${i}`}
+ initial={{ opacity: 0, x: -6 }}
+ animate={{ opacity: 1, x: 0 }}
+ className="flex items-start gap-2"
+ >
+ {step.status === 'running' ? (
+ <Loader2 size={12} className="animate-spin text-cyan-400 mt-0.5 shrink-0" />
+ ) : step.status === 'error' ? (
+ <AlertTriangle size={12} className="text-red-400 mt-0.5 shrink-0" />
+ ) : (
+ <span className="text-emerald-400 mt-0.5 shrink-0">✓</span>
+ )}
+ <div>
+ <span className={clsx(
+ step.status === 'running' ? 'text-cyan-400' :
+ step.status === 'error' ? 'text-red-400' :
+ 'text-slate-400',
+ )}>
+ {step.label}
+ </span>
+ {step.detail && (
+ <span className="text-slate-500 block">{step.detail}</span>
+ )}
+ </div>
+ </motion.div>
+ ))}
+ </div>
+ </motion.div>
+ )}
+ </AnimatePresence>
+ </div>
 
-      <AnimatePresence>
-        {result && (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <ChaosResultCard result={result} />
-          </motion.div>
-        )}
-      </AnimatePresence>
+ <AnimatePresence>
+ {result && (
+ <motion.div
+ initial={{ opacity: 0, y: 12 }}
+ animate={{ opacity: 1, y: 0 }}
+ >
+ <ChaosResultCard result={result} />
+ </motion.div>
+ )}
+ </AnimatePresence>
 
-      {/* Supabase'den gelen gecmiş test sonuçları */}
-      <ChaosHistoryPanel />
-    </div>
-  );
+ {/* Supabase'den gelen gecmiş test sonuçları */}
+ <ChaosHistoryPanel />
+ </div>
+ );
 }
 
 function ChaosResultCard({ result }: { result: ChaosTestResult }) {
-  const cfg = REACTION_CONFIG[result.controlReaction];
-  const Icon = cfg.icon;
+ const cfg = REACTION_CONFIG[result.controlReaction];
+ const Icon = cfg.icon;
 
-  return (
-    <div className={clsx('border rounded-xl p-5', cfg.bg)}>
-      <div className="flex items-center gap-3 mb-4">
-        <Icon size={24} className={cfg.color} />
-        <div>
-          <h4 className="text-sm font-bold text-primary">Kaos Test Sonucu</h4>
-          <span className={clsx('text-xs font-bold', cfg.color)}>{cfg.label}</span>
-        </div>
-      </div>
+ return (
+ <div className={clsx('border rounded-xl p-5', cfg.bg)}>
+ <div className="flex items-center gap-3 mb-4">
+ <Icon size={24} className={cfg.color} />
+ <div>
+ <h4 className="text-sm font-bold text-primary">Kaos Test Sonucu</h4>
+ <span className={clsx('text-xs font-bold', cfg.color)}>{cfg.label}</span>
+ </div>
+ </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="bg-surface/70 rounded-lg p-3">
-          <div className="flex items-center gap-1.5 mb-1">
-            <Zap size={12} className="text-slate-400" />
-            <span className="text-[10px] text-slate-500">Saldiri</span>
-          </div>
-          <span className="text-xs font-bold text-primary">{SCENARIO_LABELS[result.scenario]}</span>
-        </div>
+ <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+ <div className="bg-surface/70 rounded-lg p-3">
+ <div className="flex items-center gap-1.5 mb-1">
+ <Zap size={12} className="text-slate-400" />
+ <span className="text-[10px] text-slate-500">Saldiri</span>
+ </div>
+ <span className="text-xs font-bold text-primary">{SCENARIO_LABELS[result.scenario]}</span>
+ </div>
 
-        <div className="bg-surface/70 rounded-lg p-3">
-          <div className="flex items-center gap-1.5 mb-1">
-            <BarChart3 size={12} className="text-slate-400" />
-            <span className="text-[10px] text-slate-500">Enjeksiyon</span>
-          </div>
-          <span className="text-xs font-bold text-primary">
-            {result.transactionsInjected} islem / {result.totalAmount.toLocaleString('tr-TR')} TL
-          </span>
-        </div>
+ <div className="bg-surface/70 rounded-lg p-3">
+ <div className="flex items-center gap-1.5 mb-1">
+ <BarChart3 size={12} className="text-slate-400" />
+ <span className="text-[10px] text-slate-500">Enjeksiyon</span>
+ </div>
+ <span className="text-xs font-bold text-primary">
+ {result.transactionsInjected} islem / {result.totalAmount.toLocaleString('tr-TR')} TL
+ </span>
+ </div>
 
-        <div className="bg-surface/70 rounded-lg p-3">
-          <div className="flex items-center gap-1.5 mb-1">
-            <Clock size={12} className="text-slate-400" />
-            <span className="text-[10px] text-slate-500">Tespit Suresi</span>
-          </div>
-          <span className="text-xs font-bold text-primary">{result.detectionTimeMs}ms</span>
-        </div>
+ <div className="bg-surface/70 rounded-lg p-3">
+ <div className="flex items-center gap-1.5 mb-1">
+ <Clock size={12} className="text-slate-400" />
+ <span className="text-[10px] text-slate-500">Tespit Suresi</span>
+ </div>
+ <span className="text-xs font-bold text-primary">{result.detectionTimeMs}ms</span>
+ </div>
 
-        <div className="bg-surface/70 rounded-lg p-3">
-          <div className="flex items-center gap-1.5 mb-1">
-            <AlertTriangle size={12} className="text-slate-400" />
-            <span className="text-[10px] text-slate-500">Uyari</span>
-          </div>
-          <span className={clsx('text-xs font-bold', result.alertTriggered ? 'text-emerald-700' : 'text-red-700')}>
-            {result.alertTriggered ? `Olusturuldu (#${result.alertId?.slice(0, 8)})` : 'Olusturulmadi'}
-          </span>
-        </div>
-      </div>
+ <div className="bg-surface/70 rounded-lg p-3">
+ <div className="flex items-center gap-1.5 mb-1">
+ <AlertTriangle size={12} className="text-slate-400" />
+ <span className="text-[10px] text-slate-500">Uyari</span>
+ </div>
+ <span className={clsx('text-xs font-bold', result.alertTriggered ? 'text-emerald-700' : 'text-red-700')}>
+ {result.alertTriggered ? `Olusturuldu (#${result.alertId?.slice(0, 8)})` : 'Olusturulmadi'}
+ </span>
+ </div>
+ </div>
 
-      <div className="mt-3 p-2 bg-surface/50 rounded-lg">
-        <span className="text-[10px] text-slate-500">Batch ID: {result.batchId}</span>
-        <span className="text-[10px] text-slate-500 ml-3">Zaman: {new Date(result.timestamp).toLocaleString('tr-TR')}</span>
-      </div>
-    </div>
-  );
+ <div className="mt-3 p-2 bg-surface/50 rounded-lg">
+ <span className="text-[10px] text-slate-500">Batch ID: {result.batchId}</span>
+ <span className="text-[10px] text-slate-500 ml-3">Zaman: {new Date(result.timestamp).toLocaleString('tr-TR')}</span>
+ </div>
+ </div>
+ );
 }
 
 /* ──────────────────────────────────────────────────────────
-   ChaosHistoryPanel — Supabase'den gelen geçmiş test sonuçları
-   ────────────────────────────────────────────────────────── */
+ ChaosHistoryPanel — Supabase'den gelen geçmiş test sonuçları
+ ────────────────────────────────────────────────────────── */
 function ChaosHistoryPanel() {
-  const { data: results, isLoading } = useChaosResults();
-  const { stats } = useChaosStats();
-  const rows = results ?? [];
+ const { data: results, isLoading } = useChaosResults();
+ const { stats } = useChaosStats();
+ const rows = results ?? [];
 
-  return (
-    <div className="bg-surface border border-slate-200 rounded-xl p-5">
-      <div className="flex items-center gap-2 mb-4">
-        <History size={16} className="text-slate-400" />
-        <h4 className="text-sm font-bold text-primary">Geçmiş Test Sonuçları</h4>
-        <span className="ml-auto text-[10px] text-slate-400 font-mono">
-          {stats.total_runs} çalıştırma
-        </span>
-      </div>
+ return (
+ <div className="bg-surface border border-slate-200 rounded-xl p-5">
+ <div className="flex items-center gap-2 mb-4">
+ <History size={16} className="text-slate-400" />
+ <h4 className="text-sm font-bold text-primary">Geçmiş Test Sonuçları</h4>
+ <span className="ml-auto text-[10px] text-slate-400 font-mono">
+ {stats.total_runs} çalıştırma
+ </span>
+ </div>
 
-      {/* Stats bar */}
-      <div className="grid grid-cols-4 gap-2 mb-4">
-        {[
-          { label: 'Başarı Oranı', value: `%${stats.success_rate}`, color: 'text-emerald-600', icon: TrendingUp },
-          { label: 'Engellendi', value: stats.blocked_count, color: 'text-emerald-600', icon: ShieldCheck },
-          { label: 'Tespit', value: stats.detected_count, color: 'text-amber-600', icon: ShieldAlert },
-          { label: 'Kaçırıldı', value: stats.missed_count, color: 'text-red-600', icon: ShieldOff },
-        ].map(({ label, value, color, icon: Icon }) => (
-          <div key={label} className="bg-canvas rounded-lg p-2.5 text-center">
-            <Icon size={14} className={clsx('mx-auto mb-1', color)} />
-            <span className={clsx('text-sm font-black', color)}>{value}</span>
-            <span className="text-[10px] text-slate-500 block mt-0.5">{label}</span>
-          </div>
-        ))}
-      </div>
+ {/* Stats bar */}
+ <div className="grid grid-cols-4 gap-2 mb-4">
+ {[
+ { label: 'Başarı Oranı', value: `%${stats.success_rate}`, color: 'text-emerald-600', icon: TrendingUp },
+ { label: 'Engellendi', value: stats.blocked_count, color: 'text-emerald-600', icon: ShieldCheck },
+ { label: 'Tespit', value: stats.detected_count, color: 'text-amber-600', icon: ShieldAlert },
+ { label: 'Kaçırıldı', value: stats.missed_count, color: 'text-red-600', icon: ShieldOff },
+ ].map(({ label, value, color, icon: Icon }) => (
+ <div key={label} className="bg-canvas rounded-lg p-2.5 text-center">
+ <Icon size={14} className={clsx('mx-auto mb-1', color)} />
+ <span className={clsx('text-sm font-black', color)}>{value}</span>
+ <span className="text-[10px] text-slate-500 block mt-0.5">{label}</span>
+ </div>
+ ))}
+ </div>
 
-      {isLoading ? (
-        <div className="flex items-center gap-2 text-xs text-slate-400 py-3">
-          <Loader2 size={14} className="animate-spin" />
-          Yükleniyor...
-        </div>
-      ) : rows.length === 0 ? (
-        <p className="text-xs text-slate-400 text-center py-3">
-          Henüz test çalıştırılmadı. Yukarıdan başlatabilirsiniz.
-        </p>
-      ) : (
-        <div className="space-y-2 max-h-64 overflow-y-auto">
-          {rows.map((r) => {
-            const reaction = r.control_reaction as ControlReaction;
-            const cfg = REACTION_CONFIG[reaction] ?? REACTION_CONFIG.MISSED;
-            const RIcon = cfg.icon;
-            return (
-              <div
-                key={r.id}
-                className={clsx(
-                  'flex items-center gap-3 px-3 py-2 rounded-lg border text-xs',
-                  cfg.bg,
-                )}
-              >
-                <RIcon size={14} className={cfg.color} />
-                <div className="flex-1 min-w-0">
-                  <span className="font-medium text-primary truncate block">
-                    {r.scenario}
-                  </span>
-                  <span className="text-slate-400">
-                    {r.transactions_injected} işlem · {(r.total_amount ?? 0).toLocaleString('tr-TR')} TL
-                    {r.detection_time_ms > 0 ? ` · ${r.detection_time_ms}ms` : ''}
-                  </span>
-                </div>
-                <span className={clsx('font-bold uppercase text-[9px]', cfg.color)}>{cfg.label}</span>
-                <span className="text-slate-400 shrink-0">
-                  {new Date(r.ran_at).toLocaleDateString('tr-TR')}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
+ {isLoading ? (
+ <div className="flex items-center gap-2 text-xs text-slate-400 py-3">
+ <Loader2 size={14} className="animate-spin" />
+ Yükleniyor...
+ </div>
+ ) : rows.length === 0 ? (
+ <p className="text-xs text-slate-400 text-center py-3">
+ Henüz test çalıştırılmadı. Yukarıdan başlatabilirsiniz.
+ </p>
+ ) : (
+ <div className="space-y-2 max-h-64 overflow-y-auto">
+ {(rows || []).map((r) => {
+ const reaction = r.control_reaction as ControlReaction;
+ const cfg = REACTION_CONFIG[reaction] ?? REACTION_CONFIG.MISSED;
+ const RIcon = cfg.icon;
+ return (
+ <div
+ key={r.id}
+ className={clsx(
+ 'flex items-center gap-3 px-3 py-2 rounded-lg border text-xs',
+ cfg.bg,
+ )}
+ >
+ <RIcon size={14} className={cfg.color} />
+ <div className="flex-1 min-w-0">
+ <span className="font-medium text-primary truncate block">
+ {r.scenario}
+ </span>
+ <span className="text-slate-400">
+ {r.transactions_injected} işlem · {(r.total_amount ?? 0).toLocaleString('tr-TR')} TL
+ {r.detection_time_ms > 0 ? ` · ${r.detection_time_ms}ms` : ''}
+ </span>
+ </div>
+ <span className={clsx('font-bold uppercase text-[9px]', cfg.color)}>{cfg.label}</span>
+ <span className="text-slate-400 shrink-0">
+ {new Date(r.ran_at).toLocaleDateString('tr-TR')}
+ </span>
+ </div>
+ );
+ })}
+ </div>
+ )}
+ </div>
+ );
 }

@@ -23,7 +23,7 @@ test.describe('Wave 35 — SOX / ICFR & Skeptic Agent E2E', () => {
 
     await loginAs(page, '00000000-0000-0000-0000-000000000001', 'Dr. Hasan Aksoy', 'CAE');
     await page.goto('/execution/workpapers');
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(500);
 
     // Sayfanın render ettiğini doğrula
     const hasContent = await page.locator('h1, h2, h3, main, [class*="container"]').first().isVisible().catch(() => false);
@@ -32,7 +32,7 @@ test.describe('Wave 35 — SOX / ICFR & Skeptic Agent E2E', () => {
 
     // Herhangi bir SOX sayfasına geç
     await page.goto('/governance');
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(500);
     const govContent = await page.locator('h1, h2, h3, main').first().isVisible().catch(() => false);
     console.log(`Governance page contentVisible: ${govContent}`);
     expect(govContent).toBe(true);

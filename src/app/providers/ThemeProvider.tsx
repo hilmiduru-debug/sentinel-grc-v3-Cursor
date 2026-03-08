@@ -6,20 +6,28 @@
  * CSS değişkenleri (Design Tokens) bu nitelik değişiminde otomatik devreye girer.
  */
 
-import { useEffect } from 'react';
 import { useThemeStore } from '@/shared/stores/theme-store';
+import { useEffect } from 'react';
 
 interface ThemeProviderProps {
-  children: React.ReactNode;
+ children: React.ReactNode;
 }
 
 export const ThemeProvider = ({ children }: ThemeProviderProps) => {
-  const { activeTheme } = useThemeStore();
+ const { activeTheme, mode } = useThemeStore();
 
-  useEffect(() => {
-    // <html data-theme="zen|cloud|enterprise|ice"> niteliğini güncelle
-    document.documentElement.setAttribute('data-theme', activeTheme);
-  }, [activeTheme]);
+ useEffect(() => {
+ // <html data-theme="..."> and <html data-theme-mode="..."> attributes
+ document.documentElement.setAttribute('data-theme', activeTheme);
+ document.documentElement.setAttribute('data-theme-mode', mode);
 
-  return <>{children}</>;
+ // Tailwind dark: class toggle fallback
+ if (mode === 'dark') {
+   document.documentElement.classList.add('dark');
+ } else {
+   document.documentElement.classList.remove('dark');
+ }
+ }, [activeTheme, mode]);
+
+ return <>{children}</>;
 };

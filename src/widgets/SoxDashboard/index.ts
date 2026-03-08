@@ -1,2 +1,2 @@
-export { PresidentDashboard } from './PresidentDashboard';
 export { ManagerView } from './ManagerView';
+export { PresidentDashboard } from './PresidentDashboard';

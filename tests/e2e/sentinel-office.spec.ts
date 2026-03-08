@@ -18,7 +18,7 @@ test.describe('🏢 SENTINEL OFFICE DOCUMENT VAULT E2E TEST', () => {
     // Navigate to a page that hosts the Sentinel Office widget
     // The workpapers page typically has the Office button
     await page.goto('/workpapers');
-    await page.waitForTimeout(2500);
+    await page.waitForTimeout(500);
 
     // Check no WSOD on workpapers page
     const body = page.locator('body');
@@ -44,7 +44,7 @@ test.describe('🏢 SENTINEL OFFICE DOCUMENT VAULT E2E TEST', () => {
 
   test('Spreadsheet document loads cells without crash', async ({ page }) => {
     await page.goto('/workpapers');
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(500);
 
     const officeBtn = page.getByRole('button', { name: /Sentinel Office|Office|Belge|Tablo/i }).first();
     if (await officeBtn.isVisible()) {

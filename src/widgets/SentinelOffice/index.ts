@@ -1,7 +1,7 @@
-export { SentinelSheets } from './Sheets';
 export { SentinelDocs } from './Docs';
-export { OfficeOrchestrator } from './OfficeOrchestrator';
 export { DocumentList } from './DocumentList';
+export { OfficeOrchestrator } from './OfficeOrchestrator';
+export { SentinelSheets } from './Sheets';
+export type { CellData, SheetConfig, SheetData, SmartVariable, SpreadsheetState } from './types';
+export { useCryoSave, useSheetAutoSave } from './useSheetAutoSave';
 export { VersionHistory } from './VersionHistory';
-export { useSheetAutoSave, useCryoSave } from './useSheetAutoSave';
-export type { SpreadsheetState, SheetData, CellData, SheetConfig, SmartVariable } from './types';

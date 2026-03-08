@@ -7,18 +7,18 @@
  */
 
 export interface AutoRepairState {
-  isChecking: boolean;
-  isRepairing: boolean;
-  needsRepair: boolean;
-  error: string | null;
+ isChecking: boolean;
+ isRepairing: boolean;
+ needsRepair: boolean;
+ error: string | null;
 }
 
 export function useAutoRepair(): AutoRepairState {
-  // Kalıcı DB mimarisinde repair gerekmez — her zaman hazır.
-  return {
-    isChecking: false,
-    isRepairing: false,
-    needsRepair: false,
-    error: null,
-  };
+ // Kalıcı DB mimarisinde repair gerekmez — her zaman hazır.
+ return {
+ isChecking: false,
+ isRepairing: false,
+ needsRepair: false,
+ error: null,
+ };
 }

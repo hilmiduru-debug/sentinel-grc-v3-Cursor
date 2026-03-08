@@ -13,14 +13,14 @@ test.describe('⚖️ REGULATORY LOBBYING AI E2E TEST', () => {
 
   test('Regulatory Lobbying page loads without WSOD', async ({ page }) => {
     await page.goto('/compliance/lobbying');
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(500);
     await expect(page.locator('body')).not.toBeEmpty();
     await expect(page.getByText('Regulatory Lobbying AI')).toBeVisible({ timeout: 10000 });
   });
 
   test('AI Responder pulls Draft title and Synthesized Feedback text', async ({ page }) => {
     await page.goto('/compliance/lobbying');
-    await page.waitForTimeout(3500);
+    await page.waitForTimeout(500);
 
     // Look for the loaded Draft Title and inbox mechanism
     await expect(page.getByText('Bilgi Sistemleri Tebliği Yönetmeliği').first()).toBeVisible({ timeout: 10000 });

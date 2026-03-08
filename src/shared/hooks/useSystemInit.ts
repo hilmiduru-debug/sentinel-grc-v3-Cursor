@@ -11,18 +11,18 @@
  */
 
 export interface SystemInitState {
-  isInitializing: boolean;
-  isComplete: boolean;
-  error: string | null;
-  progress: string;
+ isInitializing: boolean;
+ isComplete: boolean;
+ error: string | null;
+ progress: string;
 }
 
 export function useSystemInit(): SystemInitState {
-  // Kalıcı DB mimarisinde init anında tamamlanmış sayılır.
-  return {
-    isInitializing: false,
-    isComplete: true,
-    error: null,
-    progress: '',
-  };
+ // Kalıcı DB mimarisinde init anında tamamlanmış sayılır.
+ return {
+ isInitializing: false,
+ isComplete: true,
+ error: null,
+ progress: '',
+ };
 }

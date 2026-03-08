@@ -4,21 +4,11 @@
  */
 
 export {
-  processVoiceTranscript,
-  simulateVoiceInput,
-  saveFindingDraft,
-  getRecentDrafts,
-  clearDrafts,
-  getSeverityColor,
-  getSeverityLabelTR,
-  isSpeechRecognitionSupported,
-  getSpeechRecognition,
+ clearDrafts, getRecentDrafts, getSeverityColor,
+ getSeverityLabelTR, getSpeechRecognition, isSpeechRecognitionSupported, processVoiceTranscript, saveFindingDraft, simulateVoiceInput, convertDraftToFindingWithAI
 } from './voice-engine';
 
 export type {
-  VoiceStatus,
-  VoiceTranscript,
-  VoiceFindingDraft,
-  KeywordMatch,
-  VoiceProcessingResult,
+ KeywordMatch, VoiceFindingDraft, VoiceProcessingResult, VoiceStatus,
+ VoiceTranscript
 } from './types';

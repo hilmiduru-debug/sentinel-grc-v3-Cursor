@@ -9,21 +9,21 @@
 import type { SystemContext } from './types';
 
 export interface SentinelPromptConfig {
-  persona: 'skeptical' | 'neutral' | 'advisory';
-  mode: 'audit' | 'advisory' | 'investigation';
-  language: 'en' | 'tr';
+ persona: 'skeptical' | 'neutral' | 'advisory';
+ mode: 'audit' | 'advisory' | 'investigation';
+ language: 'en' | 'tr';
 }
 
 /**
  * Generates the core system prompt for Sentinel Prime
  */
 export function generateSystemPrompt(
-  context: SystemContext,
-  config: SentinelPromptConfig = { persona: 'skeptical', mode: 'audit', language: 'en' }
+ context: SystemContext,
+ config: SentinelPromptConfig = { persona: 'skeptical', mode: 'audit', language: 'en' }
 ): string {
-  const { constitution, universeStats, recentFindings, currentUser } = context;
+ const { constitution, universeStats, recentFindings, currentUser } = context;
 
-  const corePersona = `You are SENTINEL PRIME, the Guardian of the Bank's Amanah (Trust).
+ const corePersona = `You are SENTINEL PRIME, the Guardian of the Bank's Amanah (Trust).
 
 IDENTITY & ROLE:
 - You are a skeptical, experienced Senior Auditor with 20+ years in Banking Risk & Compliance
@@ -45,14 +45,14 @@ YOUR KNOWLEDGE BASE:
 - You are familiar with Shari'ah compliance requirements (AAOIFI GSIFI standards)
 - You understand BDDK regulations (Turkish Banking Regulator)`;
 
-  const constitutionContext = constitution
-    ? `\n\nACTIVE RISK CONSTITUTION (${constitution.methodology_name}):
+ const constitutionContext = constitution
+ ? `\n\nACTIVE RISK CONSTITUTION (${constitution.methodology_name}):
 Version: ${constitution.version} | Updated: ${constitution.updated_at}
 
 RISK DIMENSIONS & WEIGHTS:
 ${Object.entries(constitution.dimension_weights || {})
-  .map(([dim, weight]) => `- ${dim}: ${weight}%`)
-  .join('\n')}
+ .map(([dim, weight]) => `- ${dim}: ${weight}%`)
+ .join('\n')}
 
 GRADING SCALE:
 ${JSON.stringify(constitution.grading_scale, null, 2)}
@@ -70,25 +70,25 @@ RISK FORMULA:
 Risk Score = (Impact × ln(Volume)) × (1 - Control_Effectiveness)
 Inherent Risk = Impact × ln(Volume)
 Residual Risk = Inherent Risk × (1 - Control_Effectiveness)`
-    : '\n\n⚠️ WARNING: No Risk Constitution loaded. Operating in degraded mode.';
+ : '\n\n⚠️ WARNING: No Risk Constitution loaded. Operating in degraded mode.';
 
-  const universeContext = universeStats
-    ? `\n\nAUDIT UNIVERSE STATUS:
+ const universeContext = universeStats
+ ? `\n\nAUDIT UNIVERSE STATUS:
 - Total Entities: ${universeStats.totalEntities}
 - High Risk Entities: ${universeStats.highRiskCount} (${universeStats.highRiskPercentage}%)
 - Critical Risk Entities: ${universeStats.criticalRiskCount}
 - Average Risk Score: ${universeStats.avgRiskScore}/100`
-    : '';
+ : '';
 
-  const findingsContext = recentFindings
-    ? `\n\nRECENT FINDINGS (Last 30 Days):
+ const findingsContext = recentFindings
+ ? `\n\nRECENT FINDINGS (Last 30 Days):
 - Total Findings: ${recentFindings.total}
 - Critical: ${recentFindings.critical} | High: ${recentFindings.high} | Medium: ${recentFindings.medium}
 - Open Actions: ${recentFindings.openActions}
 - Average Remediation Time: ${recentFindings.avgRemediationDays} days`
-    : '';
+ : '';
 
-  const behaviorGuidelines = `\n\nCOMMUNICATION STYLE:
+ const behaviorGuidelines = `\n\nCOMMUNICATION STYLE:
 - Be direct and precise. No corporate jargon or hedging language
 - Use bullet points for clarity
 - When citing regulations: "Per Article X.Y of GIAS 2024..."
@@ -118,11 +118,11 @@ WHAT YOU CANNOT DO:
 - Access confidential personnel data
 - Make strategic business decisions`;
 
-  const userContext = currentUser
-    ? `\n\nCURRENT USER: ${currentUser.role} | ${currentUser.department || 'Unknown Department'}`
-    : '';
+ const userContext = currentUser
+ ? `\n\nCURRENT USER: ${currentUser.role} | ${currentUser.department || 'Unknown Department'}`
+ : '';
 
-  const closingInstructions = `\n\nFINAL REMINDER:
+ const closingInstructions = `\n\nFINAL REMINDER:
 You are an AI assistant, not a human auditor. Your role is to:
 - Provide insights based on the Risk Constitution
 - Challenge assumptions with professional skepticism
@@ -133,22 +133,22 @@ When in doubt, cite the Constitution. When data is missing, ask for it. Never ma
 
 BEGIN CONVERSATION.`;
 
-  return (
-    corePersona +
-    constitutionContext +
-    universeContext +
-    findingsContext +
-    behaviorGuidelines +
-    userContext +
-    closingInstructions
-  );
+ return (
+ corePersona +
+ constitutionContext +
+ universeContext +
+ findingsContext +
+ behaviorGuidelines +
+ userContext +
+ closingInstructions
+ );
 }
 
 /**
  * Generates a shorter system prompt for advisory mode
  */
 export function generateAdvisoryPrompt(context: SystemContext): string {
-  return `You are SENTINEL PRIME in Advisory Mode.
+ return `You are SENTINEL PRIME in Advisory Mode.
 
 You are here to help plan audits, suggest test procedures, and provide guidance.
 You maintain professional skepticism but are more collaborative than in audit mode.
@@ -168,7 +168,7 @@ How can I assist with your audit planning?`;
  * Generates context for investigation mode
  */
 export function generateInvestigationPrompt(context: SystemContext): string {
-  return `You are SENTINEL PRIME in Forensic Investigation Mode.
+ return `You are SENTINEL PRIME in Forensic Investigation Mode.
 
 You are analyzing potential fraud, misconduct, or compliance violations.
 Your role: Help connect dots, identify patterns, and challenge evidence quality.
@@ -194,13 +194,13 @@ What case are we investigating?`;
  * Generates user-specific context hints
  */
 export function generateUserContextHints(userRole: string): string {
-  const roleHints: Record<string, string> = {
-    'Chief Auditor': 'You have full system access. I can discuss strategic risk insights.',
-    'Senior Auditor': 'You can manage engagements and approve findings. I can help with complex analysis.',
-    'Junior Auditor': 'You are executing fieldwork. I can help interpret procedures and risk ratings.',
-    'Auditee': 'You are responding to findings. I can explain the audit rationale.',
-    'Risk Manager': 'You monitor the risk universe. I can help interpret risk scores and trends.',
-  };
+ const roleHints: Record<string, string> = {
+ 'Chief Auditor': 'You have full system access. I can discuss strategic risk insights.',
+ 'Senior Auditor': 'You can manage engagements and approve findings. I can help with complex analysis.',
+ 'Junior Auditor': 'You are executing fieldwork. I can help interpret procedures and risk ratings.',
+ 'Auditee': 'You are responding to findings. I can explain the audit rationale.',
+ 'Risk Manager': 'You monitor the risk universe. I can help interpret risk scores and trends.',
+ };
 
-  return roleHints[userRole] || 'I am here to assist with audit and risk management.';
+ return roleHints[userRole] || 'I am here to assist with audit and risk management.';
 }

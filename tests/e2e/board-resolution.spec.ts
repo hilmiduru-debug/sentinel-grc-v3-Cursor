@@ -17,7 +17,7 @@ test.describe('Wave 42 — Board Resolution & E-Voting Deck E2E', () => {
     page.on('pageerror', (err) => console.error('PAGE_ERROR:', err.message));
     await loginAs(page, '00000000-0000-0000-0000-000000000001', 'Dr. Hasan Aksoy', 'CAE');
     await page.goto('/governance/board-resolution');
-    await page.waitForTimeout(4000);
+    await page.waitForTimeout(500);
 
     const hasContent = await page.locator('h1, h2, h3, main, [class*="container"], [class*="Dashboard"]').first().isVisible().catch(() => false);
     const pageTitle = await page.title().catch(() => '');
@@ -60,7 +60,7 @@ test.describe('Wave 42 — Board Resolution & E-Voting Deck E2E', () => {
     page.on('pageerror', (err) => console.error('PAGE_ERROR:', err.message));
     await loginAs(page, '00000000-0000-0000-0000-000000000001', 'Dr. Hasan Aksoy', 'CAE');
     await page.goto('/governance/charter');
-    await page.waitForTimeout(4000);
+    await page.waitForTimeout(500);
 
     const hasContent = await page.locator('h1, h2, h3, main, [class*="container"]').first().isVisible().catch(() => false);
     console.log(`Governance/charter contentVisible: ${hasContent}`);

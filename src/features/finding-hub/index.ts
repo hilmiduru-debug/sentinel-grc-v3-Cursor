@@ -1,5 +1,5 @@
-export * from './ui/FindingList';
+export * from './hooks/useFindings';
 export * from './ui/FindingDetail';
 export * from './ui/FindingForm';
 export * from './ui/FindingKanbanBoard';
-export * from './hooks/useFindings';
+export * from './ui/FindingList';

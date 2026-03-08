@@ -19,7 +19,7 @@ test.describe('🌱 SENTINEL V3.0 ESG PLANET PULSE E2E TEST', () => {
   test('ESG Dashboard should load without WSOD and render live Supabase data', async ({ page }) => {
     // 1. Navigate to ESG page
     await page.goto('/esg');
-    await page.waitForTimeout(2500);
+    await page.waitForTimeout(500);
 
     // 2. ASSERT WSOD protection — main containers must be visible
     //    If hooks throw, the page would be blank/white
@@ -62,7 +62,7 @@ test.describe('🌱 SENTINEL V3.0 ESG PLANET PULSE E2E TEST', () => {
 
   test('ESG Data Entry view should render without crashing', async ({ page }) => {
     await page.goto('/esg');
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(500);
 
     // Switch to data entry view
     const entryTab = page.getByText('Veri Girisi', { exact: false });

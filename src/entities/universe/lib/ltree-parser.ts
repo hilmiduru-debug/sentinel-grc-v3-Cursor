@@ -3,46 +3,46 @@ import type { UniverseNode } from '../model/types';
 // ─── Ağaç Kurulum Fonksiyonları ───────────────────────────────────────────────
 
 export function buildHierarchyFromLTree(flatData: UniverseNode[]): UniverseNode[] {
-  const sorted = [...flatData].sort((a, b) => {
-    const aDepth = (a?.path ?? '').split('.').length;
-    const bDepth = (b?.path ?? '').split('.').length;
-    return aDepth !== bDepth ? aDepth - bDepth : (a?.path ?? '').localeCompare(b?.path ?? '');
-  });
+ const sorted = [...flatData].sort((a, b) => {
+ const aDepth = (a?.path ?? '').split('.').length;
+ const bDepth = (b?.path ?? '').split('.').length;
+ return aDepth !== bDepth ? aDepth - bDepth : (a?.path ?? '').localeCompare(b?.path ?? '');
+ });
 
-  const nodeMap = new Map<string, UniverseNode>();
-  const roots: UniverseNode[] = [];
+ const nodeMap = new Map<string, UniverseNode>();
+ const roots: UniverseNode[] = [];
 
-  for (const raw of sorted) {
-    if (!raw?.path) continue; // Savunmacı: path null/undefined ise atla
-    const node: UniverseNode = { ...raw, children: [] };
-    nodeMap.set(node.path, node);
+ for (const raw of sorted) {
+ if (!raw?.path) continue; // Savunmacı: path null/undefined ise atla
+ const node: UniverseNode = { ...raw, children: [] };
+ nodeMap.set(node.path, node);
 
-    const parts = node.path.split('.');
-    if (parts.length <= 1) {
-      roots.push(node);
-    } else {
-      const parentPath = parts.slice(0, -1).join('.');
-      const parent = nodeMap.get(parentPath);
-      if (parent) {
-        parent.children = parent.children ?? [];
-        parent.children.push(node);
-      } else {
-        roots.push(node);
-      }
-    }
-  }
+ const parts = node.path.split('.');
+ if (parts.length <= 1) {
+ roots.push(node);
+ } else {
+ const parentPath = parts.slice(0, -1).join('.');
+ const parent = nodeMap.get(parentPath);
+ if (parent) {
+ parent.children = parent.children ?? [];
+ parent.children.push(node);
+ } else {
+ roots.push(node);
+ }
+ }
+ }
 
-  return roots;
+ return roots;
 }
 
 export function flattenTree(nodes: UniverseNode[]): UniverseNode[] {
-  const result: UniverseNode[] = [];
-  const traverse = (node: UniverseNode): void => {
-    result.push(node);
-    (node?.children || []).forEach(traverse); // Savunmacı: || []
-  };
-  (nodes || []).forEach(traverse); // Savunmacı: || []
-  return result;
+ const result: UniverseNode[] = [];
+ const traverse = (node: UniverseNode): void => {
+ result.push(node);
+ (node?.children || []).forEach(traverse); // Savunmacı: || []
+ };
+ (nodes || []).forEach(traverse); // Savunmacı: || []
+ return result;
 }
 
 // ─── ltree Yardımcı Fonksiyonları ─────────────────────────────────────────────
@@ -52,8 +52,8 @@ export function flattenTree(nodes: UniverseNode[]): UniverseNode[] {
  * Örn: 'root.bank.unit_a' → 3
  */
 export function getPathDepth(path: string): number {
-  if (!path) return 0;
-  return path.split('.').length;
+ if (!path) return 0;
+ return path.split('.').length;
 }
 
 /**
@@ -61,13 +61,13 @@ export function getPathDepth(path: string): number {
  * Örn: 'root.bank.unit_a' → ['root', 'root.bank']
  */
 export function getAncestorPaths(path: string): string[] {
-  if (!path) return [];
-  const parts = path.split('.');
-  const ancestors: string[] = [];
-  for (let i = 1; i < parts.length; i++) {
-    ancestors.push(parts.slice(0, i).join('.'));
-  }
-  return ancestors;
+ if (!path) return [];
+ const parts = path.split('.');
+ const ancestors: string[] = [];
+ for (let i = 1; i < parts.length; i++) {
+ ancestors.push(parts.slice(0, i).join('.'));
+ }
+ return ancestors;
 }
 
 /**
@@ -76,10 +76,10 @@ export function getAncestorPaths(path: string): string[] {
  * Kök node için null döner.
  */
 export function getParentPath(path: string): string | null {
-  if (!path) return null;
-  const parts = path.split('.');
-  if (parts.length <= 1) return null;
-  return parts.slice(0, -1).join('.');
+ if (!path) return null;
+ const parts = path.split('.');
+ if (parts.length <= 1) return null;
+ return parts.slice(0, -1).join('.');
 }
 
 /**
@@ -87,13 +87,13 @@ export function getParentPath(path: string): string | null {
  * Örn: isDescendant('root.bank.unit', 'root.bank') → true
  */
 export function isDescendant(childPath: string, parentPath: string): boolean {
-  if (!childPath || !parentPath) return false;
-  return childPath.startsWith(parentPath + '.') || childPath === parentPath;
+ if (!childPath || !parentPath) return false;
+ return childPath.startsWith(parentPath + '.') || childPath === parentPath;
 }
 
 /**
  * Tüm düğümleri verilen maksimum derinliğe kadar filtreler.
  */
 export function filterByDepth(nodes: UniverseNode[], maxDepth: number): UniverseNode[] {
-  return (nodes || []).filter((n) => getPathDepth(n?.path ?? '') <= maxDepth);
+ return (nodes || []).filter((n) => getPathDepth(n?.path ?? '') <= maxDepth);
 }

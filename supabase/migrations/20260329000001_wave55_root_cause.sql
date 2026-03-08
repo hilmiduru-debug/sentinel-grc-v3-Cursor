@@ -7,6 +7,9 @@
 -- =============================================================================
 
 -- 1. ROOT CAUSE ANALYSES — Ana analiz kayıtları
+DROP TABLE IF EXISTS public.five_whys_steps CASCADE;
+DROP TABLE IF EXISTS public.root_cause_analyses CASCADE;
+
 CREATE TABLE IF NOT EXISTS public.root_cause_analyses (
   id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id           uuid NOT NULL DEFAULT '11111111-1111-1111-1111-111111111111',

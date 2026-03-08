@@ -1,10 +1,6 @@
 export { AutoTester } from './AutoTester';
-export type { TestResult, DiagnosticReport } from './AutoTester';
+export type { DiagnosticReport, TestResult } from './AutoTester';
 export {
-  measureDatabaseLatency,
-  checkAuthSession,
-  getFindingCount,
-  fetchSystemDiagnostics,
-  useSystemDiagnostics,
+ checkAuthSession, fetchSystemDiagnostics, getFindingCount, measureDatabaseLatency, useSystemDiagnostics
 } from './diagnostics-api';
-export type { DiagnosticResult, SystemDiagnosticsResult, DbStatus } from './diagnostics-api';
+export type { DbStatus, DiagnosticResult, SystemDiagnosticsResult } from './diagnostics-api';

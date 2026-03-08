@@ -14,7 +14,7 @@ test.describe('🕸️ QUANTUM RISK GRAPH E2E TEST', () => {
 
   test('Risk Network page loads without WSOD', async ({ page }) => {
     await page.goto('/strategy/neural-map');
-    await page.waitForTimeout(4000);
+    await page.waitForTimeout(500);
 
     // No WSOD
     await expect(page.locator('body')).not.toBeEmpty();
@@ -25,7 +25,7 @@ test.describe('🕸️ QUANTUM RISK GRAPH E2E TEST', () => {
 
   test('ForceGraph canvas renders with node count badge', async ({ page }) => {
     await page.goto('/strategy/neural-map');
-    await page.waitForTimeout(5000);
+    await page.waitForTimeout(500);
 
     // Canvas element rendered by react-force-graph-2d
     const canvas = page.locator('canvas').first();
@@ -37,7 +37,7 @@ test.describe('🕸️ QUANTUM RISK GRAPH E2E TEST', () => {
 
   test('Legend panel is visible', async ({ page }) => {
     await page.goto('/strategy/neural-map');
-    await page.waitForTimeout(4000);
+    await page.waitForTimeout(500);
 
     await expect(page.getByText('Legend')).toBeVisible({ timeout: 8000 });
     await expect(page.getByText('Process')).toBeVisible();

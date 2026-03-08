@@ -1,1 +1,1 @@
-export { cn, isLowPerformanceDevice, formatCurrency } from './utils';
+export { cn, formatCurrency, isLowPerformanceDevice } from './utils';

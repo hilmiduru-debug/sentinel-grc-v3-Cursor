@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS iot_sensors (
 );
 
 -- 2. Kasa Dairesi & Sistem Odası Erişim Logları (Access Control)
+DROP TABLE IF EXISTS public.vault_access_logs CASCADE;
 CREATE TABLE IF NOT EXISTS vault_access_logs (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   location_name   TEXT NOT NULL,                 

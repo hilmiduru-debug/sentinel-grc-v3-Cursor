@@ -5,8 +5,6 @@
 export { DualBrainEngine, dualBrain } from './DualBrain';
 
 export type {
-  BrainMode,
-  BrainDecision,
-  ComputationRequest,
-  ComputationResult,
+ BrainDecision, BrainMode, ComputationRequest,
+ ComputationResult
 } from './DualBrain';

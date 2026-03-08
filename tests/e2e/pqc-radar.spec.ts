@@ -17,7 +17,7 @@ test.describe('Wave 58 — PQC Radar E2E', () => {
     page.on('pageerror', (err) => console.error('PAGE_ERROR:', err.message));
     await loginAs(page, '00000000-0000-0000-0000-000000000001', 'Leyla Şahin', 'Auditor');
     await page.goto('/monitoring/pqc-radar');
-    await page.waitForTimeout(4000);
+    await page.waitForTimeout(500);
 
     const hasContent = await page.locator('h1, h2, main, [class*="container"]').first().isVisible().catch(() => false);
     const pageTitle = await page.title().catch(() => '');
@@ -59,7 +59,7 @@ test.describe('Wave 58 — PQC Radar E2E', () => {
     page.on('pageerror', (err) => console.error('PAGE_ERROR:', err.message));
     await loginAs(page, '00000000-0000-0000-0000-000000000001', 'Leyla Şahin', 'Auditor');
     await page.goto('/monitoring/watchtower');
-    await page.waitForTimeout(4000);
+    await page.waitForTimeout(500);
     const hasContent = await page.locator('h1, h2, main, [class*="container"]').first().isVisible().catch(() => false);
     console.log(`Watchtower page contentVisible: ${hasContent}`);
     expect(hasContent).toBe(true);

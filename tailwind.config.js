@@ -13,6 +13,49 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         
+        // --- DARKSIDE COLOR INVERSION ENGINE ---
+        white: "rgb(var(--tw-white) / <alpha-value>)",
+        black: "rgb(var(--tw-black) / <alpha-value>)",
+        slate: {
+          50: "rgb(var(--tw-slate-50) / <alpha-value>)",
+          100: "rgb(var(--tw-slate-100) / <alpha-value>)",
+          200: "rgb(var(--tw-slate-200) / <alpha-value>)",
+          300: "rgb(var(--tw-slate-300) / <alpha-value>)",
+          400: "rgb(var(--tw-slate-400) / <alpha-value>)",
+          500: "rgb(var(--tw-slate-500) / <alpha-value>)",
+          600: "rgb(var(--tw-slate-600) / <alpha-value>)",
+          700: "rgb(var(--tw-slate-700) / <alpha-value>)",
+          800: "rgb(var(--tw-slate-800) / <alpha-value>)",
+          900: "rgb(var(--tw-slate-900) / <alpha-value>)",
+          950: "rgb(var(--tw-slate-950) / <alpha-value>)",
+        },
+        gray: {
+          50: "rgb(var(--tw-gray-50) / <alpha-value>)",
+          100: "rgb(var(--tw-gray-100) / <alpha-value>)",
+          200: "rgb(var(--tw-gray-200) / <alpha-value>)",
+          300: "rgb(var(--tw-gray-300) / <alpha-value>)",
+          400: "rgb(var(--tw-gray-400) / <alpha-value>)",
+          500: "rgb(var(--tw-gray-500) / <alpha-value>)",
+          600: "rgb(var(--tw-gray-600) / <alpha-value>)",
+          700: "rgb(var(--tw-gray-700) / <alpha-value>)",
+          800: "rgb(var(--tw-gray-800) / <alpha-value>)",
+          900: "rgb(var(--tw-gray-900) / <alpha-value>)",
+          950: "rgb(var(--tw-gray-950) / <alpha-value>)",
+        },
+        zinc: {
+          50: "rgb(var(--tw-zinc-50) / <alpha-value>)",
+          100: "rgb(var(--tw-zinc-100) / <alpha-value>)",
+          200: "rgb(var(--tw-zinc-200) / <alpha-value>)",
+          300: "rgb(var(--tw-zinc-300) / <alpha-value>)",
+          400: "rgb(var(--tw-zinc-400) / <alpha-value>)",
+          500: "rgb(var(--tw-zinc-500) / <alpha-value>)",
+          600: "rgb(var(--tw-zinc-600) / <alpha-value>)",
+          700: "rgb(var(--tw-zinc-700) / <alpha-value>)",
+          800: "rgb(var(--tw-zinc-800) / <alpha-value>)",
+          900: "rgb(var(--tw-zinc-900) / <alpha-value>)",
+          950: "rgb(var(--tw-zinc-950) / <alpha-value>)",
+        },
+        
         // --- CHAMELEON ENGINE ---
         // RGB formatında tanımlıyoruz ki Tailwind opacity değiştirebilsin (bg-primary/20)
         primary: {

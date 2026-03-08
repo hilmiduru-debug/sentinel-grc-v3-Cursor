@@ -15,14 +15,14 @@ test.describe('🚨 BCP CRISIS COCKPIT E2E TEST', () => {
 
   test('BCP page loads without WSOD', async ({ page }) => {
     await page.goto('/bcp');
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(500);
     await expect(page.locator('body')).not.toBeEmpty();
     await expect(page.getByText('BCP & Kriz Yönetimi')).toBeVisible({ timeout: 10000 });
   });
 
   test('CrisisCockpit shows active crisis cards from Supabase', async ({ page }) => {
     await page.goto('/bcp');
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(500);
 
     // Default tab is Kriz Kokpiti
     await expect(page.getByText('Veri Merkezi A Kesintisi')).toBeVisible({ timeout: 10000 });
@@ -34,7 +34,7 @@ test.describe('🚨 BCP CRISIS COCKPIT E2E TEST', () => {
 
   test('BCP Scenarios tab renders scenario cards', async ({ page }) => {
     await page.goto('/bcp');
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(500);
     await page.getByRole('button', { name: /BCP Senaryoları/ }).click();
     await page.waitForTimeout(2000);
     await expect(page.getByText('BCP-IT-001')).toBeVisible({ timeout: 8000 });
@@ -43,7 +43,7 @@ test.describe('🚨 BCP CRISIS COCKPIT E2E TEST', () => {
 
   test('History tab renders without crash', async ({ page }) => {
     await page.goto('/bcp');
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(500);
     await page.getByRole('button', { name: /Tarihçe/ }).click();
     await page.waitForTimeout(2000);
     await expect(page.locator('body')).not.toBeEmpty();

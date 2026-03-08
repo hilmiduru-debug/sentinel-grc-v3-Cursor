@@ -8,25 +8,29 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-/** Mevcut 4 açık tema tanımlayıcısı */
-export type ThemeId = 'zen' | 'cloud' | 'enterprise' | 'ice';
+/** Mevcut açık tema tanımlayıcıları */
+export type LightThemeId = 'zen' | 'cloud' | 'enterprise' | 'ice';
+/** Mevcut koyu tema tanımlayıcıları */
+export type DarkThemeId = 'obsidian' | 'abyss' | 'nebula' | 'matrix';
+
+export type ThemeId = LightThemeId | DarkThemeId;
 
 export interface ThemeOption {
   id: ThemeId;
-  /** Kullanıcıya gösterilen başlık */
-  label: string;
-  /** Açıklama metni */
-  description: string;
-  /** Arka plan rengi önizlemesi */
-  previewCanvas: string;
-  /** Yüzey rengi önizlemesi */
-  previewSurface: string;
-  /** Vurgu rengi */
-  previewAccent: string;
+ /** Kullanıcıya gösterilen başlık */
+ label: string;
+ /** Açıklama metni */
+ description: string;
+ /** Arka plan rengi önizlemesi */
+ previewCanvas: string;
+ /** Yüzey rengi önizlemesi */
+ previewSurface: string;
+ /** Vurgu rengi */
+ previewAccent: string;
 }
 
-/** Tema kataloğu — bileşen dışında sabit olarak tanımlanır (Mock Data Kuralı) */
-export const THEME_OPTIONS: ThemeOption[] = [
+/** Açık temalar */
+export const LIGHT_THEMES: ThemeOption[] = [
   {
     id: 'zen',
     label: 'Zen Paper',
@@ -61,17 +65,68 @@ export const THEME_OPTIONS: ThemeOption[] = [
   },
 ];
 
+/** Koyu temalar */
+export const DARK_THEMES: ThemeOption[] = [
+  {
+    id: 'obsidian',
+    label: 'Obsidian Dark',
+    description: 'Derin uzay grisi — Göz yormayan analitik odaklı karanlık',
+    previewCanvas: '#020617',
+    previewSurface: '#0F172A',
+    previewAccent: '#3B82F6',
+  },
+  {
+    id: 'abyss',
+    label: 'Navy Abyss',
+    description: 'Derin okyanus laciverti — Kurumsal gece vardiyası',
+    previewCanvas: '#030712',
+    previewSurface: '#111827',
+    previewAccent: '#6366F1',
+  },
+  {
+    id: 'nebula',
+    label: 'Purple Nebula',
+    description: 'Mor ötesi karanlık uzay — Siber güvenlik ve sızma testleri için',
+    previewCanvas: '#0A0A0A',
+    previewSurface: '#171717',
+    previewAccent: '#9333EA',
+  },
+  {
+    id: 'matrix',
+    label: 'Matrix Green',
+    description: 'Terminal hacker yeşili — Kod denetimi izole ortamı',
+    previewCanvas: '#052E16',
+    previewSurface: '#064E3B',
+    previewAccent: '#10B981',
+  },
+];
+
+export const THEME_OPTIONS: ThemeOption[] = [...LIGHT_THEMES, ...DARK_THEMES];
+
 interface ThemeStore {
+  /** Aktif tema modu (açık / koyu) */
+  mode: 'light' | 'dark';
   /** Aktif tema kimliği */
   activeTheme: ThemeId;
-  /** Tema değiştir */
-  setTheme: (theme: ThemeId) => void;
+  /** Mod değiştir */
+  setMode: (mode: 'light' | 'dark') => void;
+ /** Tema değiştir */
+ setTheme: (theme: ThemeId) => void;
 }
 
 export const useThemeStore = create<ThemeStore>()(
   persist(
     (set) => ({
+      mode: 'light',
       activeTheme: 'zen',
+      setMode: (mode) =>
+        set((state) => {
+          if (state.mode === mode) return state;
+          return {
+            mode,
+            activeTheme: mode === 'dark' ? 'obsidian' : 'zen',
+          };
+        }),
       setTheme: (theme) => set({ activeTheme: theme }),
     }),
     {

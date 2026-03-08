@@ -1,16 +1,9 @@
-export { runSmurfingTest, fetchShadowBatch, fetchRecentChaosResults } from './ChaosMonkey';
-export { fetchRemediations, createRemediation, updateRemediationStatus } from './remediation-api';
-export type {
-  ChaosScenario,
-  ChaosTestStatus,
-  ControlReaction,
-  ShadowTransaction,
-  ChaosTestResult,
-  ChaosStep,
-  IaCStatus,
-  IaCRemediation,
-} from './types';
+export { fetchRecentChaosResults, fetchShadowBatch, runSmurfingTest } from './ChaosMonkey';
+export { createRemediation, fetchRemediations, updateRemediationStatus } from './remediation-api';
 export {
-  SCENARIO_LABELS,
-  SCENARIO_DESCRIPTIONS,
+ SCENARIO_DESCRIPTIONS, SCENARIO_LABELS
+} from './types';
+export type {
+ ChaosScenario, ChaosStep, ChaosTestResult, ChaosTestStatus,
+ ControlReaction, IaCRemediation, IaCStatus, ShadowTransaction
 } from './types';

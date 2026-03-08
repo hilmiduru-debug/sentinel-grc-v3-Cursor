@@ -26,7 +26,7 @@ test.describe('Wave 26 — Regulatory Export (BDDK Dosya) E2E', () => {
 
     // Remediation Dossier rotası
     await page.goto('/dossier-demo');
-    await page.waitForTimeout(5000);
+    await page.waitForTimeout(500);
 
     // Beyaz ekran yok — ya "Official Remediation Dossier" başlığı ya da boş/hata mesajı görünmeli
     const hasContent = await page.locator('h1').filter({ hasText: /Official Remediation Dossier/i }).isVisible().catch(() => false);
@@ -52,7 +52,7 @@ test.describe('Wave 26 — Regulatory Export (BDDK Dosya) E2E', () => {
     // BDDK Modal tipik olarak Actions/Reporting sayfasında bir buton ile açılır
     // Rota üzerinden değil, doğrudan modalı barındıran sayfayı bul
     await page.goto('/reporting');
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(500);
 
     // Sayfada "BDDK" içeren bir buton ara
     const bddkBtn = page.locator('button', { hasText: /BDDK/i }).first();

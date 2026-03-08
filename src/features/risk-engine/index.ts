@@ -1,8 +1,8 @@
-export * from './types';
-export * from './logic';
-export * from './methodology-types';
 export { RiskEngine } from './calculator';
+export * from './logic';
 export { fetchActiveMethodology, updateMethodologyWeights, updateVetoLogic } from './methodology-api';
+export * from './methodology-types';
 export { RiskSimulator } from './RiskSimulator';
-export { useRiskMethodology, computeRiskScore, determineRiskZone } from './useRiskMethodology';
-export type { RiskConfiguration, RiskImpacts, VelocityLevel, RiskZone } from './useRiskMethodology';
+export * from './types';
+export { computeRiskScore, determineRiskZone, useRiskMethodology } from './useRiskMethodology';
+export type { RiskConfiguration, RiskImpacts, RiskZone, VelocityLevel } from './useRiskMethodology';

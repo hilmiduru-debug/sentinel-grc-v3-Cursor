@@ -38,9 +38,9 @@ CREATE OR REPLACE VIEW public.risk_network_view AS
 SELECT
   r.id                                  AS node_id,
   r.risk_code,
-  r.risk_name,
+  r.risk_title                          AS risk_name,
   r.risk_category,
-  r.process_area,
+  r.main_process                        AS process_area,
   r.residual_rating,
   r.residual_score,
   r.inherent_score,

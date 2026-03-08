@@ -23,7 +23,7 @@ test.describe('Wave 29 — Scribble & Field Agent E2E', () => {
 
     await loginAs(page, '00000000-0000-0000-0000-000000000001', 'Dr. Hasan Aksoy', 'CAE');
     await page.goto('/execution/workpapers');
-    await page.waitForTimeout(4000);
+    await page.waitForTimeout(500);
 
     // Beyaz ekran yokluğunu doğrula
     const hasAnyContent = await page.locator('h1, h2, h3, [data-testid], main, [class*="container"], [class*="page"]').first().isVisible().catch(() => false);
@@ -100,11 +100,11 @@ test.describe('Wave 29 — Scribble & Field Agent E2E', () => {
 
     await loginAs(page, '00000000-0000-0000-0000-000000000001', 'Dr. Hasan Aksoy', 'CAE');
     await page.goto('/');
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(500);
 
     // Execution workpapers sayfasına git (scribble genellikle burada aktif olur)
     await page.goto('/execution/workpapers');
-    await page.waitForTimeout(4000);
+    await page.waitForTimeout(500);
 
     // Beyaz ekran yok
     const hasContent = await page.locator('h1, h2, h3, [data-testid], main').first().isVisible().catch(() => false);

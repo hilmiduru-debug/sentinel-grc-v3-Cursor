@@ -2535,7 +2535,7 @@ ON CONFLICT (id) DO NOTHING;
 -- -----------------------------------------------------------------------------
 INSERT INTO public.actions (
   id, tenant_id, finding_id, finding_snapshot, title, description,
-  original_due_date, current_due_date, status, priority, created_by
+  original_due_date, current_due_date, status, priority
 ) VALUES
   (
     'a8000000-0000-0000-0000-000000000001'::uuid,
@@ -2544,8 +2544,7 @@ INSERT INTO public.actions (
     '{"title":"SWIFT Mesajlarında Çift Onay (Maker-Checker) İhlali","severity":"CRITICAL","gias_category":"Operasyonel Risk"}'::jsonb,
     'SWIFT Maker-Checker zorunluluğunun sistemde etkinleştirilmesi',
     'Tüm SWIFT çıkış mesajları için ikinci onay (checker) rolü tanımlanacak; bypass sadece CAE onayı ile ve loglanacak.',
-    (CURRENT_DATE - 45), (CURRENT_DATE - 20), 'OVERDUE', 'CRITICAL',
-    '00000000-0000-0000-0000-000000000003'::uuid
+    (CURRENT_DATE - 45), (CURRENT_DATE - 20), 'OVERDUE', 'CRITICAL'
   ),
   (
     'a8000000-0000-0000-0000-000000000002'::uuid,
@@ -2554,8 +2553,7 @@ INSERT INTO public.actions (
     '{"title":"Kredi Teminat Girişlerinde Gecikme","severity":"HIGH","gias_category":"Kredi Riski"}'::jsonb,
     'Teminat güncelleme SLA ve otomasyon projesi',
     '15 iş günü SLA tanımı; haftalık eksik teminat raporu ve Kredi Yönetim Sistemi entegrasyonu.',
-    (CURRENT_DATE - 60), (CURRENT_DATE - 15), 'OVERDUE', 'HIGH',
-    '00000000-0000-0000-0000-000000000004'::uuid
+    (CURRENT_DATE - 60), (CURRENT_DATE - 15), 'OVERDUE', 'HIGH'
   )
 ON CONFLICT (id) DO NOTHING;
 
@@ -2808,7 +2806,7 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.actions (
   id, tenant_id, finding_id, finding_snapshot, title, description,
-  original_due_date, current_due_date, status, priority, created_by
+  original_due_date, current_due_date, status, priority
 ) VALUES
   (
     'a8000000-0000-0000-0000-000000000003'::uuid,
@@ -2817,8 +2815,7 @@ INSERT INTO public.actions (
     '{"title":"Legacy Sistem Sunucu Versiyonu","severity":"MEDIUM","gias_category":"Teknolojik Risk"}'::jsonb,
     'Sunucu yükseltme maliyeti nedeniyle risk kabulü',
     'Yönetim Kurulu kararı ile sistemin 2 yıl sonra tamamen yenilenmesi planlandığından, mevcut sunucu riski kabul edilmiştir.',
-    (CURRENT_DATE - 30), (CURRENT_DATE - 30), 'WAIVED', 'MEDIUM',
-    '00000000-0000-0000-0000-000000000003'::uuid
+    (CURRENT_DATE - 30), (CURRENT_DATE - 30), 'WAIVED', 'MEDIUM'
   )
 ON CONFLICT (id) DO NOTHING;
 
@@ -3161,7 +3158,7 @@ INSERT INTO public.auto_fix_logs (
   initiated_by, result_summary, duration_ms, started_at, completed_at
 ) VALUES
   (
-    'fl000000-0000-0000-0000-000000000001',
+    'f1000000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'c1000000-0000-0000-0000-000000000004',
     'access_revoke',
@@ -3174,7 +3171,7 @@ INSERT INTO public.auto_fix_logs (
     NOW() - INTERVAL '3 days' + INTERVAL '09:12:02'
   ),
   (
-    'fl000000-0000-0000-0000-000000000002',
+    'f1000000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'c1000000-0000-0000-0000-000000000001',
     'password_policy',
@@ -3187,7 +3184,7 @@ INSERT INTO public.auto_fix_logs (
     NULL
   ),
   (
-    'fl000000-0000-0000-0000-000000000003',
+    'f1000000-0000-0000-0000-000000000003',
     '11111111-1111-1111-1111-111111111111',
     'c1000000-0000-0000-0000-000000000002',
     'firewall_rule',
@@ -3207,7 +3204,7 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO tprm_vendors (id, name, category, risk_tier, criticality_score, status, contact_person, email, contract_start, contract_end, country, data_access_level, notes) VALUES
   (
-    'aaaa0001-tprm-0000-0000-000000000001',
+    'aaaa0001-ffff-0000-0000-000000000001',
     'SistemOdası Bulut Sağlayıcısı A.Ş.',
     'Bulut Altyapısı',
     'Tier 1',
@@ -3222,7 +3219,7 @@ INSERT INTO tprm_vendors (id, name, category, risk_tier, criticality_score, stat
     'Core Banking altyapısının %80i bu tedarikçi üzerinde çalışmaktadır. BDDK denetim kapsamında en kritik tedarikçi.'
   ),
   (
-    'aaaa0001-tprm-0000-0000-000000000002',
+    'aaaa0001-ffff-0000-0000-000000000002',
     'DataGuard Siber Güvenlik Ltd.',
     'Siber Güvenlik',
     'Tier 1',
@@ -3237,7 +3234,7 @@ INSERT INTO tprm_vendors (id, name, category, risk_tier, criticality_score, stat
     'SOC hizmetleri ve sızma testi kapsamıyla kritik bağımlılık. Sözleşme yenileme sürecinde.'
   ),
   (
-    'aaaa0001-tprm-0000-0000-000000000003',
+    'aaaa0001-ffff-0000-0000-000000000003',
     'SwiftNet Ödeme Sistemleri',
     'Ödeme İşlemleri',
     'Tier 1',
@@ -3252,7 +3249,7 @@ INSERT INTO tprm_vendors (id, name, category, risk_tier, criticality_score, stat
     'Uluslararası SWIFT entegrasyon partneri. Sözleşme yenilenmesi gerekmekte.'
   ),
   (
-    'aaaa0001-tprm-0000-0000-000000000004',
+    'aaaa0001-ffff-0000-0000-000000000004',
     'DocuSign TR Belge Yönetimi',
     'Dijital İmza',
     'Tier 2',
@@ -3267,7 +3264,7 @@ INSERT INTO tprm_vendors (id, name, category, risk_tier, criticality_score, stat
     'Sözleşme ve onay süreçlerinde kullanılmakta.'
   ),
   (
-    'aaaa0001-tprm-0000-0000-000000000005',
+    'aaaa0001-ffff-0000-0000-000000000005',
     'SafeHR İnsan Kaynakları Yazılımı',
     'İnsan Kaynakları',
     'Tier 2',
@@ -3282,7 +3279,7 @@ INSERT INTO tprm_vendors (id, name, category, risk_tier, criticality_score, stat
     'Personel verisine sınırlı erişim. KVKK uyumluluk denetimi yapılacak.'
   ),
   (
-    'aaaa0001-tprm-0000-0000-000000000006',
+    'aaaa0001-ffff-0000-0000-000000000006',
     'CleanOffice Temizlik Hizm.',
     'Tesis Yönetimi',
     'Tier 3',
@@ -3300,19 +3297,19 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Tedarikçi Değerlendirmeleri
 INSERT INTO tprm_assessments (id, vendor_id, title, status, risk_score, due_date, assessor) VALUES
-  ('bbbb0001-tprm-0000-0000-000000000001', 'aaaa0001-tprm-0000-0000-000000000001', 'SistemOdası 2026 Yıllık BDDK Uyumluluk Denetimi', 'In Progress', NULL, '2026-03-31', 'Denetim Komitesi'),
-  ('bbbb0001-tprm-0000-0000-000000000002', 'aaaa0001-tprm-0000-0000-000000000001', 'SistemOdası 2025 BCP/DR Testi', 'Completed', 72, '2025-09-30', 'BT Risk Ekibi'),
-  ('bbbb0001-tprm-0000-0000-000000000003', 'aaaa0001-tprm-0000-0000-000000000002', 'DataGuard Sızma Testi Sonuç Değerlendirmesi', 'Review Needed', NULL, '2026-04-15', 'Bilgi Güvenliği Birimi'),
-  ('bbbb0001-tprm-0000-0000-000000000004', 'aaaa0001-tprm-0000-0000-000000000003', 'SwiftNet AML & Fraud Kontrol Gözden Geçirme', 'Sent', NULL, '2026-05-01', 'Uyum Müdürü'),
-  ('bbbb0001-tprm-0000-0000-000000000005', 'aaaa0001-tprm-0000-0000-000000000004', 'DocuSign KVKK Uyumluluk Anketi', 'Completed', 88, '2025-12-15', 'Hukuk Departmanı')
+  ('bbbb0001-ffff-0000-0000-000000000001', 'aaaa0001-ffff-0000-0000-000000000001', 'SistemOdası 2026 Yıllık BDDK Uyumluluk Denetimi', 'In Progress', NULL, '2026-03-31', 'Denetim Komitesi'),
+  ('bbbb0001-ffff-0000-0000-000000000002', 'aaaa0001-ffff-0000-0000-000000000001', 'SistemOdası 2025 BCP/DR Testi', 'Completed', 72, '2025-09-30', 'BT Risk Ekibi'),
+  ('bbbb0001-ffff-0000-0000-000000000003', 'aaaa0001-ffff-0000-0000-000000000002', 'DataGuard Sızma Testi Sonuç Değerlendirmesi', 'Review Needed', NULL, '2026-04-15', 'Bilgi Güvenliği Birimi'),
+  ('bbbb0001-ffff-0000-0000-000000000004', 'aaaa0001-ffff-0000-0000-000000000003', 'SwiftNet AML & Fraud Kontrol Gözden Geçirme', 'Sent', NULL, '2026-05-01', 'Uyum Müdürü'),
+  ('bbbb0001-ffff-0000-0000-000000000005', 'aaaa0001-ffff-0000-0000-000000000004', 'DocuSign KVKK Uyumluluk Anketi', 'Completed', 88, '2025-12-15', 'Hukuk Departmanı')
 ON CONFLICT (id) DO NOTHING;
 
 -- Değerlendirme Soruları (SistemOdası 2026 için)
 INSERT INTO tprm_assessment_answers (assessment_id, question_text, category) VALUES
-  ('bbbb0001-tprm-0000-0000-000000000001', 'Tedarikçinin ISO 27001 sertifikası güncel mi? Son denetim tarihini ve sertifikayı paylaşınız.', 'Bilgi Güvenliği'),
-  ('bbbb0001-tprm-0000-0000-000000000001', 'SLA çerçevesinde sistem kesinti süresi (downtime) son 12 ayda kaç saatti? Raporlayınız.', 'Hizmet Sürekliliği'),
-  ('bbbb0001-tprm-0000-0000-000000000001', 'BDDK Bulut Bilişim Yönetmeliği kapsamında veri yerelleştirme (data residency) uyumluluğu nasıl sağlanmaktadır?', 'Regülasyon'),
-  ('bbbb0001-tprm-0000-0000-000000000001', 'Tedarikçinin alt yüklenicileri (sub-processors) kimlerdir ve bunlara uygulanan güvenlik kontrolleri nelerdir?', 'Tedarik Zinciri')
+  ('bbbb0001-ffff-0000-0000-000000000001', 'Tedarikçinin ISO 27001 sertifikası güncel mi? Son denetim tarihini ve sertifikayı paylaşınız.', 'Bilgi Güvenliği'),
+  ('bbbb0001-ffff-0000-0000-000000000001', 'SLA çerçevesinde sistem kesinti süresi (downtime) son 12 ayda kaç saatti? Raporlayınız.', 'Hizmet Sürekliliği'),
+  ('bbbb0001-ffff-0000-0000-000000000001', 'BDDK Bulut Bilişim Yönetmeliği kapsamında veri yerelleştirme (data residency) uyumluluğu nasıl sağlanmaktadır?', 'Regülasyon'),
+  ('bbbb0001-ffff-0000-0000-000000000001', 'Tedarikçinin alt yüklenicileri (sub-processors) kimlerdir ve bunlara uygulanan güvenlik kontrolleri nelerdir?', 'Tedarik Zinciri')
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================
@@ -3621,7 +3618,7 @@ ON CONFLICT (id) DO NOTHING;
 -- =============================================================================
 INSERT INTO public.regulatory_dossiers (id, dossier_ref, title, type, status, notes, exported_at) VALUES
   (
-    'rd000000-0000-0000-0000-000000000001',
+    'fd000000-0000-0000-0000-000000000001',
     'BDDK-2026-Q1-001',
     'BDDK 2026 Q1 Bilgi Sistemleri Denetim Paketi',
     'BDDK',
@@ -3630,7 +3627,7 @@ INSERT INTO public.regulatory_dossiers (id, dossier_ref, title, type, status, no
     NOW() - INTERVAL '10 days'
   ),
   (
-    'rd000000-0000-0000-0000-000000000002',
+    'fd000000-0000-0000-0000-000000000002',
     'BDDK-2026-KRD-002',
     'BDDK 2026 Kredi Prosedürleri Murabaha Uyumluluk Paketi',
     'BDDK',
@@ -3639,7 +3636,7 @@ INSERT INTO public.regulatory_dossiers (id, dossier_ref, title, type, status, no
     NOW() - INTERVAL '3 days'
   ),
   (
-    'rd000000-0000-0000-0000-000000000003',
+    'fd000000-0000-0000-0000-000000000003',
     'MASAK-2026-AML-003',
     'MASAK 2026 AML Risk Değerlendirme Dosyası',
     'MASAK',
@@ -3648,7 +3645,7 @@ INSERT INTO public.regulatory_dossiers (id, dossier_ref, title, type, status, no
     NULL
   ),
   (
-    'rd000000-0000-0000-0000-000000000004',
+    'fd000000-0000-0000-0000-000000000004',
     'KVKK-2026-001',
     'KVKK 2026 Kişisel Veri Envanter Dosyası',
     'KVKK',
@@ -3660,29 +3657,29 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.export_logs (id, dossier_id, action, status, metadata) VALUES
   (
-    'el000000-0000-0000-0000-000000000001',
-    'rd000000-0000-0000-0000-000000000001',
+    'ef000000-0000-0000-0000-000000000001',
+    'fd000000-0000-0000-0000-000000000001',
     'GENERATE',
     'SUCCESS',
     '{"steps": 4, "duration_ms": 7800, "file_size_kb": 2430}'::jsonb
   ),
   (
-    'el000000-0000-0000-0000-000000000002',
-    'rd000000-0000-0000-0000-000000000001',
+    'ef000000-0000-0000-0000-000000000002',
+    'fd000000-0000-0000-0000-000000000001',
     'SUBMIT',
     'SUCCESS',
     '{"recipient": "BDDK e-Devlet Portal", "ref_no": "BDDK-2026-Q1-001"}'::jsonb
   ),
   (
-    'el000000-0000-0000-0000-000000000003',
-    'rd000000-0000-0000-0000-000000000002',
+    'ef000000-0000-0000-0000-000000000003',
+    'fd000000-0000-0000-0000-000000000002',
     'GENERATE',
     'SUCCESS',
     '{"steps": 4, "duration_ms": 8200}'::jsonb
   ),
   (
-    'el000000-0000-0000-0000-000000000004',
-    'rd000000-0000-0000-0000-000000000004',
+    'ef000000-0000-0000-0000-000000000004',
+    'fd000000-0000-0000-0000-000000000004',
     'GENERATE',
     'SUCCESS',
     '{"steps": 3, "duration_ms": 5100}'::jsonb
@@ -3695,28 +3692,28 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.scribbles (id, content, linked_context, is_processed, extracted_data) VALUES
   (
-    'sc000000-0000-0000-0000-000000000001',
+    'fc000000-0000-0000-0000-000000000001',
     'Kasa dairesinde kamera açısı kör noktada. Saat 09:00-12:00 arası müşteri girişi kayıt altına alınmıyor. Şube müdürü durumu biliyor ancak iş emri açılmamış.',
     'Fiziksel Güvenlik Denetimi',
     true,
     '{"severity": "HIGH", "category": "Güvenlik Sistemleri", "finding_extracted": true}'::jsonb
   ),
   (
-    'sc000000-0000-0000-0000-000000000002',
+    'fc000000-0000-0000-0000-000000000002',
     'IT departmanında sunucu odasına giriş için yalnızca şifre yeterli, kart okuyucu devrede değil. Kapı çoğu zaman aralık bırakılıyor.',
     'BT & Bilgi Sistemleri Denetimi',
     true,
     '{"severity": "CRITICAL", "category": "IT Altyapısı", "finding_extracted": true}'::jsonb
   ),
   (
-    'sc000000-0000-0000-0000-000000000003',
+    'fc000000-0000-0000-0000-000000000003',
     'Müşteri dosyaları çoğunda onay imzası eksik, birden fazla işlemde tespit edildi, Hazine birimi özellikle etkilenmiş görünüyor.',
     'Kredi Uyum Denetimi',
     false,
     null
   ),
   (
-    'sc000000-0000-0000-0000-000000000004',
+    'fc000000-0000-0000-0000-000000000004',
     'Acil çıkış kapısının önünde malzeme deposundan gelen kutular var. KVKK ve iş güvenliği açısından tescilli bir ihlal.',
     'Fiziksel Güvenlik Denetimi',
     false,
@@ -3729,7 +3726,7 @@ INSERT INTO public.field_notes (
   audio_source, confidence, transcript, status
 ) VALUES
   (
-    'fn000000-0000-0000-0000-000000000001',
+    'ff000000-0000-0000-0000-000000000001',
     'Kasa Dairesi Kamera Kör Noktası',
     'Kasa dairesinde kamera açısı kör noktada bulundu. Saat 09:00-12:00 arası müşteri girişi kayıt altına alınmıyor. Şube müdürü durumu biliyor ancak iş emri açılmamış.',
     'high',
@@ -3741,7 +3738,7 @@ INSERT INTO public.field_notes (
     'submitted'
   ),
   (
-    'fn000000-0000-0000-0000-000000000002',
+    'ff000000-0000-0000-0000-000000000002',
     'Sunucu Odası Erişim Kartı Kontrolü Yok',
     'IT departmanında sunucu odasına giriş için yalnızca şifre yeterli, biyometrik kart okuyucu devrede değil. Fiziksel erişim logu tutulmuyor.',
     'critical',
@@ -3753,7 +3750,7 @@ INSERT INTO public.field_notes (
     'draft'
   ),
   (
-    'fn000000-0000-0000-0000-000000000003',
+    'ff000000-0000-0000-0000-000000000003',
     'Yangın Söndürücü Tüpü Bakım Süresi Geçmiş',
     'Şube koridorundaki yangın söndürücü tüpünün bakım etiketi 14 ay önce tarihli. Yenilenmesi gerekiyor. Yangın güvenliği yönetmeliği kapsamında kritik ihlal.',
     'critical',
@@ -3765,7 +3762,7 @@ INSERT INTO public.field_notes (
     'draft'
   ),
   (
-    'fn000000-0000-0000-0000-000000000004',
+    'ff000000-0000-0000-0000-000000000004',
     'Kasa Sayım Çift İmza Eksikliği',
     'Kasa sayım işleminde çift imza kuralına uyulmamış. Birden fazla günde tek yetkili kişi tarafından sayım yapıldığı kayıtlarda görülüyor.',
     'high',
@@ -3777,7 +3774,7 @@ INSERT INTO public.field_notes (
     'converted'
   ),
   (
-    'fn000000-0000-0000-0000-000000000005',
+    'ff000000-0000-0000-0000-000000000005',
     'Arşiv Odası Yangın Alarm Testi Yapılmamış',
     'Arşiv odasındaki yangın alarmının en son test edilme tarihi 2 yılı aşıyor. BDDK Bilgi Sistemleri Yönetmeliği kapsamında periyodik test zorunluluğu ihlali.',
     'high',
@@ -3796,9 +3793,9 @@ ON CONFLICT (id) DO NOTHING;
 -- ============================================================
 
 -- Çerçeveler
-INSERT INTO compliance_frameworks (id, name, short_code, version, description, authority, effective_date, status) VALUES
-  (
-    'cccc0001-comp-0000-0000-000000000001',
+INSERT INTO compliance_frameworks (tenant_id, id, name, short_code, version, description, authority, effective_date, status) VALUES
+  ('11111111-1111-1111-1111-111111111111',
+    'cccc0001-cfff-0000-0000-000000000001',
     'BDDK Denetim Çerçevesi',
     'BDDK',
     '2024',
@@ -3807,8 +3804,8 @@ INSERT INTO compliance_frameworks (id, name, short_code, version, description, a
     '2024-01-01',
     'ACTIVE'
   ),
-  (
-    'cccc0001-comp-0000-0000-000000000002',
+  ('11111111-1111-1111-1111-111111111111',
+    'cccc0001-cfff-0000-0000-000000000002',
     'ISO/IEC 27001:2022',
     'ISO27001',
     '2022',
@@ -3817,8 +3814,8 @@ INSERT INTO compliance_frameworks (id, name, short_code, version, description, a
     '2022-10-25',
     'ACTIVE'
   ),
-  (
-    'cccc0001-comp-0000-0000-000000000003',
+  ('11111111-1111-1111-1111-111111111111',
+    'cccc0001-cfff-0000-0000-000000000003',
     'Kişisel Verilerin Korunması Kanunu',
     'KVKK',
     '6698',
@@ -3830,46 +3827,46 @@ INSERT INTO compliance_frameworks (id, name, short_code, version, description, a
 ON CONFLICT (id) DO NOTHING;
 
 -- BDDK Gereksinimleri (Madde 14 ve ilgili maddeler)
-INSERT INTO framework_requirements (id, framework_id, code, title, description, category, priority) VALUES
-  (
-    'dddd0001-req0-0000-0000-000000000001',
-    'cccc0001-comp-0000-0000-000000000001',
+INSERT INTO framework_requirements (tenant_id, id, framework_id, code, title, description, category, priority) VALUES
+  ('11111111-1111-1111-1111-111111111111',
+    'dddd0001-fef0-0000-0000-000000000001',
+    'cccc0001-cfff-0000-0000-000000000001',
     'BDDK-14.1',
     'İç Denetim Bağımsızlığı',
     'İç denetim birimi, yönetim kuruluna bağlı olarak bağımsız biçimde çalışmalı; denetçiler denetledikleri faaliyetlerden sorumlu olmamalıdır.',
     'Kurumsal Yönetim',
     'CRITICAL'
   ),
-  (
-    'dddd0001-req0-0000-0000-000000000002',
-    'cccc0001-comp-0000-0000-000000000001',
+  ('11111111-1111-1111-1111-111111111111',
+    'dddd0001-fef0-0000-0000-000000000002',
+    'cccc0001-cfff-0000-0000-000000000001',
     'BDDK-14.2',
     'Denetim Kapsamı ve Planlaması',
     'Yıllık denetim planı risk odaklı metodoloji ile hazırlanmalı ve yönetim kurulunca onaylanmalıdır.',
     'Denetim Planlaması',
     'CRITICAL'
   ),
-  (
-    'dddd0001-req0-0000-0000-000000000003',
-    'cccc0001-comp-0000-0000-000000000001',
+  ('11111111-1111-1111-1111-111111111111',
+    'dddd0001-fef0-0000-0000-000000000003',
+    'cccc0001-cfff-0000-0000-000000000001',
     'BDDK-14.3',
     'Bulgu Takip ve Kapatma',
     'Tespit edilen bulgular kayıt altına alınmalı, aksiyon planıyla takip edilmeli ve zamanında kapatılmalıdır.',
     'Bulgu Yönetimi',
     'HIGH'
   ),
-  (
-    'dddd0001-req0-0000-0000-000000000004',
-    'cccc0001-comp-0000-0000-000000000001',
+  ('11111111-1111-1111-1111-111111111111',
+    'dddd0001-fef0-0000-0000-000000000004',
+    'cccc0001-cfff-0000-0000-000000000001',
     'BDDK-14.4',
     'Denetim Raporlaması',
     'Denetim bulguları ve sonuçları yönetim kuruluna periyodik raporlarla iletilmelidir.',
     'Raporlama',
     'HIGH'
   ),
-  (
-    'dddd0001-req0-0000-0000-000000000005',
-    'cccc0001-comp-0000-0000-000000000001',
+  ('11111111-1111-1111-1111-111111111111',
+    'dddd0001-fef0-0000-0000-000000000005',
+    'cccc0001-cfff-0000-0000-000000000001',
     'BDDK-14.5',
     'Denetçi Nitelikleri',
     'İç denetim personeli mesleki yeterlilik, deneyim ve sürekli eğitim gerekliliklerini karşılamalıdır.',
@@ -3877,45 +3874,45 @@ INSERT INTO framework_requirements (id, framework_id, code, title, description, 
     'MEDIUM'
   ),
   -- ISO 27001 A.8 — Varlık Yönetimi
-  (
-    'dddd0001-req0-0000-0000-000000000006',
-    'cccc0001-comp-0000-0000-000000000002',
+  ('11111111-1111-1111-1111-111111111111',
+    'dddd0001-fef0-0000-0000-000000000006',
+    'cccc0001-cfff-0000-0000-000000000002',
     'ISO-A.8.1',
     'Varlık Envanteri ve Sınıflandırma',
     'Kuruluş, bilgi varlıklarını tanımlamalı, sınıflandırmalı ve envanter altına almalıdır. Gizlilik, bütünlük ve erişilebilirlik düzeyleri belirlenmelidir.',
     'Varlık Yönetimi',
     'HIGH'
   ),
-  (
-    'dddd0001-req0-0000-0000-000000000007',
-    'cccc0001-comp-0000-0000-000000000002',
+  ('11111111-1111-1111-1111-111111111111',
+    'dddd0001-fef0-0000-0000-000000000007',
+    'cccc0001-cfff-0000-0000-000000000002',
     'ISO-A.8.2',
     'Bilgi Etiketleme',
     'Varlıklar sınıflandırma düzeyine göre etiketlenmeli; etiketleme prosedürleri uygulanmalıdır.',
     'Varlık Yönetimi',
     'MEDIUM'
   ),
-  (
-    'dddd0001-req0-0000-0000-000000000008',
-    'cccc0001-comp-0000-0000-000000000002',
+  ('11111111-1111-1111-1111-111111111111',
+    'dddd0001-fef0-0000-0000-000000000008',
+    'cccc0001-cfff-0000-0000-000000000002',
     'ISO-A.8.3',
     'Taşınabilir Ortam Yönetimi',
     'USB, disk gibi taşınabilir ortamların kullanımı ve imhası politika çerçevesinde yönetilmelidir.',
     'Varlık Yönetimi',
     'MEDIUM'
   ),
-  (
-    'dddd0001-req0-0000-0000-000000000009',
-    'cccc0001-comp-0000-0000-000000000002',
+  ('11111111-1111-1111-1111-111111111111',
+    'dddd0001-fef0-0000-0000-000000000009',
+    'cccc0001-cfff-0000-0000-000000000002',
     'ISO-A.9.1',
     'Erişim Kontrol Politikası',
     'Bilgi varlıklarına erişim iş gereksinimine ve en az yetki prensibine dayalı politikayla kontrol edilmelidir.',
     'Erişim Kontrolü',
     'CRITICAL'
   ),
-  (
-    'dddd0001-req0-0000-0000-000000000010',
-    'cccc0001-comp-0000-0000-000000000002',
+  ('11111111-1111-1111-1111-111111111111',
+    'dddd0001-fef0-0000-0000-000000000010',
+    'cccc0001-cfff-0000-0000-000000000002',
     'ISO-A.12.1',
     'Operasyonel Prosedürler ve Sorumluluklar',
     'Bilgi işlem tesisi operasyonları için belgelenmiş prosedürler ve sorumluluklar tanımlanmalıdır.',
@@ -3923,18 +3920,18 @@ INSERT INTO framework_requirements (id, framework_id, code, title, description, 
     'HIGH'
   ),
   -- KVKK
-  (
-    'dddd0001-req0-0000-0000-000000000011',
-    'cccc0001-comp-0000-0000-000000000003',
+  ('11111111-1111-1111-1111-111111111111',
+    'dddd0001-fef0-0000-0000-000000000011',
+    'cccc0001-cfff-0000-0000-000000000003',
     'KVKK-4',
     'Veri İşleme İlkeleri',
     'Kişisel veriler hukuka ve dürüstlük kurallarına uygun, belirli ve meşru amaçlarla, sınırlı ve ölçülü biçimde işlenmelidir.',
     'Veri İşleme',
     'CRITICAL'
   ),
-  (
-    'dddd0001-req0-0000-0000-000000000012',
-    'cccc0001-comp-0000-0000-000000000003',
+  ('11111111-1111-1111-1111-111111111111',
+    'dddd0001-fef0-0000-0000-000000000012',
+    'cccc0001-cfff-0000-0000-000000000003',
     'KVKK-12',
     'Veri Güvenliği Tedbirleri',
     'Veri sorumlusu, kişisel verilerin yetkisiz işlenmesini önlemek için gerekli teknik ve idari tedbirleri almalıdır.',
@@ -3945,12 +3942,18 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Örnek Kontrol-Gereksinim Eşleşmeleri (seed bazlı, gerçek mapping'ler UI üzerinden yapılır)
 INSERT INTO control_requirement_mappings (requirement_id, control_ref, control_title, coverage_strength, match_score, notes) VALUES
-  ('dddd0001-req0-0000-0000-000000000001', 'CTRL-GOV-001', 'Yönetim Kurulu İç Denetim Talimatı', 'FULL', 95, 'Talimat belgesi bağımsızlık ilkesini tam karşılamaktadır.'),
-  ('dddd0001-req0-0000-0000-000000000002', 'CTRL-AUD-001', 'Yıllık Risk Odaklı Denetim Planı', 'FULL', 92, 'Plan metodoloji dokümanına uygun hazırlanmaktadır.'),
-  ('dddd0001-req0-0000-0000-000000000003', 'CTRL-FND-001', 'Bulgu Kayıt ve Takip Sistemi', 'PARTIAL', 75, 'Takip sistemi mevcut ancak otomatik hatırlatma eksik.'),
-  ('dddd0001-req0-0000-0000-000000000006', 'CTRL-IT-001', 'BT Varlık Envanteri Prosedürü', 'PARTIAL', 70, 'Ağ varlıkları dahil ancak bulut varlıkları eksik.'),
-  ('dddd0001-req0-0000-0000-000000000009', 'CTRL-IT-002', 'Erişim Yönetimi Politikası', 'FULL', 88, 'IAM sistemi ile entegre, en az yetki prensibi uygulanmaktadır.'),
-  ('dddd0001-req0-0000-0000-000000000011', 'CTRL-KVKK-001', 'Kişisel Veri İşleme Envanteri', 'PARTIAL', 68, 'Envanter mevcut ancak departman bazlı gözden geçirme beklenmekte.')
+  (
+    'dddd0001-fef0-0000-0000-000000000001', 'CTRL-GOV-001', 'Yönetim Kurulu İç Denetim Talimatı', 'FULL', 95, 'Talimat belgesi bağımsızlık ilkesini tam karşılamaktadır.'),
+  (
+    'dddd0001-fef0-0000-0000-000000000002', 'CTRL-AUD-001', 'Yıllık Risk Odaklı Denetim Planı', 'FULL', 92, 'Plan metodoloji dokümanına uygun hazırlanmaktadır.'),
+  (
+    'dddd0001-fef0-0000-0000-000000000003', 'CTRL-FND-001', 'Bulgu Kayıt ve Takip Sistemi', 'PARTIAL', 75, 'Takip sistemi mevcut ancak otomatik hatırlatma eksik.'),
+  (
+    'dddd0001-fef0-0000-0000-000000000006', 'CTRL-IT-001', 'BT Varlık Envanteri Prosedürü', 'PARTIAL', 70, 'Ağ varlıkları dahil ancak bulut varlıkları eksik.'),
+  (
+    'dddd0001-fef0-0000-0000-000000000009', 'CTRL-IT-002', 'Erişim Yönetimi Politikası', 'FULL', 88, 'IAM sistemi ile entegre, en az yetki prensibi uygulanmaktadır.'),
+  (
+    'dddd0001-fef0-0000-0000-000000000011', 'CTRL-KVKK-001', 'Kişisel Veri İşleme Envanteri', 'PARTIAL', 68, 'Envanter mevcut ancak departman bazlı gözden geçirme beklenmekte.')
 ON CONFLICT DO NOTHING;
 
 -- =============================================================================
@@ -3986,7 +3989,7 @@ ON CONFLICT (id) DO NOTHING;
 -- Advisory services seed
 INSERT INTO public.advisory_services (id, tenant_id, engagement_id, title, service_type, description, regulatory_ref, estimated_hours, fee_basis, status, deliverable) VALUES
   (
-    'as000000-0000-0000-0000-000000000001',
+    'af000000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'ae000000-0000-0000-0000-000000000001',
     'BDDK 6493 Ödeme Hizmetleri Uyum Yol Haritası',
@@ -3999,7 +4002,7 @@ INSERT INTO public.advisory_services (id, tenant_id, engagement_id, title, servi
     'Gap Analiz Raporu + Kapatma Planı (Excel + PDF)'
   ),
   (
-    'as000000-0000-0000-0000-000000000002',
+    'af000000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'ae000000-0000-0000-0000-000000000001',
     'Ürün Lansmanı Uyum Çalıştayı',
@@ -4012,7 +4015,7 @@ INSERT INTO public.advisory_services (id, tenant_id, engagement_id, title, servi
     'Çalıştay Tutanağı + Katılımcı Listesi'
   ),
   (
-    'as000000-0000-0000-0000-000000000003',
+    'af000000-0000-0000-0000-000000000003',
     '11111111-1111-1111-1111-111111111111',
     'ae000000-0000-0000-0000-000000000002',
     'Teminat Değerleme Akış Şeması Tasarımı',
@@ -4040,7 +4043,7 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO resurrection_logs (id, finding_code, finding_title, category, risk_level, original_closed_at, resurface_date, previous_close_count, assigned_to, entity_name, notes, status) VALUES
   (
-    'eeee0001-res0-0000-0000-000000000001',
+    'eeee0001-fef0-0000-0000-000000000001',
     'M6-KRD-2024-042',
     'KGF Destekli Kredilerde Temerrüt Risk Kontrolü Eksikliği',
     'KREDİ RİSKİ',
@@ -4054,7 +4057,7 @@ INSERT INTO resurrection_logs (id, finding_code, finding_title, category, risk_l
     'ACTIVE'
   ),
   (
-    'eeee0001-res0-0000-0000-000000000002',
+    'eeee0001-fef0-0000-0000-000000000002',
     'BT-SEC-2024-017',
     'Core Banking API Katmanında Nesne Düzeyi Yetkilendirme Açığı',
     'BT GÜVENLİĞİ',
@@ -4068,7 +4071,7 @@ INSERT INTO resurrection_logs (id, finding_code, finding_title, category, risk_l
     'ACTIVE'
   ),
   (
-    'eeee0001-res0-0000-0000-000000000003',
+    'eeee0001-fef0-0000-0000-000000000003',
     'OP-MASAK-2023-008',
     'MASAK Bildirim Sürelerinde Gecikme (Şüpheli İşlem Bildirimi)',
     'OPERASYONEL',
@@ -4082,7 +4085,7 @@ INSERT INTO resurrection_logs (id, finding_code, finding_title, category, risk_l
     'ACTIVE'
   ),
   (
-    'eeee0001-res0-0000-0000-000000000004',
+    'eeee0001-fef0-0000-0000-000000000004',
     'KVKK-VER-2025-003',
     'Üçüncü Taraf ile Veri Paylaşım Sözleşmesi Eksikliği',
     'KVKK / UYUM',
@@ -4096,7 +4099,7 @@ INSERT INTO resurrection_logs (id, finding_code, finding_title, category, risk_l
     'MONITORING'
   ),
   (
-    'eeee0001-res0-0000-0000-000000000005',
+    'eeee0001-fef0-0000-0000-000000000005',
     'BDDK-LIK-2024-011',
     'Likidite Yönetim Politikasında Stres Testi Metodoloji Açığı',
     'LİKİDİTE RİSKİ',
@@ -4114,7 +4117,7 @@ ON CONFLICT (id) DO NOTHING;
 -- Tahminsel Uyarılar (Predictive Alerts)
 INSERT INTO predictive_alerts (id, category, alert_type, severity, title, description, predicted_date, confidence_pct, source_data) VALUES
   (
-    'ffff0001-prda-0000-0000-000000000001',
+    'ffff0001-ffda-0000-0000-000000000001',
     'KREDİ RİSKİ',
     'RECURRENCE',
     'CRITICAL',
@@ -4125,7 +4128,7 @@ INSERT INTO predictive_alerts (id, category, alert_type, severity, title, descri
     '{"source": "ResurrectionWatch", "finding_code": "M6-KRD-2024-042", "history_count": 2}'
   ),
   (
-    'ffff0001-prda-0000-0000-000000000002',
+    'ffff0001-ffda-0000-0000-000000000002',
     'BT GÜVENLİĞİ',
     'RECURRENCE',
     'CRITICAL',
@@ -4136,7 +4139,7 @@ INSERT INTO predictive_alerts (id, category, alert_type, severity, title, descri
     '{"source": "ResurrectionWatch", "finding_code": "BT-SEC-2024-017"}'
   ),
   (
-    'ffff0001-prda-0000-0000-000000000003',
+    'ffff0001-ffda-0000-0000-000000000003',
     'OPERASYONEL',
     'ESCALATION',
     'HIGH',
@@ -4222,7 +4225,7 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.chaos_results (id, tenant_id, experiment_id, batch_id, scenario, transactions_injected, total_amount, control_reaction, detection_time_ms, alert_triggered, notes, ran_at) VALUES
   (
-    'cr000000-0000-0000-0000-000000000001',
+    'cf000000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'ce000000-0000-0000-0000-000000000001',
     'batch-smurfing-001',
@@ -4232,7 +4235,7 @@ INSERT INTO public.chaos_results (id, tenant_id, experiment_id, batch_id, scenar
     NOW() - INTERVAL '7 days'
   ),
   (
-    'cr000000-0000-0000-0000-000000000002',
+    'cf000000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'ce000000-0000-0000-0000-000000000001',
     'batch-smurfing-002',
@@ -4242,7 +4245,7 @@ INSERT INTO public.chaos_results (id, tenant_id, experiment_id, batch_id, scenar
     NOW() - INTERVAL '3 days'
   ),
   (
-    'cr000000-0000-0000-0000-000000000003',
+    'cf000000-0000-0000-0000-000000000003',
     '11111111-1111-1111-1111-111111111111',
     'ce000000-0000-0000-0000-000000000002',
     'batch-creditbypass-001',
@@ -4252,7 +4255,7 @@ INSERT INTO public.chaos_results (id, tenant_id, experiment_id, batch_id, scenar
     NOW() - INTERVAL '5 days'
   ),
   (
-    'cr000000-0000-0000-0000-000000000004',
+    'cf000000-0000-0000-0000-000000000004',
     '11111111-1111-1111-1111-111111111111',
     'ce000000-0000-0000-0000-000000000003',
     'batch-roundtrip-001',
@@ -4359,7 +4362,7 @@ ON CONFLICT (id) DO NOTHING;
 -- 3. academy_questions — CIA Part I sınavı için örnek sorular
 INSERT INTO public.academy_questions (id, exam_id, question_text, options, correct_option_id, points, explanation, order_index) VALUES
   (
-    'aq000000-0000-0000-0000-000000000001',
+    'af000000-0000-0000-0000-000000000001',
     'ae100000-0000-0000-0000-000000000001',
     'GIAS 2024''e göre iç denetim biriminin birincil amacı aşağıdakilerden hangisidir?',
     '[{"id":"A","text":"Hata ve usulsüzlükleri tespit etmek"},{"id":"B","text":"Kuruma değer katmak ve faaliyetlerini geliştirmek"},{"id":"C","text":"Yönetim kuruluna raporlamak"},{"id":"D","text":"Finansal tabloları onaylamak"}]',
@@ -4369,7 +4372,7 @@ INSERT INTO public.academy_questions (id, exam_id, question_text, options, corre
     1
   ),
   (
-    'aq000000-0000-0000-0000-000000000002',
+    'af000000-0000-0000-0000-000000000002',
     'ae100000-0000-0000-0000-000000000001',
     'İç denetim faaliyetinin "bağımsızlığı" için en kritik gereksinim hangisidir?',
     '[{"id":"A","text":"Denetçilerin ayrı bir binada çalışması"},{"id":"B","text":"İç denetim biriminin doğrudan yönetim kuruluna veya eşdeğerine raporlaması"},{"id":"C","text":"Tüm denetçilerin CIA sertifikasına sahip olması"},{"id":"D","text":"Bilgi teknolojileri bölümünden bütçe almaması"}]',
@@ -4379,7 +4382,7 @@ INSERT INTO public.academy_questions (id, exam_id, question_text, options, corre
     2
   ),
   (
-    'aq000000-0000-0000-0000-000000000003',
+    'af000000-0000-0000-0000-000000000003',
     'ae100000-0000-0000-0000-000000000001',
     'Aşağıdakilerden hangisi bir iç denetim bulgusunun zorunlu bileşeni DEĞİLDİR?',
     '[{"id":"A","text":"Kriter (Standart/Politika)"},{"id":"B","text":"Durum (Gözlemlenen)"},{"id":"C","text":"Neden (Kök Sebep)"},{"id":"D","text":"Yönetim Kurulu İmzası"}]',
@@ -4389,7 +4392,7 @@ INSERT INTO public.academy_questions (id, exam_id, question_text, options, corre
     3
   ),
   (
-    'aq000000-0000-0000-0000-000000000004',
+    'af000000-0000-0000-0000-000000000004',
     'ae100000-0000-0000-0000-000000000002',
     'IT General Controls (ITGC) kapsamında aşağıdakilerden hangisi birincil kontrol kategorisidir?',
     '[{"id":"A","text":"Müşteri hizmetleri kalitesi"},{"id":"B","text":"Erişim kontrolü ve kimlik yönetimi"},{"id":"C","text":"Pazarlama veri analitiği"},{"id":"D","text":"İnsan kaynakları planlaması"}]',
@@ -4399,7 +4402,7 @@ INSERT INTO public.academy_questions (id, exam_id, question_text, options, corre
     1
   ),
   (
-    'aq000000-0000-0000-0000-000000000005',
+    'af000000-0000-0000-0000-000000000005',
     'ae100000-0000-0000-0000-000000000003',
     'GIAS 2024''ün önceki IPPF sürümünden temel farkı nedir?',
     '[{"id":"A","text":"Risk tabanlı denetim kaldırıldı"},{"id":"B","text":"Denetim planlaması isteğe bağlı hale getirildi"},{"id":"C","text":"Hem güvence hem danışmanlık faaliyetleri için tek entegre çerçeve"},{"id":"D","text":"Tüm denetçilerin hukuk diplomasına sahip olması zorunlu"}]',
@@ -4413,7 +4416,7 @@ ON CONFLICT (id) DO NOTHING;
 -- 4. user_cpe_records — Örnek CPE kayıtları (gerçekçi bankacılık eğitimleri)
 INSERT INTO public.user_cpe_records (id, user_id, tenant_id, title, provider, credit_hours, status, date_earned, notes) VALUES
   (
-    'ur000000-0000-0000-0000-000000000001',
+    'ff000000-0000-0000-0000-000000000001',
     '00000000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'IIA Türkiye — Risk Odaklı Denetim Zirvesi',
@@ -4424,7 +4427,7 @@ INSERT INTO public.user_cpe_records (id, user_id, tenant_id, title, provider, cr
     '2 günlük konferans, 8 CPE saati. Belge no: IIA-TR-2026-0215'
   ),
   (
-    'ur000000-0000-0000-0000-000000000002',
+    'ff000000-0000-0000-0000-000000000002',
     '00000000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'ISACA — CISA Review Webinar (BT Kontrolleri)',
@@ -4435,7 +4438,7 @@ INSERT INTO public.user_cpe_records (id, user_id, tenant_id, title, provider, cr
     'Online webinar. CPE No: ISACA-WEB-2026-047'
   ),
   (
-    'ur000000-0000-0000-0000-000000000003',
+    'ff000000-0000-0000-0000-000000000003',
     '00000000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'BDDK Uyum Konferansı — Katılım Bankacılığı',
@@ -4450,7 +4453,7 @@ ON CONFLICT (id) DO NOTHING;
 -- 5. cpe_annual_goals — Demo kullanıcı için 2026 hedefi
 INSERT INTO public.cpe_annual_goals (id, user_id, year, goal_hours) VALUES
   (
-    'cg000000-0000-0000-0000-000000000001',
+    'cf000000-0000-0000-0000-000000000001',
     '00000000-0000-0000-0000-000000000001',
     2026,
     40
@@ -4466,7 +4469,7 @@ INSERT INTO public.skeptic_challenges (
   incident_count, ai_message, justification, resolution
 ) VALUES
   (
-    'sc350000-0000-0000-0000-000000000001',
+    'fc350000-0000-0000-0000-000000000001',
     'SOX-FIN-001',
     'Hazine',
     'Effective',
@@ -4477,7 +4480,7 @@ INSERT INTO public.skeptic_challenges (
     'Override'
   ),
   (
-    'sc350000-0000-0000-0000-000000000002',
+    'fc350000-0000-0000-0000-000000000002',
     'SOX-IT-003',
     'BT',
     'Effective',
@@ -4488,7 +4491,7 @@ INSERT INTO public.skeptic_challenges (
     'Pending'
   ),
   (
-    'sc350000-0000-0000-0000-000000000003',
+    'fc350000-0000-0000-0000-000000000003',
     'SOX-OPS-002',
     'Operasyon',
     'Effective',
@@ -4499,7 +4502,7 @@ INSERT INTO public.skeptic_challenges (
     'Withdrawn'
   ),
   (
-    'sc350000-0000-0000-0000-000000000004',
+    'fc350000-0000-0000-0000-000000000004',
     'SOX-COM-001',
     'Uyum',
     'Effective',
@@ -4526,7 +4529,7 @@ INSERT INTO rkm_master (
   last_audit_date, audit_rating
 ) VALUES
   (
-    'gggg0001-rkm0-0000-0000-000000000001',
+    'ffff0001-fff0-0000-0000-000000000001',
     'RKM-KRD-2026-001',
     'Kurumsal Kredi Portföyünde Yoğunlaşma Riski',
     'Kredi Risk Komitesi',
@@ -4544,7 +4547,7 @@ INSERT INTO rkm_master (
     'NEEDS_IMPROVEMENT'
   ),
   (
-    'gggg0001-rkm0-0000-0000-000000000002',
+    'ffff0001-fff0-0000-0000-000000000002',
     'RKM-BT-2026-001',
     'Core Banking Sistemi Erişim Kontrolü Yetersizliği',
     'Bilgi Güvenliği Birimi',
@@ -4562,7 +4565,7 @@ INSERT INTO rkm_master (
     'NEEDS_IMPROVEMENT'
   ),
   (
-    'gggg0001-rkm0-0000-0000-000000000003',
+    'ffff0001-fff0-0000-0000-000000000003',
     'RKM-OP-2026-001',
     'MASAK Şüpheli İşlem Bildirim Süreci Zafiyeti',
     'MASAK Uyum Birimi',
@@ -4580,7 +4583,7 @@ INSERT INTO rkm_master (
     'SATISFACTORY'
   ),
   (
-    'gggg0001-rkm0-0000-0000-000000000004',
+    'ffff0001-fff0-0000-0000-000000000004',
     'RKM-LIK-2026-001',
     'Kısa Vadeli Likidite Tampon Yetersizliği (LCR)',
     'Hazine ve ALM',
@@ -4598,7 +4601,7 @@ INSERT INTO rkm_master (
     'SATISFACTORY'
   ),
   (
-    'gggg0001-rkm0-0000-0000-000000000005',
+    'ffff0001-fff0-0000-0000-000000000005',
     'RKM-KVKK-2026-001',
     'Kişisel Veri İhlaline İlişkin Bildirim Sürecinin Yetersizliği',
     'Hukuk ve Uyum Departmanı',
@@ -4616,7 +4619,7 @@ INSERT INTO rkm_master (
     'NEEDS_IMPROVEMENT'
   ),
   (
-    'gggg0001-rkm0-0000-0000-000000000006',
+    'ffff0001-fff0-0000-0000-000000000006',
     'RKM-STR-2026-001',
     'Dijital Bankacılık Dönüşüm Projesinde Teknik Borç Birikimi',
     'Dijital Bankacılık Birimi',
@@ -4641,17 +4644,17 @@ INSERT INTO sampling_logs (
   recommended_sample_size, methodology, is_full_scope
 ) VALUES
   (
-    'hhhh0001-samp-0000-0000-000000000001',
+    'ffff0001-faff-0000-0000-000000000001',
     1200, 'high', 95, 2.5,
     136, 'Attribute Sampling — GIAS 14.1 / BDDK Annex-C', FALSE
   ),
   (
-    'hhhh0001-samp-0000-0000-000000000002',
+    'ffff0001-faff-0000-0000-000000000002',
     450, 'medium', 95, 0,
     83, 'Attribute Sampling — GIAS 14.1 / BDDK Annex-C', FALSE
   ),
   (
-    'hhhh0001-samp-0000-0000-000000000003',
+    'ffff0001-faff-0000-0000-000000000003',
     38, 'high', 95, 0,
     38, 'Tam Kapsam Testi (N<50)', TRUE
   )
@@ -4898,7 +4901,7 @@ WHERE id = 'f0ffce00-0000-0000-0000-000000000003';
 -- 1. Grading Scale — BDDK ve KERD-2026 standartları
 INSERT INTO public.grading_scales (id, tenant_id, name, version, is_active, base_score, deduction_config) VALUES
   (
-    'gs000000-0000-0000-0000-000000000001',
+    'ff000000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'KERD-2026 Standart Ölçeği',
     '4.0',
@@ -4907,7 +4910,7 @@ INSERT INTO public.grading_scales (id, tenant_id, name, version, is_active, base
     '{"critical":25,"high":10,"medium":5,"low":1}'
   ),
   (
-    'gs000000-0000-0000-0000-000000000002',
+    'ff000000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'BDDK Basit Ölçeği',
     '2024',
@@ -4925,9 +4928,9 @@ INSERT INTO public.audit_grades (
   count_critical, count_high, count_medium, count_low, graded_by
 )
 SELECT
-  'ag000000-0000-0000-0000-000000000001',
+  'af000000-0000-0000-0000-000000000001',
   ae.id,
-  'gs000000-0000-0000-0000-000000000001',
+  'ff000000-0000-0000-0000-000000000001',
   '11111111-1111-1111-1111-111111111111',
   72.0, 'C', 'SINIRLI_GUVENCE',
   100, 28.0, true, '1 critical bulgu mevcut - Maksimum not C',
@@ -4940,7 +4943,7 @@ ON CONFLICT (engagement_id) DO NOTHING;
 -- 3. grade_history — Not değişim geçmişi
 INSERT INTO public.grade_history (id, engagement_id, tenant_id, previous_grade, new_grade, previous_score, new_score, change_reason, changed_by)
 SELECT
-  'gh000000-0000-0000-0000-000000000001',
+  'ff000000-0000-0000-0000-000000000001',
   ae.id,
   '11111111-1111-1111-1111-111111111111',
   'D',
@@ -4963,7 +4966,7 @@ INSERT INTO report_snapshots (
   id, report_id, snapshot_by, content_json, title, status_at_seal, hash_sha256, metadata
 ) VALUES
   (
-    'iiii0001-snap-0000-0000-000000000001',
+    'ffff0001-ffaf-0000-0000-000000000001',
     '00000000-0000-0000-0000-000000000001',
     'kbirim@sentinelab.com.tr',
     '{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"2025 Q4 İç Denetim Nihai Raporu mühürlenmiş içeriği."}]}]}',
@@ -4973,7 +4976,7 @@ INSERT INTO report_snapshots (
     '{"sealed_version": "1.0", "bddk_reference": "BDDK-DEN-2025-Q4", "attestation": "WORM"}'
   ),
   (
-    'iiii0001-snap-0000-0000-000000000002',
+    'ffff0001-ffaf-0000-0000-000000000002',
     '00000000-0000-0000-0000-000000000002',
     'denetim.baskani@sentinelab.com.tr',
     '{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Kredi Riski Kapsamlı Değerlendirme Raporu mühürlenmiş içeriği."}]}]}',
@@ -4990,9 +4993,9 @@ INSERT INTO cryptographic_signatures (
   signature_type, signature_hash, order_index
 ) VALUES
   (
-    'jjjj0001-sig0-0000-0000-000000000001',
+    'ffff0001-fff0-0000-0000-000000000001',
     '00000000-0000-0000-0000-000000000001',
-    'iiii0001-snap-0000-0000-000000000001',
+    'ffff0001-ffaf-0000-0000-000000000001',
     'Dr. Ayşe Kaya',
     'DENETIM_BASKANI',
     'a.kaya@sentinelab.com.tr',
@@ -5001,9 +5004,9 @@ INSERT INTO cryptographic_signatures (
     1
   ),
   (
-    'jjjj0001-sig0-0000-0000-000000000002',
+    'ffff0001-fff0-0000-0000-000000000002',
     '00000000-0000-0000-0000-000000000001',
-    'iiii0001-snap-0000-0000-000000000001',
+    'ffff0001-ffaf-0000-0000-000000000001',
     'Mehmet Yılmaz',
     'RISK_DIREKTORU',
     'm.yilmaz@sentinelab.com.tr',
@@ -5012,9 +5015,9 @@ INSERT INTO cryptographic_signatures (
     2
   ),
   (
-    'jjjj0001-sig0-0000-0000-000000000003',
+    'ffff0001-fff0-0000-0000-000000000003',
     '00000000-0000-0000-0000-000000000001',
-    'iiii0001-snap-0000-0000-000000000001',
+    'ffff0001-ffaf-0000-0000-000000000001',
     'Fatma Demir',
     'YON_KURULU',
     'f.demir@sentinelab.com.tr',
@@ -5034,20 +5037,20 @@ ON CONFLICT (id) DO NOTHING;
 -- Pilot Action: Kredi Limiti Aşımı İzlenebilirlik Kaydı
 INSERT INTO public.actions (
   id,
+  tenant_id,
   finding_id,
   title,
   description,
   priority,
   status,
-  due_date,
+  current_due_date,
   original_due_date,
   regulatory_tags,
-  finding_snapshot,
-  created_by,
-  created_at
+  finding_snapshot
 ) VALUES (
   'a9000000-0000-0000-0000-000000000039',
-  NULL,
+  '11111111-1111-1111-1111-111111111111',
+  'f1000000-0000-0000-0000-000000000001',
   'Kredi Limiti Aşımı Kontrol Açığı — Kapatma Aksiyonu',
   'Belirli kurumsal kredi hesaplarında limit aşımlarının onay sürecindeki kontrol zafiyetinin giderilmesi.',
   'CRITICAL',
@@ -5056,37 +5059,34 @@ INSERT INTO public.actions (
   NOW() + INTERVAL '45 days',
   ARRAY['BDDK', 'GIAS-2024', 'Std15.1'],
   jsonb_build_object(
-    'finding_id',     'a9000000-find-0000-0000-000000000001',
+    'finding_id',     'a9000000-fffd-0000-0000-000000000001',
     'title',          'Onaysız Kredi Limiti Aşımı',
     'severity',       'CRITICAL',
     'risk_rating',    'HIGH',
     'gias_category',  'Kredi Riski',
     'description',    'Sistematik onay mekanizması devre dışı bırakılarak limitin üstüne çıkıldığı tespit edildi.',
-    'created_at',     to_char(NOW() - INTERVAL '30 days', ''YYYY-MM-DD"T"HH24:MI:SS"Z"'')
-  ),
-  '00000000-0000-0000-0000-000000000001',
-  NOW() - INTERVAL '30 days'
+    'created_at',     to_char(NOW() - INTERVAL '30 days', 'YYYY-MM-DD"T"HH24:MI:SS"Z"')
+  )
 ) ON CONFLICT (id) DO UPDATE
-  SET regulatory_tags   = EXCLUDED.regulatory_tags,
-      finding_snapshot  = EXCLUDED.finding_snapshot;
+  SET regulatory_tags   = EXCLUDED.regulatory_tags;
 
 -- İkinci Pilot Action: KVKK Uyum Süreci
 INSERT INTO public.actions (
   id,
+  tenant_id,
   finding_id,
   title,
   description,
   priority,
   status,
-  due_date,
+  current_due_date,
   original_due_date,
   regulatory_tags,
-  finding_snapshot,
-  created_by,
-  created_at
+  finding_snapshot
 ) VALUES (
   'a9000000-0000-0000-0000-000000000040',
-  NULL,
+  '11111111-1111-1111-1111-111111111111',
+  'f1000000-0000-0000-0000-000000000002',
   'KVKK Veri Erişim Logu Eksikliği — Kapatma Aksiyonu',
   'Hassas kişisel veri tablolarına erişim loglarının KVKK Madde 12 kapsamında tutulmaması.',
   'HIGH',
@@ -5095,19 +5095,16 @@ INSERT INTO public.actions (
   NOW() + INTERVAL '20 days',
   ARRAY['KVKK', 'BDDK', 'GIAS-2024'],
   jsonb_build_object(
-    'finding_id',     'a9000000-find-0000-0000-000000000002',
+    'finding_id',     'a9000000-fffd-0000-0000-000000000002',
     'title',          'Kişisel Veri Erişim Logu Eksikliği',
     'severity',       'HIGH',
     'risk_rating',    'HIGH',
     'gias_category',  'Veri Yönetimi',
     'description',    'Hassas kişisel verilere erişim loglarının tutulmaması yasal yükümlülükleri ihlal etmektedir.',
-    'created_at',     to_char(NOW() - INTERVAL '15 days', ''YYYY-MM-DD"T"HH24:MI:SS"Z"'')
-  ),
-  '00000000-0000-0000-0000-000000000001',
-  NOW() - INTERVAL '15 days'
+    'created_at',     to_char(NOW() - INTERVAL '15 days', 'YYYY-MM-DD"T"HH24:MI:SS"Z"')
+  )
 ) ON CONFLICT (id) DO UPDATE
-  SET regulatory_tags   = EXCLUDED.regulatory_tags,
-      finding_snapshot  = EXCLUDED.finding_snapshot;
+  SET regulatory_tags   = EXCLUDED.regulatory_tags;
 
 -- =============================================================================
 -- WAVE 41 SEED: Data Signals & Seismograph
@@ -5116,7 +5113,7 @@ INSERT INTO public.actions (
 -- 1. external_data_signals — Gerçekçi Türk Bankacılık Sinyalleri
 INSERT INTO public.external_data_signals (id, tenant_id, signal_type, signal_source, title, description, signal_strength, impact_score, severity, is_active, triggered_at) VALUES
   (
-    'es000000-0000-0000-0000-000000000001',
+    'ef000000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'MACRO_ECONOMIC',
     'TCMB',
@@ -5129,7 +5126,7 @@ INSERT INTO public.external_data_signals (id, tenant_id, signal_type, signal_sou
     NOW() - INTERVAL '2 hours'
   ),
   (
-    'es000000-0000-0000-0000-000000000002',
+    'ef000000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'CYBER',
     'CERT-TR',
@@ -5142,7 +5139,7 @@ INSERT INTO public.external_data_signals (id, tenant_id, signal_type, signal_sou
     NOW() - INTERVAL '45 minutes'
   ),
   (
-    'es000000-0000-0000-0000-000000000003',
+    'ef000000-0000-0000-0000-000000000003',
     '11111111-1111-1111-1111-111111111111',
     'REGULATORY',
     'BDDK',
@@ -5155,7 +5152,7 @@ INSERT INTO public.external_data_signals (id, tenant_id, signal_type, signal_sou
     NOW() - INTERVAL '6 hours'
   ),
   (
-    'es000000-0000-0000-0000-000000000004',
+    'ef000000-0000-0000-0000-000000000004',
     '11111111-1111-1111-1111-111111111111',
     'MARKET',
     'Bloomberg',
@@ -5168,7 +5165,7 @@ INSERT INTO public.external_data_signals (id, tenant_id, signal_type, signal_sou
     NOW() - INTERVAL '30 minutes'
   ),
   (
-    'es000000-0000-0000-0000-000000000005',
+    'ef000000-0000-0000-0000-000000000005',
     '11111111-1111-1111-1111-111111111111',
     'REGULATORY',
     'SPK',
@@ -5184,29 +5181,29 @@ ON CONFLICT (id) DO NOTHING;
 
 -- 2. seismograph_logs — Son 24 saat sismograf verisi (saat başı)
 INSERT INTO public.seismograph_logs (id, tenant_id, log_hour, hour_label, exceptions, passes, signal_strength) VALUES
-  ('sl000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '23 hours', '01:00', 2, 45, 0.4),
-  ('sl000000-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '22 hours', '02:00', 1, 52, 0.2),
-  ('sl000000-0000-0000-0000-000000000003', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '21 hours', '03:00', 0, 37, 0.0),
-  ('sl000000-0000-0000-0000-000000000004', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '20 hours', '04:00', 3, 41, 0.7),
-  ('sl000000-0000-0000-0000-000000000005', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '19 hours', '05:00', 1, 60, 0.2),
-  ('sl000000-0000-0000-0000-000000000006', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '18 hours', '06:00', 4, 78, 0.5),
-  ('sl000000-0000-0000-0000-000000000007', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '17 hours', '07:00', 8, 112, 0.7),
-  ('sl000000-0000-0000-0000-000000000008', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '16 hours', '08:00', 12, 145, 0.8),
-  ('sl000000-0000-0000-0000-000000000009', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '15 hours', '09:00', 18, 160, 1.1),
-  ('sl000000-0000-0000-0000-000000000010', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '14 hours', '10:00', 24, 148, 1.6),
-  ('sl000000-0000-0000-0000-000000000011', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '13 hours', '11:00', 31, 155, 2.0),
-  ('sl000000-0000-0000-0000-000000000012', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '12 hours', '12:00', 15, 130, 1.2),
-  ('sl000000-0000-0000-0000-000000000013', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '11 hours', '13:00', 19, 141, 1.3),
-  ('sl000000-0000-0000-0000-000000000014', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '10 hours', '14:00', 22, 138, 1.6),
-  ('sl000000-0000-0000-0000-000000000015', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '9 hours',  '15:00', 42, 120, 3.5),
-  ('sl000000-0000-0000-0000-000000000016', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '8 hours',  '16:00', 28, 110, 2.5),
-  ('sl000000-0000-0000-0000-000000000017', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '7 hours',  '17:00', 16, 98,  1.6),
-  ('sl000000-0000-0000-0000-000000000018', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '6 hours',  '18:00', 9,  87,  0.9),
-  ('sl000000-0000-0000-0000-000000000019', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '5 hours',  '19:00', 6,  71,  0.8),
-  ('sl000000-0000-0000-0000-000000000020', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '4 hours',  '20:00', 11, 65,  1.7),
-  ('sl000000-0000-0000-0000-000000000021', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '3 hours',  '21:00', 7,  55,  1.2),
-  ('sl000000-0000-0000-0000-000000000022', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '2 hours',  '22:00', 5,  48,  1.0),
-  ('sl000000-0000-0000-0000-000000000023', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '1 hour',   '23:00', 3,  40,  0.8)
+  ('ff000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '23 hours', '01:00', 2, 45, 0.4),
+  ('ff000000-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '22 hours', '02:00', 1, 52, 0.2),
+  ('ff000000-0000-0000-0000-000000000003', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '21 hours', '03:00', 0, 37, 0.0),
+  ('ff000000-0000-0000-0000-000000000004', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '20 hours', '04:00', 3, 41, 0.7),
+  ('ff000000-0000-0000-0000-000000000005', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '19 hours', '05:00', 1, 60, 0.2),
+  ('ff000000-0000-0000-0000-000000000006', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '18 hours', '06:00', 4, 78, 0.5),
+  ('ff000000-0000-0000-0000-000000000007', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '17 hours', '07:00', 8, 112, 0.7),
+  ('ff000000-0000-0000-0000-000000000008', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '16 hours', '08:00', 12, 145, 0.8),
+  ('ff000000-0000-0000-0000-000000000009', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '15 hours', '09:00', 18, 160, 1.1),
+  ('ff000000-0000-0000-0000-000000000010', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '14 hours', '10:00', 24, 148, 1.6),
+  ('ff000000-0000-0000-0000-000000000011', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '13 hours', '11:00', 31, 155, 2.0),
+  ('ff000000-0000-0000-0000-000000000012', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '12 hours', '12:00', 15, 130, 1.2),
+  ('ff000000-0000-0000-0000-000000000013', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '11 hours', '13:00', 19, 141, 1.3),
+  ('ff000000-0000-0000-0000-000000000014', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '10 hours', '14:00', 22, 138, 1.6),
+  ('ff000000-0000-0000-0000-000000000015', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '9 hours',  '15:00', 42, 120, 3.5),
+  ('ff000000-0000-0000-0000-000000000016', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '8 hours',  '16:00', 28, 110, 2.5),
+  ('ff000000-0000-0000-0000-000000000017', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '7 hours',  '17:00', 16, 98,  1.6),
+  ('ff000000-0000-0000-0000-000000000018', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '6 hours',  '18:00', 9,  87,  0.9),
+  ('ff000000-0000-0000-0000-000000000019', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '5 hours',  '19:00', 6,  71,  0.8),
+  ('ff000000-0000-0000-0000-000000000020', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '4 hours',  '20:00', 11, 65,  1.7),
+  ('ff000000-0000-0000-0000-000000000021', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '3 hours',  '21:00', 7,  55,  1.2),
+  ('ff000000-0000-0000-0000-000000000022', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '2 hours',  '22:00', 5,  48,  1.0),
+  ('ff000000-0000-0000-0000-000000000023', '11111111-1111-1111-1111-111111111111', NOW() - INTERVAL '1 hour',   '23:00', 3,  40,  0.8)
 ON CONFLICT (id) DO NOTHING;
 
 -- =============================================================================
@@ -5215,7 +5212,7 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.board_resolutions (id, tenant_id, title, description, resolution_type, status, quorum_required, meeting_date, regulatory_ref, proposed_by) VALUES
   (
-    'br000000-0000-0000-0000-000000000001',
+    'bf000000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'Bireysel Kredi Tahsis Süreci Revizyonu',
     'BDDK 5411 sayılı Kanun 51. Maddesi ve ilgili Yönetmelik değişiklikleri çerçevesinde, bireysel kredi tahsis sürecinin yeniden yapılandırılması, limit matrisinin güncellenmesi ve otomatik onay mekanizmasının devreye alınması hususlarının karara bağlanması.',
@@ -5227,7 +5224,7 @@ INSERT INTO public.board_resolutions (id, tenant_id, title, description, resolut
     'Genel Müdür Yardımcısı — Bireysel Bankacılık'
   ),
   (
-    'br000000-0000-0000-0000-000000000002',
+    'bf000000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'KVKK Veri İşleme Politikası Güncellemesi',
     'Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında hazırlanan güncel veri işleme politikasının ve müşteri aydınlatma metinlerinin Yönetim Kurulu onayına sunulması.',
@@ -5239,7 +5236,7 @@ INSERT INTO public.board_resolutions (id, tenant_id, title, description, resolut
     'Hukuk ve Uyum Direktörü'
   ),
   (
-    'br000000-0000-0000-0000-000000000003',
+    'bf000000-0000-0000-0000-000000000003',
     '11111111-1111-1111-1111-111111111111',
     'İç Denetim Yıllık Planı — 2026',
     'Teftiş Kurulu Başkanlığı tarafından GIAS 2024 standartları çerçevesinde hazırlanan 2026 yılı iç denetim çalışma planının ve risk odaklı önceliklendirme matrisinin YK bilgisine sunulması.',
@@ -5251,7 +5248,7 @@ INSERT INTO public.board_resolutions (id, tenant_id, title, description, resolut
     'Teftiş Kurulu Başkanı (CAE)'
   ),
   (
-    'br000000-0000-0000-0000-000000000004',
+    'bf000000-0000-0000-0000-000000000004',
     '11111111-1111-1111-1111-111111111111',
     'Operasyonel Risk Çerçevesi Onayı',
     'Basel III operasyonel risk standartları ve BDDK Operasyonel Risk Yönetimi Rehberi esas alınarak revize edilen Operasyonel Risk Politikası ile ölçüm ve izleme metodolojisinin YK onayına sunulması.',
@@ -5266,17 +5263,17 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.committee_votes (id, tenant_id, resolution_id, member_name, member_title, vote, rationale, voted_at) VALUES
   -- Karar 1: Kredi Tahsis Süreci Revizyonu
-  ('cv000001-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', 'br000000-0000-0000-0000-000000000001', 'Ahmet Yılmaz', 'Yönetim Kurulu Başkanı', 'FOR', 'Operasyonel verimliliği artıracak, rekabet gücünü güçlendirecektir.', NOW() - INTERVAL '1 hour'),
-  ('cv000001-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111', 'br000000-0000-0000-0000-000000000001', 'Fatma Kaya', 'Bağımsız YK Üyesi', 'FOR', 'BDDK uyumluluk açısından gereklidir.', NOW() - INTERVAL '45 minutes'),
-  ('cv000001-0000-0000-0000-000000000003', '11111111-1111-1111-1111-111111111111', 'br000000-0000-0000-0000-000000000001', 'Mehmet Demir', 'YK Üyesi', 'AGAINST', 'Uygulama takvimi kısa; etki analizi yetersiz.', NOW() - INTERVAL '30 minutes'),
-  ('cv000001-0000-0000-0000-000000000004', '11111111-1111-1111-1111-111111111111', 'br000000-0000-0000-0000-000000000001', 'Ayşe Çelik', 'Bağımsız YK Üyesi', 'FOR', 'Risk azaltıcı etkileri baskın; destekliyorum.', NOW() - INTERVAL '20 minutes'),
-  ('cv000001-0000-0000-0000-000000000005', '11111111-1111-1111-1111-111111111111', 'br000000-0000-0000-0000-000000000001', 'Hasan Öztürk', 'YK Üyesi', 'ABSTAIN', NULL, NOW() - INTERVAL '15 minutes'),
+  ('cf000001-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', 'bf000000-0000-0000-0000-000000000001', 'Ahmet Yılmaz', 'Yönetim Kurulu Başkanı', 'FOR', 'Operasyonel verimliliği artıracak, rekabet gücünü güçlendirecektir.', NOW() - INTERVAL '1 hour'),
+  ('cf000001-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111', 'bf000000-0000-0000-0000-000000000001', 'Fatma Kaya', 'Bağımsız YK Üyesi', 'FOR', 'BDDK uyumluluk açısından gereklidir.', NOW() - INTERVAL '45 minutes'),
+  ('cf000001-0000-0000-0000-000000000003', '11111111-1111-1111-1111-111111111111', 'bf000000-0000-0000-0000-000000000001', 'Mehmet Demir', 'YK Üyesi', 'AGAINST', 'Uygulama takvimi kısa; etki analizi yetersiz.', NOW() - INTERVAL '30 minutes'),
+  ('cf000001-0000-0000-0000-000000000004', '11111111-1111-1111-1111-111111111111', 'bf000000-0000-0000-0000-000000000001', 'Ayşe Çelik', 'Bağımsız YK Üyesi', 'FOR', 'Risk azaltıcı etkileri baskın; destekliyorum.', NOW() - INTERVAL '20 minutes'),
+  ('cf000001-0000-0000-0000-000000000005', '11111111-1111-1111-1111-111111111111', 'bf000000-0000-0000-0000-000000000001', 'Hasan Öztürk', 'YK Üyesi', 'ABSTAIN', NULL, NOW() - INTERVAL '15 minutes'),
   -- Karar 2: KVKK (KAPANDI)
-  ('cv000002-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', 'br000000-0000-0000-0000-000000000002', 'Ahmet Yılmaz', 'Yönetim Kurulu Başkanı', 'FOR', 'Yasal yükümlülük; oybirliğiyle kabul.', NOW() - INTERVAL '10 days'),
-  ('cv000002-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111', 'br000000-0000-0000-0000-000000000002', 'Fatma Kaya', 'Bağımsız YK Üyesi', 'FOR', 'KVKK uyumluluğu kritik öneme sahiptir.', NOW() - INTERVAL '10 days'),
-  ('cv000002-0000-0000-0000-000000000003', '11111111-1111-1111-1111-111111111111', 'br000000-0000-0000-0000-000000000002', 'Mehmet Demir', 'YK Üyesi', 'FOR', NULL, NOW() - INTERVAL '10 days'),
-  ('cv000002-0000-0000-0000-000000000004', '11111111-1111-1111-1111-111111111111', 'br000000-0000-0000-0000-000000000002', 'Ayşe Çelik', 'Bağımsız YK Üyesi', 'FOR', NULL, NOW() - INTERVAL '10 days'),
-  ('cv000002-0000-0000-0000-000000000005', '11111111-1111-1111-1111-111111111111', 'br000000-0000-0000-0000-000000000002', 'Hasan Öztürk', 'YK Üyesi', 'FOR', NULL, NOW() - INTERVAL '10 days')
+  ('cf000002-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', 'bf000000-0000-0000-0000-000000000002', 'Ahmet Yılmaz', 'Yönetim Kurulu Başkanı', 'FOR', 'Yasal yükümlülük; oybirliğiyle kabul.', NOW() - INTERVAL '10 days'),
+  ('cf000002-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111', 'bf000000-0000-0000-0000-000000000002', 'Fatma Kaya', 'Bağımsız YK Üyesi', 'FOR', 'KVKK uyumluluğu kritik öneme sahiptir.', NOW() - INTERVAL '10 days'),
+  ('cf000002-0000-0000-0000-000000000003', '11111111-1111-1111-1111-111111111111', 'bf000000-0000-0000-0000-000000000002', 'Mehmet Demir', 'YK Üyesi', 'FOR', NULL, NOW() - INTERVAL '10 days'),
+  ('cf000002-0000-0000-0000-000000000004', '11111111-1111-1111-1111-111111111111', 'bf000000-0000-0000-0000-000000000002', 'Ayşe Çelik', 'Bağımsız YK Üyesi', 'FOR', NULL, NOW() - INTERVAL '10 days'),
+  ('cf000002-0000-0000-0000-000000000005', '11111111-1111-1111-1111-111111111111', 'bf000000-0000-0000-0000-000000000002', 'Hasan Öztürk', 'YK Üyesi', 'FOR', NULL, NOW() - INTERVAL '10 days')
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================
@@ -5291,7 +5288,7 @@ INSERT INTO external_data_pipelines (
   endpoint_url, last_success_at, record_count
 ) VALUES
   (
-    'kkkk0001-pipe-0000-0000-000000000001',
+    'ffff0001-fffe-0000-0000-000000000001',
     'MIZAN-DAILY',
     'Mizan Verisi Günlük Aktarımı',
     'Genel Muhasebe Sistemi''nden günlük mizan verilerinin Sentinel analiz tablolarına aktarılması. BDDK Muhasebe Md. 7 kapsamında.',
@@ -5307,7 +5304,7 @@ INSERT INTO external_data_pipelines (
     48320
   ),
   (
-    'kkkk0001-pipe-0000-0000-000000000002',
+    'ffff0001-fffe-0000-0000-000000000002',
     'EFT-INTRADAY',
     'Günlük EFT/Havale Log Çekimi',
     'Gün içi EFT ve havale işlem loglarının gerçek zamanlı izleme için çekilmesi. MASAK uyum takibi doğrudan bu pipeline üzerinden yapılmaktadır.',
@@ -5323,7 +5320,7 @@ INSERT INTO external_data_pipelines (
     1240
   ),
   (
-    'kkkk0001-pipe-0000-0000-000000000003',
+    'ffff0001-fffe-0000-0000-000000000003',
     'SWIFT-MT940',
     'SWIFT MT940 Hesap Ekstreleri',
     'Muhabir banka hesap ekstrelerinin SWIFT MT940 formatında SFTP üzerinden çekilmesi ve doğrulanması.',
@@ -5339,7 +5336,7 @@ INSERT INTO external_data_pipelines (
     96
   ),
   (
-    'kkkk0001-pipe-0000-0000-000000000004',
+    'ffff0001-fffe-0000-0000-000000000004',
     'KREDI-PORTFOLIO',
     'Kredi Portföy Anlık Görüntüsü',
     'Aktif kredi portföyünün tüm taksit ve vade bilgileriyle birlikte günlük snapshot''ının çekilmesi. Risk skorlama modeli için girdi.',
@@ -5355,7 +5352,7 @@ INSERT INTO external_data_pipelines (
     284910
   ),
   (
-    'kkkk0001-pipe-0000-0000-000000000005',
+    'ffff0001-fffe-0000-0000-000000000005',
     'MIS-RAPORLAMA',
     'MIS Yönetim Raporlama Sistemi Aktarımı',
     'Yönetim Bilgi Sistemi''nden haftalık özet raporların Sentinel''e aktarılması. BDDK raporlama takvimi ile senkronizasyon.',
@@ -5371,7 +5368,7 @@ INSERT INTO external_data_pipelines (
     210
   ),
   (
-    'kkkk0001-pipe-0000-0000-000000000006',
+    'ffff0001-fffe-0000-0000-000000000006',
     'KVKK-MASAK-PUSH',
     'KVKK/MASAK Uyumsuzluk Bildirimi',
     'Sentinel''den tespit edilen KVKK ve MASAK ihlallerinin dış uyum sistemine bildirilmesi. Çift yönlü doğrulama dahil.',
@@ -5391,66 +5388,72 @@ ON CONFLICT (pipeline_code) DO NOTHING;
 -- Senkronizasyon Logları (geçmiş çalıştırmalar)
 INSERT INTO core_sync_logs (
   id, pipeline_id, pipeline_code, started_at, completed_at, duration_ms,
-  status, records_fetched, records_written, records_failed, triggered_by
+  status, records_fetched, records_written, records_failed, triggered_by,
+  error_code, error_detail, triggered_user
 ) VALUES
   -- MIZAN başarılı
   (
-    'llll0001-log0-0000-0000-000000000001',
-    'kkkk0001-pipe-0000-0000-000000000001',
+    'ffff0001-fff0-0000-0000-000000000001',
+    'ffff0001-fffe-0000-0000-000000000001',
     'MIZAN-DAILY',
     now() - INTERVAL '1 hour 5 minutes',
     now() - INTERVAL '1 hour',
     312000,
-    'SUCCESS', 48320, 48320, 0, 'SCHEDULER'
+    'SUCCESS', 48320, 48320, 0, 'SCHEDULER',
+    NULL, NULL, NULL
   ),
   -- EFT son çalıştırma
   (
-    'llll0001-log0-0000-0000-000000000002',
-    'kkkk0001-pipe-0000-0000-000000000002',
+    'ffff0001-fff0-0000-0000-000000000002',
+    'ffff0001-fffe-0000-0000-000000000002',
     'EFT-INTRADAY',
     now() - INTERVAL '14 minutes',
     now() - INTERVAL '12 minutes',
     87000,
-    'SUCCESS', 1240, 1240, 0, 'SCHEDULER'
+    'SUCCESS', 1240, 1240, 0, 'SCHEDULER',
+    NULL, NULL, NULL
   ),
   -- EFT önceki başarısız çalıştırma
   (
-    'llll0001-log0-0000-0000-000000000003',
-    'kkkk0001-pipe-0000-0000-000000000002',
+    'ffff0001-fff0-0000-0000-000000000003',
+    'ffff0001-fffe-0000-0000-000000000002',
     'EFT-INTRADAY',
     now() - INTERVAL '29 minutes',
     now() - INTERVAL '28 minutes',
     45000,
     'FAILED', 0, 0, 0, 'SCHEDULER',
     'TIMEOUT_502',
-    'CBS API gateway timed out (502 Bad Gateway). Yeniden deneme planlandı.'
+    'CBS API gateway timed out (502 Bad Gateway). Yeniden deneme planlandı.',
+    NULL
   ),
   -- SWIFT başarılı
   (
-    'llll0001-log0-0000-0000-000000000004',
-    'kkkk0001-pipe-0000-0000-000000000003',
+    'ffff0001-fff0-0000-0000-000000000004',
+    'ffff0001-fffe-0000-0000-000000000003',
     'SWIFT-MT940',
     now() - INTERVAL '18 hours 8 minutes',
     now() - INTERVAL '18 hours',
     451000,
-    'SUCCESS', 96, 96, 0, 'SCHEDULER'
+    'SUCCESS', 96, 96, 0, 'SCHEDULER',
+    NULL, NULL, NULL
   ),
   -- Kredi portföyü kısmı başarılı
   (
-    'llll0001-log0-0000-0000-000000000005',
-    'kkkk0001-pipe-0000-0000-000000000004',
+    'ffff0001-fff0-0000-0000-000000000005',
+    'ffff0001-fffe-0000-0000-000000000004',
     'KREDI-PORTFOLIO',
     now() - INTERVAL '1 day 12 minutes',
     now() - INTERVAL '1 day',
     720000,
     'PARTIAL', 284910, 284820, 90, 'SCHEDULER',
     'PARTIAL_WRITE',
-    '90 kayıt foreign key kısıtlaması nedeniyle yazılamadı. Manuel inceleme gerekiyor.'
+    '90 kayıt foreign key kısıtlaması nedeniyle yazılamadı. Manuel inceleme gerekiyor.',
+    NULL
   ),
   -- Manuel tetikleme
   (
-    'llll0001-log0-0000-0000-000000000006',
-    'kkkk0001-pipe-0000-0000-000000000001',
+    'ffff0001-fff0-0000-0000-000000000006',
+    'ffff0001-fffe-0000-0000-000000000001',
     'MIZAN-DAILY',
     now() - INTERVAL '3 hours',
     now() - INTERVAL '2 hours 50 minutes',
@@ -5468,10 +5471,10 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.board_resolutions (
   id, title, description, resolution_type, status,
-  quorum_required, meeting_date, regulatory_ref, proposed_by, urgency, category
+  quorum_required, meeting_date, regulatory_ref, proposed_by
 ) VALUES
   (
-    'br420000-0000-0000-0000-000000000001',
+    'bf420000-0000-0000-0000-000000000001',
     'Kredi Tahsis Süreci Revizyonu — SOX/ICFR Uyumu',
     'Basel IV ve SOX Section 302 kapsamında kurumsal kredi tahsis sürecinin yeniden yapılandırılması ve 4-Göz ilkesine uygun dual-control mekanizmasının zorunlu kılınması.',
     'APPROVAL',
@@ -5479,12 +5482,10 @@ INSERT INTO public.board_resolutions (
     7,
     '2026-03-15T10:00:00+03:00',
     'BDDK 2024/1 Madde 12, SOX S.302',
-    'Dr. Mehmet Yıldız — Yönetim Kurulu Başkanı',
-    'Kritik',
-    'Kredi'
+    'Dr. Mehmet Yıldız — Yönetim Kurulu Başkanı'
   ),
   (
-    'br420000-0000-0000-0000-000000000002',
+    'bf420000-0000-0000-0000-000000000002',
     'Yıllık Bütçe ve Kaynak Planı — FY2026',
     'İç Denetim Bölümü FY2026 operasyonel bütçesinin onayı ve ek uzman istihdamı kararının YK gündemine alınması.',
     'APPROVAL',
@@ -5492,12 +5493,10 @@ INSERT INTO public.board_resolutions (
     5,
     '2026-03-15T11:30:00+03:00',
     'IIA Practice Advisory 2030-1',
-    'CAE Dr. Hasan Aksoy',
-    'Yüksek',
-    'Bütçe'
+    'CAE Dr. Hasan Aksoy'
   ),
   (
-    'br420000-0000-0000-0000-000000000003',
+    'bf420000-0000-0000-0000-000000000003',
     'FATF Öneri 16 Raporlaması — Gecikme Gerekçe Kabulü',
     'FATF Öneri 16 kapsamındaki işlem izleme raporlamasındaki 72 saatlik gecikmenin operasyonel sebepleri and gerekçe müzakeresi.',
     'ACKNOWLEDGEMENT',
@@ -5505,12 +5504,10 @@ INSERT INTO public.board_resolutions (
     5,
     '2026-03-10T09:00:00+03:00',
     'FATF R.16, MASAK 2023/5',
-    'Uyum Direktörü Ayşe Kara',
-    'Yüksek',
-    'Uyum'
+    'Uyum Direktörü Ayşe Kara'
   ),
   (
-    'br420000-0000-0000-0000-000000000004',
+    'bf420000-0000-0000-0000-000000000004',
     'Siber Güvenlik Altyapısı Modernizasyonu',
     'ISO 27001:2022 ve BDDK BT Risk Yönetimi Tebliği kapsamında Zero-Trust mimarisine geçiş yatırım kararı (₺12.5M bütçe talebi).',
     'APPROVAL',
@@ -5518,9 +5515,7 @@ INSERT INTO public.board_resolutions (
     7,
     '2026-03-20T14:00:00+03:00',
     'BDDK BT Risk 2023, ISO 27001:2022',
-    'CTO Ahmet Demir',
-    'Kritik',
-    'Strateji'
+    'CTO Ahmet Demir'
   )
 ON CONFLICT (id) DO NOTHING;
 
@@ -5529,8 +5524,8 @@ INSERT INTO public.committee_votes (
 ) VALUES
   -- Karar 1: Kredi Tahsis — açık oylama
   (
-    'cv420000-0000-0000-0000-000000000001',
-    'br420000-0000-0000-0000-000000000001',
+    'cf420000-0000-0000-0000-000000000001',
+    'bf420000-0000-0000-0000-000000000001',
     'Dr. Mehmet Yıldız',
     'Yönetim Kurulu Başkanı',
     'FOR',
@@ -5538,8 +5533,8 @@ INSERT INTO public.committee_votes (
     '2026-03-15T10:12:00+03:00'
   ),
   (
-    'cv420000-0000-0000-0000-000000000002',
-    'br420000-0000-0000-0000-000000000001',
+    'cf420000-0000-0000-0000-000000000002',
+    'bf420000-0000-0000-0000-000000000001',
     'Fatma Çelik',
     'Bağımsız Üye',
     'FOR',
@@ -5547,8 +5542,8 @@ INSERT INTO public.committee_votes (
     '2026-03-15T10:15:00+03:00'
   ),
   (
-    'cv420000-0000-0000-0000-000000000003',
-    'br420000-0000-0000-0000-000000000001',
+    'cf420000-0000-0000-0000-000000000003',
+    'bf420000-0000-0000-0000-000000000001',
     'Kemal Öztürk',
     'Risk Komitesi Başkanı',
     'FOR',
@@ -5556,8 +5551,8 @@ INSERT INTO public.committee_votes (
     '2026-03-15T10:17:00+03:00'
   ),
   (
-    'cv420000-0000-0000-0000-000000000004',
-    'br420000-0000-0000-0000-000000000001',
+    'cf420000-0000-0000-0000-000000000004',
+    'bf420000-0000-0000-0000-000000000001',
     'Selin Arslan',
     'Bağımsız Üye',
     'ABSTAIN',
@@ -5566,8 +5561,8 @@ INSERT INTO public.committee_votes (
   ),
   -- Karar 3: FATF — kapalı oylama
   (
-    'cv420000-0000-0000-0000-000000000005',
-    'br420000-0000-0000-0000-000000000003',
+    'cf420000-0000-0000-0000-000000000005',
+    'bf420000-0000-0000-0000-000000000003',
     'Dr. Mehmet Yıldız',
     'Yönetim Kurulu Başkanı',
     'FOR',
@@ -5575,8 +5570,8 @@ INSERT INTO public.committee_votes (
     '2026-03-10T09:25:00+03:00'
   ),
   (
-    'cv420000-0000-0000-0000-000000000006',
-    'br420000-0000-0000-0000-000000000003',
+    'cf420000-0000-0000-0000-000000000006',
+    'bf420000-0000-0000-0000-000000000003',
     'Fatma Çelik',
     'Bağımsız Üye',
     'AGAINST',
@@ -5584,8 +5579,8 @@ INSERT INTO public.committee_votes (
     '2026-03-10T09:28:00+03:00'
   ),
   (
-    'cv420000-0000-0000-0000-000000000007',
-    'br420000-0000-0000-0000-000000000003',
+    'cf420000-0000-0000-0000-000000000007',
+    'bf420000-0000-0000-0000-000000000003',
     'Kemal Öztürk',
     'Risk Komitesi Başkanı',
     'FOR',
@@ -5593,8 +5588,8 @@ INSERT INTO public.committee_votes (
     '2026-03-10T09:30:00+03:00'
   ),
   (
-    'cv420000-0000-0000-0000-000000000008',
-    'br420000-0000-0000-0000-000000000003',
+    'cf420000-0000-0000-0000-000000000008',
+    'bf420000-0000-0000-0000-000000000003',
     'Selin Arslan',
     'Bağımsız Üye',
     'FOR',
@@ -5602,8 +5597,8 @@ INSERT INTO public.committee_votes (
     '2026-03-10T09:32:00+03:00'
   ),
   (
-    'cv420000-0000-0000-0000-000000000009',
-    'br420000-0000-0000-0000-000000000003',
+    'cf420000-0000-0000-0000-000000000009',
+    'bf420000-0000-0000-0000-000000000003',
     'Burak Şahin',
     'Uyum Komitesi Üyesi',
     'FOR',
@@ -5619,7 +5614,7 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.report_translations (id, tenant_id, report_id, source_language, target_language, source_text, translated_text, section_key, translation_model, confidence_score, is_reviewed, created_by) VALUES
   (
-    'rt000000-0000-0000-0000-000000000001',
+    'ff000000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     (SELECT id FROM public.reports WHERE tenant_id = '11111111-1111-1111-1111-111111111111' LIMIT 1),
     'tr',
@@ -5633,7 +5628,7 @@ INSERT INTO public.report_translations (id, tenant_id, report_id, source_languag
     'AI Çeviri Motoru v4.5'
   ),
   (
-    'rt000000-0000-0000-0000-000000000002',
+    'ff000000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     (SELECT id FROM public.reports WHERE tenant_id = '11111111-1111-1111-1111-111111111111' LIMIT 1),
     'tr',
@@ -5647,7 +5642,7 @@ INSERT INTO public.report_translations (id, tenant_id, report_id, source_languag
     'AI Çeviri Motoru v4.5'
   ),
   (
-    'rt000000-0000-0000-0000-000000000003',
+    'ff000000-0000-0000-0000-000000000003',
     '11111111-1111-1111-1111-111111111111',
     (SELECT id FROM public.reports WHERE tenant_id = '11111111-1111-1111-1111-111111111111' LIMIT 1),
     'tr',
@@ -5661,7 +5656,7 @@ INSERT INTO public.report_translations (id, tenant_id, report_id, source_languag
     'AI Çeviri Motoru v4.5'
   ),
   (
-    'rt000000-0000-0000-0000-000000000004',
+    'ff000000-0000-0000-0000-000000000004',
     '11111111-1111-1111-1111-111111111111',
     (SELECT id FROM public.reports WHERE tenant_id = '11111111-1111-1111-1111-111111111111' LIMIT 1),
     'tr',
@@ -5693,63 +5688,63 @@ INSERT INTO public.risk_edges
 VALUES
   -- Kredi Yoğunlaşma → Likidite (nedensellik: büyük kredi bozulması likiditeyi etkiler)
   (
-    'edge0001-0000-0000-0000-000000000001',
-    'gggg0001-rkm0-0000-0000-000000000001',
-    'gggg0001-rkm0-0000-0000-000000000004',
+    'edfe0001-0000-0000-0000-000000000001',
+    'ffff0001-fff0-0000-0000-000000000001',
+    'ffff0001-fff0-0000-0000-000000000004',
     'CAUSAL',
     3.5,
     'Portföy yoğunlaşması kayıpları LCR baskısına yol açabilir'
   ),
   -- Core Banking Erişim → MASAK İzleme (bağımlılık: güvenlik açığı şüpheli işlem tespitini engeller)
   (
-    'edge0001-0000-0000-0000-000000000002',
-    'gggg0001-rkm0-0000-0000-000000000002',
-    'gggg0001-rkm0-0000-0000-000000000003',
+    'edfe0001-0000-0000-0000-000000000002',
+    'ffff0001-fff0-0000-0000-000000000002',
+    'ffff0001-fff0-0000-0000-000000000003',
     'DEPENDENCY',
     2.8,
     'Erişim kontrolü zafiyeti MASAK işlem izleme kalitesini düşürür'
   ),
   -- Dijital Dönüşüm Teknik Borç → Core Banking Erişim (nedensellik: modernizasyon gecikmesi güvenliği artırır)
   (
-    'edge0001-0000-0000-0000-000000000003',
-    'gggg0001-rkm0-0000-0000-000000000006',
-    'gggg0001-rkm0-0000-0000-000000000002',
+    'edfe0001-0000-0000-0000-000000000003',
+    'ffff0001-fff0-0000-0000-000000000006',
+    'ffff0001-fff0-0000-0000-000000000002',
     'ESCALATION',
     2.2,
     'Teknik borç birikimi güncellenmemiş erişim yönetimini tetikler'
   ),
   -- MASAK → Uyum Riski (korelasyon: her ikisi de mevzuat uyum alanında)
   (
-    'edge0001-0000-0000-0000-000000000004',
-    'gggg0001-rkm0-0000-0000-000000000003',
-    'gggg0001-rkm0-0000-0000-000000000005',
+    'edfe0001-0000-0000-0000-000000000004',
+    'ffff0001-fff0-0000-0000-000000000003',
+    'ffff0001-fff0-0000-0000-000000000005',
     'CORRELATED',
     1.9,
     'Uyum zaafiyetleri KVKK ve AML süreçlerini eş zamanlı etkiler'
   ),
   -- Likidite → Kredi Yoğunlaşma (geri döngü: stres ortamında kredi çekilmesi)
   (
-    'edge0001-0000-0000-0000-000000000005',
-    'gggg0001-rkm0-0000-0000-000000000004',
-    'gggg0001-rkm0-0000-0000-000000000001',
+    'edfe0001-0000-0000-0000-000000000005',
+    'ffff0001-fff0-0000-0000-000000000004',
+    'ffff0001-fff0-0000-0000-000000000001',
     'CORRELATED',
     1.5,
     'Likidite kısıtı kredi portföyü kalitesini bozar (geri etki)'
   ),
   -- KVKK → Dijital Dönüşüm (engelleme: veri sınırları dijital büyümeyi kısıtlar)
   (
-    'edge0001-0000-0000-0000-000000000006',
-    'gggg0001-rkm0-0000-0000-000000000005',
-    'gggg0001-rkm0-0000-0000-000000000006',
+    'edfe0001-0000-0000-0000-000000000006',
+    'ffff0001-fff0-0000-0000-000000000005',
+    'ffff0001-fff0-0000-0000-000000000006',
     'DEPENDENCY',
     1.2,
     'KVKK gereksinimleri dijital platform veri mimarisini etkiler'
   ),
   -- Kredi Yoğunlaşma → MASAK (dolaylı: büyük kurumsal müşteri HNW riski)
   (
-    'edge0001-0000-0000-0000-000000000007',
-    'gggg0001-rkm0-0000-0000-000000000001',
-    'gggg0001-rkm0-0000-0000-000000000003',
+    'edfe0001-0000-0000-0000-000000000007',
+    'ffff0001-fff0-0000-0000-000000000001',
+    'ffff0001-fff0-0000-0000-000000000003',
     'CORRELATED',
     1.8,
     'Büyük kurumsal kredi müşterileri AML risk profilini artırır'
@@ -5763,7 +5758,7 @@ ON CONFLICT (id) DO NOTHING;
 -- 1. user_behavior_logs — Anomali İçeren Kullanıcı Davranış Kayıtları
 INSERT INTO public.user_behavior_logs (id, tenant_id, user_id, user_name, session_id, event_type, event_category, ip_address, resource_type, resource_id, metadata, risk_score, occurred_at) VALUES
   (
-    'bl000000-0000-0000-0000-000000000001',
+    'bf000000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'demo-user-001',
     'Mustafa Kara',
@@ -5778,7 +5773,7 @@ INSERT INTO public.user_behavior_logs (id, tenant_id, user_id, user_name, sessio
     NOW() - INTERVAL '2 days' + INTERVAL '23 hours'
   ),
   (
-    'bl000000-0000-0000-0000-000000000002',
+    'bf000000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'demo-user-002',
     'Zehra Yıldız',
@@ -5793,7 +5788,7 @@ INSERT INTO public.user_behavior_logs (id, tenant_id, user_id, user_name, sessio
     NOW() - INTERVAL '6 hours'
   ),
   (
-    'bl000000-0000-0000-0000-000000000003',
+    'bf000000-0000-0000-0000-000000000003',
     '11111111-1111-1111-1111-111111111111',
     'demo-user-001',
     'Mustafa Kara',
@@ -5808,7 +5803,7 @@ INSERT INTO public.user_behavior_logs (id, tenant_id, user_id, user_name, sessio
     NOW() - INTERVAL '1 day' + INTERVAL '2 hours'
   ),
   (
-    'bl000000-0000-0000-0000-000000000004',
+    'bf000000-0000-0000-0000-000000000004',
     '11111111-1111-1111-1111-111111111111',
     'demo-user-003',
     'Ali Özcan',
@@ -5823,7 +5818,7 @@ INSERT INTO public.user_behavior_logs (id, tenant_id, user_id, user_name, sessio
     NOW() - INTERVAL '3 hours'
   ),
   (
-    'bl000000-0000-0000-0000-000000000005',
+    'bf000000-0000-0000-0000-000000000005',
     '11111111-1111-1111-1111-111111111111',
     'demo-user-004',
     'Elif Şahin',
@@ -5838,7 +5833,7 @@ INSERT INTO public.user_behavior_logs (id, tenant_id, user_id, user_name, sessio
     NOW() - INTERVAL '18 hours'
   ),
   (
-    'bl000000-0000-0000-0000-000000000006',
+    'bf000000-0000-0000-0000-000000000006',
     '11111111-1111-1111-1111-111111111111',
     'demo-user-002',
     'Zehra Yıldız',
@@ -5866,7 +5861,7 @@ INSERT INTO public.fraud_alerts (id, tenant_id, alert_code, title, description, 
     'open',
     'demo-user-001',
     'Mustafa Kara',
-    'bl000000-0000-0000-0000-000000000001',
+    'bf000000-0000-0000-0000-000000000001',
     91.5,
     '{"ip": "185.220.101.47", "file_count": 1847, "total_mb": 2340, "occurred_at_weekend": true}'
   ),
@@ -5880,7 +5875,7 @@ INSERT INTO public.fraud_alerts (id, tenant_id, alert_code, title, description, 
     'investigating',
     'demo-user-002',
     'Zehra Yıldız',
-    'bl000000-0000-0000-0000-000000000002',
+    'bf000000-0000-0000-0000-000000000002',
     78.2,
     '{"ip": "91.108.4.188", "country": "RU", "vpn": true, "distance_km": 2840}'
   ),
@@ -5894,7 +5889,7 @@ INSERT INTO public.fraud_alerts (id, tenant_id, alert_code, title, description, 
     'open',
     'demo-user-001',
     'Mustafa Kara',
-    'bl000000-0000-0000-0000-000000000003',
+    'bf000000-0000-0000-0000-000000000003',
     92.0,
     '{"config_key": "mfa_required", "changed_to": false, "correlated_with": "fa000000-0000-0000-0000-000000000001"}'
   ),
@@ -5908,7 +5903,7 @@ INSERT INTO public.fraud_alerts (id, tenant_id, alert_code, title, description, 
     'open',
     'demo-user-004',
     'Elif Şahin',
-    'bl000000-0000-0000-0000-000000000005',
+    'bf000000-0000-0000-0000-000000000005',
     67.8,
     '{"export_count": 512, "format": "CSV", "hour": 2}'
   )
@@ -5925,7 +5920,7 @@ INSERT INTO regulatory_bulletins (
   affected_sectors, tags
 ) VALUES
   (
-    'mmmm0001-bull-0000-0000-000000000001',
+    'ffff0001-bfff-0000-0000-000000000001',
     'BDDK-TEBL-2026-03',
     'Kripto Varlık Hizmet Sağlayıcılarına İlişkin Taslak Tebliğ',
     'Bankaların kripto varlık saklama, transfer ve ticaret hizmetlerine ilişkin lisanslama, sermaye yeterliliği ve müşteri doğrulama (KYC) yükümlülüklerini düzenleyen taslak tebliğ. Bankalara münhasır platform kurma yetkisi verilmektedir.',
@@ -5936,7 +5931,7 @@ INSERT INTO regulatory_bulletins (
     ARRAY['KRİPTO','VARLIK','LISANS','KYC']
   ),
   (
-    'mmmm0001-bull-0000-0000-000000000002',
+    'ffff0001-bfff-0000-0000-000000000002',
     'BDDK-CIRC-2026-01',
     'Likidite Karşılama Oranı (LCR) Hesaplama Metodolojisi Güncellemesi',
     'LCR hesaplamasında kullanılan yüksek kaliteli likit varlık (HQLA) sınıflandırmasında yapılan değişiklikler. Dijital devlet tahvilleri ve CBDC rezervleri Seviye 1 HQLA olarak tanımlanmaktadır.',
@@ -5947,7 +5942,7 @@ INSERT INTO regulatory_bulletins (
     ARRAY['LİKİDİTE','LCR','HQLA','CBDC']
   ),
   (
-    'mmmm0001-bull-0000-0000-000000000003',
+    'ffff0001-bfff-0000-0000-000000000003',
     'MASAK-GEN-2026-01',
     'Kripto Varlık İşlemlerinde Şüpheli İşlem Bildirim Standartları',
     'Kripto varlık aracı kuruluşları ve bankaların kripto işlem kaynaklı şüpheli işlemleri 24 saat içinde bildirme yükümlülükleri. Zincir analizi sonuçlarının rapora eklenmesi zorunlu kılınmaktadır.',
@@ -5958,7 +5953,7 @@ INSERT INTO regulatory_bulletins (
     ARRAY['MASAK','ŞİB','KRİPTO','AML']
   ),
   (
-    'mmmm0001-bull-0000-0000-000000000004',
+    'ffff0001-bfff-0000-0000-000000000004',
     'FATF-REC-2026-R15',
     'FATF R-15 Kripto Varlık Güncel Rehberi',
     'FATF ''in kripto varlık hizmet sağlayıcıları (VASP) için yayımladığı güncellenmiş uygulama rehberi. Travel Rule minimum eşiğinin 0 EUR''ya indirilmesini ve KYC süreçlerinin FATF standartlarına entegrasyonunu öngörmektedir.',
@@ -5969,7 +5964,7 @@ INSERT INTO regulatory_bulletins (
     ARRAY['FATF','VASP','TRAVEL_RULE','AML']
   ),
   (
-    'mmmm0001-bull-0000-0000-000000000005',
+    'ffff0001-bfff-0000-0000-000000000005',
     'KVKK-GEN-2026-02',
     'Yapay Zeka Destekli Kredi Kararlarında Kişisel Veri İşleme İlkeleri',
     'AI/ML tabanlı kredi skorlama ve red kararlarında veri sahibine açık rıza alma, kararın izah edilebilirliği (explainability) ve otomatik karar almaya itiraz hakkı yükümlülüklerini düzenleyen genel kurul kararı.',
@@ -5980,7 +5975,7 @@ INSERT INTO regulatory_bulletins (
     ARRAY['KVKK','YZ','KREDİ_SKORLAMA','AÇIK_RIVA']
   ),
   (
-    'mmmm0001-bull-0000-0000-000000000006',
+    'ffff0001-bfff-0000-0000-000000000006',
     'BDDK-REG-2026-SR',
     'Sürdürülebilir Finansman ve İklim Riski Açıklama Standartları',
     'Bankaların iklim riskini kredi portföyüne yansıtma yükümlülükleri ve çevresel stres testi metodolojisi. TCFD ve ISSB S2 standardıyla uyum zorunlu tutulmaktadır.',
@@ -5999,8 +5994,8 @@ INSERT INTO policy_impact_alerts (
   priority, status, completion_pct, assigned_to
 ) VALUES
   (
-    'nnnn0001-pia0-0000-0000-000000000001',
-    'mmmm0001-bull-0000-0000-000000000001',
+    'ffff0001-ffa0-0000-0000-000000000001',
+    'ffff0001-bfff-0000-0000-000000000001',
     'BDDK-TEBL-2026-03',
     'POL-KRD-001 — Kredi Politikası',
     'Kredi Risk Yönetim Birimi',
@@ -6011,8 +6006,8 @@ INSERT INTO policy_impact_alerts (
     'Kredi Risk Direktörü'
   ),
   (
-    'nnnn0001-pia0-0000-0000-000000000002',
-    'mmmm0001-bull-0000-0000-000000000001',
+    'ffff0001-ffa0-0000-0000-000000000002',
+    'ffff0001-bfff-0000-0000-000000000001',
     'BDDK-TEBL-2026-03',
     'POL-COMP-003 — AML/KYC Uyum Politikası',
     'MASAK ve Uyum Birimi',
@@ -6023,8 +6018,8 @@ INSERT INTO policy_impact_alerts (
     'MASAK Uyum Direktörü'
   ),
   (
-    'nnnn0001-pia0-0000-0000-000000000003',
-    'mmmm0001-bull-0000-0000-000000000002',
+    'ffff0001-ffa0-0000-0000-000000000003',
+    'ffff0001-bfff-0000-0000-000000000002',
     'BDDK-CIRC-2026-01',
     'POL-HAZ-001 — Hazine ve Likidite Yönetim Politikası',
     'Hazine ve ALM',
@@ -6035,8 +6030,8 @@ INSERT INTO policy_impact_alerts (
     'Hazine Risk Yöneticisi'
   ),
   (
-    'nnnn0001-pia0-0000-0000-000000000004',
-    'mmmm0001-bull-0000-0000-000000000003',
+    'ffff0001-ffa0-0000-0000-000000000004',
+    'ffff0001-bfff-0000-0000-000000000003',
     'MASAK-GEN-2026-01',
     'POL-COMP-002 — Şüpheli İşlem Raporlama Politikası',
     'MASAK ve Uyum Birimi',
@@ -6053,31 +6048,31 @@ ON CONFLICT (id) DO NOTHING;
 -- =============================================================================
 
 INSERT INTO public.risk_appetite_limits (id, tenant_id, kri_code, kri_name, description, category, unit, target_value, warning_threshold, limit_threshold, direction, is_active, regulatory_ref) VALUES
-  ('ral00001-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','NPL_RATIO','Takipteki Kredi Oranı (NPL)','Toplam kredi portföyü içindeki takipteki kredilerin oranı. BDDK 5411 md. 53 kapsamında izlenmektedir.','CREDIT','PERCENT',3.0,4.0,5.0,'LOWER_IS_BETTER',true,'BDDK 5411 md.53; Basel III'),
-  ('ral00001-0000-0000-0000-000000000002','11111111-1111-1111-1111-111111111111','LCR','Likidite Karşılama Oranı (LCR)','30 günlük stres senaryosunda yüksek kaliteli likit varlıkların net nakit çıkışına oranı.','LIQUIDITY','PERCENT',120.0,110.0,100.0,'HIGHER_IS_BETTER',true,'BDDK LCR Yönetmeliği; Basel III LCR'),
-  ('ral00001-0000-0000-0000-000000000003','11111111-1111-1111-1111-111111111111','CAPITAL_RATIO','Sermaye Yeterlilik Oranı (SYO)','Risk ağırlıklı varlıklara göre özkaynak oranı. BDDK asgari %12 sınırı.','CREDIT','PERCENT',15.0,13.0,12.0,'HIGHER_IS_BETTER',true,'BDDK Sermaye Yeterliliği Yönetmeliği; Basel III'),
-  ('ral00001-0000-0000-0000-000000000004','11111111-1111-1111-1111-111111111111','OP_LOSS_RATIO','Operasyonel Kayıp Oranı','Toplam gelir içindeki operasyonel kayıpların oranı.','OPERATIONAL','PERCENT',0.5,1.0,1.5,'LOWER_IS_BETTER',true,'Basel III Operasyonel Risk'),
-  ('ral00001-0000-0000-0000-000000000005','11111111-1111-1111-1111-111111111111','CYBER_INCIDENT_COUNT','Siber Güvenlik Olay Sayısı','Son 30 günde tespit edilen kritik siber güvenlik olaylarının sayısı.','CYBER','COUNT',0.0,2.0,5.0,'LOWER_IS_BETTER',true,'BDDK Siber Güvenlik Rehberi 2023'),
-  ('ral00001-0000-0000-0000-000000000006','11111111-1111-1111-1111-111111111111','KYC_COMPLETION','KYC Tamamlanma Oranı','Aktif müşteri portföyü içinde KYC belgesi tam olan müşterilerin oranı.','COMPLIANCE','PERCENT',98.0,95.0,90.0,'HIGHER_IS_BETTER',true,'MASAK AML Direktifi; FATF R.10')
+  ('faf00001-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','NPL_RATIO','Takipteki Kredi Oranı (NPL)','Toplam kredi portföyü içindeki takipteki kredilerin oranı. BDDK 5411 md. 53 kapsamında izlenmektedir.','CREDIT','PERCENT',3.0,4.0,5.0,'LOWER_IS_BETTER',true,'BDDK 5411 md.53; Basel III'),
+  ('faf00001-0000-0000-0000-000000000002','11111111-1111-1111-1111-111111111111','LCR','Likidite Karşılama Oranı (LCR)','30 günlük stres senaryosunda yüksek kaliteli likit varlıkların net nakit çıkışına oranı.','LIQUIDITY','PERCENT',120.0,110.0,100.0,'HIGHER_IS_BETTER',true,'BDDK LCR Yönetmeliği; Basel III LCR'),
+  ('faf00001-0000-0000-0000-000000000003','11111111-1111-1111-1111-111111111111','CAPITAL_RATIO','Sermaye Yeterlilik Oranı (SYO)','Risk ağırlıklı varlıklara göre özkaynak oranı. BDDK asgari %12 sınırı.','CREDIT','PERCENT',15.0,13.0,12.0,'HIGHER_IS_BETTER',true,'BDDK Sermaye Yeterliliği Yönetmeliği; Basel III'),
+  ('faf00001-0000-0000-0000-000000000004','11111111-1111-1111-1111-111111111111','OP_LOSS_RATIO','Operasyonel Kayıp Oranı','Toplam gelir içindeki operasyonel kayıpların oranı.','OPERATIONAL','PERCENT',0.5,1.0,1.5,'LOWER_IS_BETTER',true,'Basel III Operasyonel Risk'),
+  ('faf00001-0000-0000-0000-000000000005','11111111-1111-1111-1111-111111111111','CYBER_INCIDENT_COUNT','Siber Güvenlik Olay Sayısı','Son 30 günde tespit edilen kritik siber güvenlik olaylarının sayısı.','CYBER','COUNT',0.0,2.0,5.0,'LOWER_IS_BETTER',true,'BDDK Siber Güvenlik Rehberi 2023'),
+  ('faf00001-0000-0000-0000-000000000006','11111111-1111-1111-1111-111111111111','KYC_COMPLETION','KYC Tamamlanma Oranı','Aktif müşteri portföyü içinde KYC belgesi tam olan müşterilerin oranı.','COMPLIANCE','PERCENT',98.0,95.0,90.0,'HIGHER_IS_BETTER',true,'MASAK AML Direktifi; FATF R.10')
 ON CONFLICT (tenant_id, kri_code) DO NOTHING;
 
 INSERT INTO public.kri_readings (id, tenant_id, appetite_id, kri_code, reading_value, status, note, measured_by, measured_at) VALUES
   -- NPL: Uyarı bölgesinde (4.2 > 4.0 eşiği)
-  ('kr000001-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','ral00001-0000-0000-0000-000000000001','NPL_RATIO',4.2,'WARNING','Konut kredisi portföyündeki gecikmeli ödemeler artış trendinde.','RISK_SYSTEM',NOW() - INTERVAL '2 hours'),
-  ('kr000001-0000-0000-0000-000000000002','11111111-1111-1111-1111-111111111111','ral00001-0000-0000-0000-000000000001','NPL_RATIO',3.8,'NORMAL',NULL,'RISK_SYSTEM',NOW() - INTERVAL '1 day'),
-  ('kr000001-0000-0000-0000-000000000003','11111111-1111-1111-1111-111111111111','ral00001-0000-0000-0000-000000000001','NPL_RATIO',3.5,'NORMAL',NULL,'RISK_SYSTEM',NOW() - INTERVAL '7 days'),
+  ('ff000001-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','faf00001-0000-0000-0000-000000000001','NPL_RATIO',4.2,'WARNING','Konut kredisi portföyündeki gecikmeli ödemeler artış trendinde.','RISK_SYSTEM',NOW() - INTERVAL '2 hours'),
+  ('ff000001-0000-0000-0000-000000000002','11111111-1111-1111-1111-111111111111','faf00001-0000-0000-0000-000000000001','NPL_RATIO',3.8,'NORMAL',NULL,'RISK_SYSTEM',NOW() - INTERVAL '1 day'),
+  ('ff000001-0000-0000-0000-000000000003','11111111-1111-1111-1111-111111111111','faf00001-0000-0000-0000-000000000001','NPL_RATIO',3.5,'NORMAL',NULL,'RISK_SYSTEM',NOW() - INTERVAL '7 days'),
   -- LCR: Limit ihlali (98 < 100 eşiği)
-  ('kr000002-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','ral00001-0000-0000-0000-000000000002','LCR',98.0,'BREACH','Döviz likiditesindeki sıkışma nedeniyle LCR limit altına düştü. Acil aksiyon gerekiyor.','TREASURY',NOW() - INTERVAL '30 minutes'),
-  ('kr000002-0000-0000-0000-000000000002','11111111-1111-1111-1111-111111111111','ral00001-0000-0000-0000-000000000002','LCR',108.0,'WARNING',NULL,'RISK_SYSTEM',NOW() - INTERVAL '1 day'),
-  ('kr000002-0000-0000-0000-000000000003','11111111-1111-1111-1111-111111111111','ral00001-0000-0000-0000-000000000002','LCR',125.0,'NORMAL',NULL,'RISK_SYSTEM',NOW() - INTERVAL '7 days'),
+  ('ff000002-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','faf00001-0000-0000-0000-000000000002','LCR',98.0,'BREACH','Döviz likiditesindeki sıkışma nedeniyle LCR limit altına düştü. Acil aksiyon gerekiyor.','TREASURY',NOW() - INTERVAL '30 minutes'),
+  ('ff000002-0000-0000-0000-000000000002','11111111-1111-1111-1111-111111111111','faf00001-0000-0000-0000-000000000002','LCR',108.0,'WARNING',NULL,'RISK_SYSTEM',NOW() - INTERVAL '1 day'),
+  ('ff000002-0000-0000-0000-000000000003','11111111-1111-1111-1111-111111111111','faf00001-0000-0000-0000-000000000002','LCR',125.0,'NORMAL',NULL,'RISK_SYSTEM',NOW() - INTERVAL '7 days'),
   -- SYO: Normal bölge
-  ('kr000003-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','ral00001-0000-0000-0000-000000000003','CAPITAL_RATIO',16.8,'NORMAL',NULL,'RISK_SYSTEM',NOW() - INTERVAL '1 hour'),
+  ('ff000003-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','faf00001-0000-0000-0000-000000000003','CAPITAL_RATIO',16.8,'NORMAL',NULL,'RISK_SYSTEM',NOW() - INTERVAL '1 hour'),
   -- Operasyonel Kayıp: Normal
-  ('kr000004-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','ral00001-0000-0000-0000-000000000004','OP_LOSS_RATIO',0.3,'NORMAL',NULL,'RISK_SYSTEM',NOW() - INTERVAL '3 hours'),
+  ('ff000004-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','faf00001-0000-0000-0000-000000000004','OP_LOSS_RATIO',0.3,'NORMAL',NULL,'RISK_SYSTEM',NOW() - INTERVAL '3 hours'),
   -- Siber Olay: Uyarı
-  ('kr000005-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','ral00001-0000-0000-0000-000000000005','CYBER_INCIDENT_COUNT',3.0,'WARNING','3 kritik siber olay tespit edildi: API brute-force + 2 insider threat şüphesi.','SIEM',NOW() - INTERVAL '4 hours'),
+  ('ff000005-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','faf00001-0000-0000-0000-000000000005','CYBER_INCIDENT_COUNT',3.0,'WARNING','3 kritik siber olay tespit edildi: API brute-force + 2 insider threat şüphesi.','SIEM',NOW() - INTERVAL '4 hours'),
   -- KYC: Normal
-  ('kr000006-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','ral00001-0000-0000-0000-000000000006','KYC_COMPLETION',97.4,'NORMAL',NULL,'COMPLIANCE_SYSTEM',NOW() - INTERVAL '6 hours')
+  ('ff000006-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','faf00001-0000-0000-0000-000000000006','KYC_COMPLETION',97.4,'NORMAL',NULL,'COMPLIANCE_SYSTEM',NOW() - INTERVAL '6 hours')
 ON CONFLICT (id) DO NOTHING;
 
 -- =============================================================================
@@ -6087,7 +6082,7 @@ ON CONFLICT (id) DO NOTHING;
 -- audit_scripts — Gerçekçi Denetim Scriptleri
 INSERT INTO public.audit_scripts (id, tenant_id, title, description, script_type, category, schedule_cron, is_active, is_scheduled, script_body, last_run_status, last_run_results, total_executions, error_count, avg_duration_ms, created_by) VALUES
   (
-    'as000000-0000-0000-0000-000000000001',
+    'af000000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'Atıl Hesap Tarama — Gece 03:00',
     'Son 90 gün içinde hiç giriş yapılmamış aktif kullanıcı hesaplarını tespit eder. BDDK Siber Güvenlik Rehberi Madde 18 gereğince aylık çalıştırılması zorunludur.',
@@ -6105,7 +6100,7 @@ INSERT INTO public.audit_scripts (id, tenant_id, title, description, script_type
     'Sürekli Denetim Motoru'
   ),
   (
-    'as000000-0000-0000-0000-000000000002',
+    'af000000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'Görevler Ayrılığı (SoD) İhlal Taraması',
     'Çelişkili yetkilere sahip kullanıcıları tespit eder: Hem ödeme onaylama hem de fatura oluşturma yetkisi olan kişiler Basel III operasyonel risk kurallarını ihlal eder.',
@@ -6123,7 +6118,7 @@ INSERT INTO public.audit_scripts (id, tenant_id, title, description, script_type
     'Sürekli Denetim Motoru'
   ),
   (
-    'as000000-0000-0000-0000-000000000003',
+    'af000000-0000-0000-0000-000000000003',
     '11111111-1111-1111-1111-111111111111',
     'Yüksek Tutarlı İşlem Anomali Tespiti (AML)',
     'Tek bir iş günü içinde 50.000 TL üzeri birden fazla havale yapan hesapları MASAK uyum kuralları çerçevesinde işaretler.',
@@ -6141,7 +6136,7 @@ INSERT INTO public.audit_scripts (id, tenant_id, title, description, script_type
     'Sürekli Denetim Motoru'
   ),
   (
-    'as000000-0000-0000-0000-000000000004',
+    'af000000-0000-0000-0000-000000000004',
     '11111111-1111-1111-1111-111111111111',
     'COSO İç Kontrol Etkinlik Puanı Hesaplama',
     'COSO 2013 çerçevesinin 5 bileşeni ve 17 prensibi için ağırlıklı etkinlik puanı hesaplar. Yönetim kurulu raporlamasında kullanılır.',
@@ -6159,7 +6154,7 @@ INSERT INTO public.audit_scripts (id, tenant_id, title, description, script_type
     'COSO Değerlendirme Ekibi'
   ),
   (
-    'as000000-0000-0000-0000-000000000005',
+    'af000000-0000-0000-0000-000000000005',
     '11111111-1111-1111-1111-111111111111',
     'IT Yama Uyum Kontrolü (Patch Compliance)',
     'Son 30 gün içinde güvenlik yaması uygulanmamış aktif sistemleri listeler. BDDK Siber Güvenlik Rehberi, uygulama süresi: 72 saat.',
@@ -6180,11 +6175,11 @@ ON CONFLICT (id) DO NOTHING;
 
 -- script_execution_logs — Son Çalıştırma Kayıtları
 INSERT INTO public.script_execution_logs (id, tenant_id, script_id, status, triggered_by, started_at, completed_at, duration_ms, rows_returned, output_preview) VALUES
-  ('el000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', 'as000000-0000-0000-0000-000000000001', 'success', 'scheduler',   NOW() - INTERVAL '1 day' + INTERVAL '3 hours',    NOW() - INTERVAL '1 day' + INTERVAL '3 hours 2 minutes', 1840, 47, 'kullanici_adi: ahmet.sahin@banka.com, departman: BT, bekleme_gun: 127 ...'),
-  ('el000000-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111', 'as000000-0000-0000-0000-000000000001', 'success', 'manual',      NOW() - INTERVAL '3 hours',                          NOW() - INTERVAL '3 hours' + INTERVAL '2 minutes',        1920, 49, 'kullanici_adi: mehmet.demir@banka.com, departman: Operasyon, bekleme_gun: 95 ...'),
-  ('el000000-0000-0000-0000-000000000003', '11111111-1111-1111-1111-111111111111', 'as000000-0000-0000-0000-000000000002', 'success', 'scheduler',   NOW() - INTERVAL '6 days' + INTERVAL '6 hours',    NOW() - INTERVAL '6 days' + INTERVAL '6 hours 3 minutes', 2210, 12, 'user_id: usr-44, username: ali.koc, atanmis_roller: PAYMENT_APPROVER, INVOICE_CREATOR ...'),
-  ('el000000-0000-0000-0000-000000000004', '11111111-1111-1111-1111-111111111111', 'as000000-0000-0000-0000-000000000003', 'success', 'scheduler',   NOW() - INTERVAL '8 hours',                          NOW() - INTERVAL '8 hours' + INTERVAL '1 minute',         950,  3,  'account_id: ACC-9912, hesap_sahibi: Zeynep Ltd., toplam_tutar_tl: 187500 ...'),
-  ('el000000-0000-0000-0000-000000000005', '11111111-1111-1111-1111-111111111111', 'as000000-0000-0000-0000-000000000005', 'error',   'scheduler',   NOW() - INTERVAL '2 days' + INTERVAL '9 hours',    NULL,                                                      NULL, NULL, NULL)
+  ('ef000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', 'af000000-0000-0000-0000-000000000001', 'success', 'scheduler',   NOW() - INTERVAL '1 day' + INTERVAL '3 hours',    NOW() - INTERVAL '1 day' + INTERVAL '3 hours 2 minutes', 1840, 47, 'kullanici_adi: ahmet.sahin@banka.com, departman: BT, bekleme_gun: 127 ...'),
+  ('ef000000-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111', 'af000000-0000-0000-0000-000000000001', 'success', 'manual',      NOW() - INTERVAL '3 hours',                          NOW() - INTERVAL '3 hours' + INTERVAL '2 minutes',        1920, 49, 'kullanici_adi: mehmet.demir@banka.com, departman: Operasyon, bekleme_gun: 95 ...'),
+  ('ef000000-0000-0000-0000-000000000003', '11111111-1111-1111-1111-111111111111', 'af000000-0000-0000-0000-000000000002', 'success', 'scheduler',   NOW() - INTERVAL '6 days' + INTERVAL '6 hours',    NOW() - INTERVAL '6 days' + INTERVAL '6 hours 3 minutes', 2210, 12, 'user_id: usr-44, username: ali.koc, atanmis_roller: PAYMENT_APPROVER, INVOICE_CREATOR ...'),
+  ('ef000000-0000-0000-0000-000000000004', '11111111-1111-1111-1111-111111111111', 'af000000-0000-0000-0000-000000000003', 'success', 'scheduler',   NOW() - INTERVAL '8 hours',                          NOW() - INTERVAL '8 hours' + INTERVAL '1 minute',         950,  3,  'account_id: ACC-9912, hesap_sahibi: Zeynep Ltd., toplam_tutar_tl: 187500 ...'),
+  ('ef000000-0000-0000-0000-000000000005', '11111111-1111-1111-1111-111111111111', 'af000000-0000-0000-0000-000000000005', 'error',   'scheduler',   NOW() - INTERVAL '2 days' + INTERVAL '9 hours',    NULL,                                                      NULL, NULL, NULL)
 ON CONFLICT (id) DO NOTHING;
 
 -- =============================================================================
@@ -6199,7 +6194,7 @@ INSERT INTO public.interview_sessions (
   scheduled_at, started_at, ended_at
 ) VALUES
   (
-    'is500000-0000-0000-0000-000000000001',
+    'ff500000-0000-0000-0000-000000000001',
     'Hazine İşlemleri Mülakat #1 — Repo Limit Aşımı',
     'Barış Kaya',
     'Hazine Uzmanı',
@@ -6217,7 +6212,7 @@ INSERT INTO public.interview_sessions (
     '2026-03-10T10:37:00+03:00'
   ),
   (
-    'is500000-0000-0000-0000-000000000002',
+    'ff500000-0000-0000-0000-000000000002',
     'Operasyon Müdürü Görüşme — IBAN Doğrulama İhlali',
     'Cengiz Arslan',
     'Operasyon Müdürü',
@@ -6242,16 +6237,16 @@ INSERT INTO public.transcript_analysis (
 ) VALUES
   -- Oturum 1: Repo Limit Aşımı (is500000...001)
   (
-    'ta500000-0000-0000-0000-000000000001',
-    'is500000-0000-0000-0000-000000000001', 1,
+    'fa500000-0000-0000-0000-000000000001',
+    'ff500000-0000-0000-0000-000000000001', 1,
     'Denetçi',
     '3 Mart tarihinde gerçekleştirilen repo işleminin onaylı limit üzerinde olduğu görülmektedir. Bunu fark ettiniz mi?',
     'Nötr', 0.95, NULL, NULL,
     ARRAY['repo', 'limit', 'onay'], 0, 12000
   ),
   (
-    'ta500000-0000-0000-0000-000000000002',
-    'is500000-0000-0000-0000-000000000001', 2,
+    'fa500000-0000-0000-0000-000000000002',
+    'ff500000-0000-0000-0000-000000000001', 2,
     'Muhatap',
     'Şey... o gün sistem... yani sistem bazen böyle hatalar verebiliyor. Ben doğrudan onay vermemiştim zaten.',
     'Kaçamak', 0.88,
@@ -6260,16 +6255,16 @@ INSERT INTO public.transcript_analysis (
     ARRAY['sistem', 'hata', 'sorumluluk'], 12500, 27000
   ),
   (
-    'ta500000-0000-0000-0000-000000000003',
-    'is500000-0000-0000-0000-000000000001', 3,
+    'fa500000-0000-0000-0000-000000000003',
+    'ff500000-0000-0000-0000-000000000001', 3,
     'Denetçi',
     'Peki işlem onay loglarına göre sizin kullanıcı kimliğinizle onaylanmış. Bunu nasıl açıklarsınız?',
     'Nötr', 0.97, NULL, NULL,
     ARRAY['log', 'kimlik', 'onay'], 27500, 38000
   ),
   (
-    'ta500000-0000-0000-0000-000000000004',
-    'is500000-0000-0000-0000-000000000001', 4,
+    'fa500000-0000-0000-0000-000000000004',
+    'ff500000-0000-0000-0000-000000000001', 4,
     'Muhatap',
     'O gün... bilmiyorum, belki birileri benim şifremi kullandı. Zaten çok yoğun bir gündü, tam olarak hatırlamıyorum.',
     'Stresli', 0.91,
@@ -6278,16 +6273,16 @@ INSERT INTO public.transcript_analysis (
     ARRAY['şifre', 'hafıza', 'yoğunluk', 'başkası'], 38500, 58000
   ),
   (
-    'ta500000-0000-0000-0000-000000000005',
-    'is500000-0000-0000-0000-000000000001', 5,
+    'fa500000-0000-0000-0000-000000000005',
+    'ff500000-0000-0000-0000-000000000001', 5,
     'Denetçi',
     'Şifrenizi başkasıyla paylaştığınızı mı söylüyorsunuz? Bu güvenlik politikası ihlalidir ve ayrıca tutanağa geçmesi gerekiyor.',
     'Nötr', 0.99, NULL, NULL,
     ARRAY['güvenlik', 'politika', 'ihlal', 'tutanak'], 58500, 70000
   ),
   (
-    'ta500000-0000-0000-0000-000000000006',
-    'is500000-0000-0000-0000-000000000001', 6,
+    'fa500000-0000-0000-0000-000000000006',
+    'ff500000-0000-0000-0000-000000000001', 6,
     'Muhatap',
     'Hayır, hayır. Öyle bir şey demedim. Yanlış anladınız. Ben sadece... sistemi kastettim.',
     'Savunmacı', 0.87,
@@ -6297,16 +6292,16 @@ INSERT INTO public.transcript_analysis (
   ),
   -- Oturum 2: IBAN Doğrulama (is500000...002)
   (
-    'ta500000-0000-0000-0000-000000000007',
-    'is500000-0000-0000-0000-000000000002', 1,
+    'fa500000-0000-0000-0000-000000000007',
+    'ff500000-0000-0000-0000-000000000002', 1,
     'Denetçi',
     'Operasyon biriminizde müşteri IBAN doğrulama adımının devre dışı bırakıldığına dair kayıt mevcut. Bu kararı kim aldı?',
     'Nötr', 0.96, NULL, NULL,
     ARRAY['IBAN', 'doğrulama', 'devre dışı', 'karar'], 0, 14000
   ),
   (
-    'ta500000-0000-0000-0000-000000000008',
-    'is500000-0000-0000-0000-000000000002', 2,
+    'fa500000-0000-0000-0000-000000000008',
+    'ff500000-0000-0000-0000-000000000002', 2,
     'Muhatap',
     'Bu bir sistem geliştirme sürecinin parçasıydı. BT departmanıyla koordineli yapıldı. Operasyon olarak biz sadece kullanıcıyız.',
     'Savunmacı', 0.83,
@@ -6315,16 +6310,16 @@ INSERT INTO public.transcript_analysis (
     ARRAY['BT', 'koordinasyon', 'sorumluluk', 'transfer'], 14500, 31000
   ),
   (
-    'ta500000-0000-0000-0000-000000000009',
-    'is500000-0000-0000-0000-000000000002', 3,
+    'fa500000-0000-0000-0000-000000000009',
+    'ff500000-0000-0000-0000-000000000002', 3,
     'Denetçi',
     'BT onay belgesi veya değişiklik talebi (Change Request) var mı elimizde?',
     'Nötr', 0.98, NULL, NULL,
     ARRAY['CR', 'belge', 'onay', 'BT'], 31500, 40000
   ),
   (
-    'ta500000-0000-0000-0000-000000000010',
-    'is500000-0000-0000-0000-000000000002', 4,
+    'fa500000-0000-0000-0000-000000000010',
+    'ff500000-0000-0000-0000-000000000002', 4,
     'Muhatap',
     'Olması lazım. Yani olmalı. Ben şu an elimin altında değil ama... herhalde arşivdedir.',
     'Şüpheli', 0.79,
@@ -6344,7 +6339,7 @@ INSERT INTO public.bcp_scenarios
   (id, scenario_code, title, category, severity, rto_minutes, rpo_minutes, description, steps, owner, is_tested, last_test_date, test_result)
 VALUES
   (
-    'bcp00001-0000-0000-0000-000000000001',
+    'bcf00001-0000-0000-0000-000000000001',
     'BCP-IT-001',
     'Veri Merkezi Ana Güç Kesintisi — Tier 1 Sistemler',
     'IT', 'CRITICAL', 240, 60,
@@ -6361,7 +6356,7 @@ VALUES
     'Bilgi Teknolojileri Direktörü', true, '2025-11-15', 'PASSED'
   ),
   (
-    'bcp00001-0000-0000-0000-000000000002',
+    'bcf00001-0000-0000-0000-000000000002',
     'BCP-CYBER-001',
     'Fidye Yazılımı Saldırısı — Core Banking Yalıtımı',
     'CYBER', 'CRITICAL', 480, 120,
@@ -6376,7 +6371,7 @@ VALUES
     'Bilgi Güvenliği Direktörü (CISO)', false, NULL, NULL
   ),
   (
-    'bcp00001-0000-0000-0000-000000000003',
+    'bcf00001-0000-0000-0000-000000000003',
     'BCP-NAT-001',
     'Deprem Sonrası Operasyon Sürekliliği',
     'NATURAL_DISASTER', 'HIGH', 480, 240,
@@ -6397,7 +6392,7 @@ INSERT INTO public.crisis_events
 VALUES
   (
     'ce000001-0000-0000-0000-000000000001',
-    'bcp00001-0000-0000-0000-000000000001',
+    'bcf00001-0000-0000-0000-000000000001',
     'CRISIS-2026-03-07-VMA1',
     'Veri Merkezi A Kesintisi — Tier 1 Sistemler İçin Kurtarma Başladı',
     'Birincil veri merkezinde (İstanbul, Maslak) ana güç dağıtım panosu arızalandı. UPS devrede, jeneratörler çalışıyor. DR site devrilmesi başlatıldı. Core banking %80 kapasitede DR üzerinden çalışıyor.',
@@ -6412,7 +6407,7 @@ VALUES
   ),
   (
     'ce000001-0000-0000-0000-000000000002',
-    'bcp00001-0000-0000-0000-000000000002',
+    'bcf00001-0000-0000-0000-000000000002',
     'CRISIS-2026-03-07-CERT1',
     'CERT-TR Uyarısı — Şüpheli Fidye Yazılımı Aktivitesi',
     'CERT-TR, bankaya yönelik koordineli fidye yazılımı kampanyasında ön tespit bildirdi. SOC Ekibi anomali analizi yapıyor, sistem izolasyonu henüz uygulanmadı.',
@@ -6432,7 +6427,7 @@ INSERT INTO public.recovery_logs
   (id, crisis_id, step_number, action_title, action_detail, status, assigned_to, started_at, completed_at, notes)
 VALUES
   (
-    'rl000001-0000-0000-0000-000000000001',
+    'ff000001-0000-0000-0000-000000000001',
     'ce000001-0000-0000-0000-000000000001',
     1, 'Kriz Yönetim Ekibini Topla',
     'CAE ve Teknoloji Direktörünü acil bilgilendir',
@@ -6442,7 +6437,7 @@ VALUES
     'CAE ve YK Başkanı bilgilendirildi. Kriz odası kuruldu.'
   ),
   (
-    'rl000001-0000-0000-0000-000000000002',
+    'ff000001-0000-0000-0000-000000000002',
     'ce000001-0000-0000-0000-000000000001',
     2, 'DR Site Hazırlığını Kontrol Et',
     'İkincil veri merkezinin hazırlık durumunu doğrula',
@@ -6452,7 +6447,7 @@ VALUES
     'DR sitesi %95 hazır. Ağ bant genişliği yeterli.'
   ),
   (
-    'rl000001-0000-0000-0000-000000000003',
+    'ff000001-0000-0000-0000-000000000003',
     'ce000001-0000-0000-0000-000000000001',
     3, 'Core Banking DR Sitede Ayağa Kaldır',
     'Core banking, SWIFT, ödeme sistemleri öncelikli',
@@ -6462,7 +6457,7 @@ VALUES
     'Fineksus core banking %80 kapasitede DR üzerinden aktif. SWIFT normal.'
   ),
   (
-    'rl000001-0000-0000-0000-000000000004',
+    'ff000001-0000-0000-0000-000000000004',
     'ce000001-0000-0000-0000-000000000001',
     4, 'İnternet Bankacılığı ve ATM Restorasyonu',
     'Müşteri kanallarını DR üzerinden devreye al',
@@ -6472,7 +6467,7 @@ VALUES
     'İnternet bankacılığı %60 hizmette. ATM ağının %40ı DR bağlantısında.'
   ),
   (
-    'rl000001-0000-0000-0000-000000000005',
+    'ff000001-0000-0000-0000-000000000005',
     'ce000001-0000-0000-0000-000000000001',
     5, 'Kullanıcı ve Müşteri Bilgilendirmesi',
     'Tüm kullanıcılara ve müşterilere durum mesajı gönder',
@@ -6480,7 +6475,7 @@ VALUES
     NULL, NULL, NULL
   ),
   (
-    'rl000001-0000-0000-0000-000000000006',
+    'ff000001-0000-0000-0000-000000000006',
     'ce000001-0000-0000-0000-000000000001',
     6, 'Sistem Bütünlüğü ve Veri Tutarlılığı',
     'Veri kaybı ve transaction tutarlılığı kontrolü',
@@ -6488,7 +6483,7 @@ VALUES
     NULL, NULL, NULL
   ),
   (
-    'rl000001-0000-0000-0000-000000000007',
+    'ff000001-0000-0000-0000-000000000007',
     'ce000001-0000-0000-0000-000000000001',
     7, 'Post-Mortem Başlat',
     'Olay sonrası analiz ve BDDK bildirimi',
@@ -6508,7 +6503,7 @@ INSERT INTO rule_nodes (
   color_scheme, config_schema, output_type, is_terminal, display_order
 ) VALUES
   (
-    'node0001-cata-0000-0000-000000000001',
+    'ffde0001-cafa-0000-0000-000000000001',
     'TRIGGER', 'TRANSACTION_EVENT',
     'İşlem Tetikleyicisi',
     'Yeni bir finansal işlem oluştuğunda veya güncellendiğinde tetiklenir.',
@@ -6518,7 +6513,7 @@ INSERT INTO rule_nodes (
     'EVENT', FALSE, 1
   ),
   (
-    'node0001-cata-0000-0000-000000000002',
+    'ffde0001-cafa-0000-0000-000000000002',
     'CONDITION', 'AMOUNT_THRESHOLD',
     'Tutar Eşiği Koşulu',
     'İşlem tutarını belirli bir limitle karşılaştırır.',
@@ -6528,7 +6523,7 @@ INSERT INTO rule_nodes (
     'BOOLEAN', FALSE, 2
   ),
   (
-    'node0001-cata-0000-0000-000000000003',
+    'ffde0001-cafa-0000-0000-000000000003',
     'CONDITION', 'TIME_WINDOW',
     'Zaman Penceresi Koşulu',
     'İşlemin gerçekleştiği saati veya gün/hafta periyodunu kontrol eder.',
@@ -6538,7 +6533,7 @@ INSERT INTO rule_nodes (
     'BOOLEAN', FALSE, 3
   ),
   (
-    'node0001-cata-0000-0000-000000000004',
+    'ffde0001-cafa-0000-0000-000000000004',
     'CONDITION', 'FREQUENCY_CHECK',
     'Frekans Analizi Koşulu',
     'Belirli bir zaman penceresi içindeki işlem sayısını veya toplamını kontrol eder (Structuring tespiti).',
@@ -6548,7 +6543,7 @@ INSERT INTO rule_nodes (
     'BOOLEAN', FALSE, 4
   ),
   (
-    'node0001-cata-0000-0000-000000000005',
+    'ffde0001-cafa-0000-0000-000000000005',
     'AGGREGATOR', 'AND_GATE',
     'VE Kapısı (AND)',
     'Tüm bağlı koşulların doğru olması gerekir.',
@@ -6558,7 +6553,7 @@ INSERT INTO rule_nodes (
     'BOOLEAN', FALSE, 5
   ),
   (
-    'node0001-cata-0000-0000-000000000006',
+    'ffde0001-cafa-0000-0000-000000000006',
     'AGGREGATOR', 'OR_GATE',
     'VEYA Kapısı (OR)',
     'Bağlı koşullardan en az birinin doğru olması yeterlidir.',
@@ -6568,7 +6563,7 @@ INSERT INTO rule_nodes (
     'BOOLEAN', FALSE, 6
   ),
   (
-    'node0001-cata-0000-0000-000000000007',
+    'ffde0001-cafa-0000-0000-000000000007',
     'ACTION', 'GENERATE_ALERT',
     'Uyarı Oluştur',
     'CCM sisteminde yüksek öncelikli uyarı kaydı oluşturur ve ilgili birimleri bildirir.',
@@ -6578,7 +6573,7 @@ INSERT INTO rule_nodes (
     'VOID', TRUE, 7
   ),
   (
-    'node0001-cata-0000-0000-000000000008',
+    'ffde0001-cafa-0000-0000-000000000008',
     'ACTION', 'FLAG_FOR_REVIEW',
     'İnceleme Bayrağı Ekle',
     'Kaydı manuel inceleme kuyruğuna ekler.',
@@ -6595,7 +6590,7 @@ INSERT INTO ccm_visual_rules (
   nodes_json, edges_json, compiled_logic, created_by, version
 ) VALUES
   (
-    'rule0001-ccmr-0000-0000-000000000001',
+    'fffe0001-ccff-0000-0000-000000000001',
     'VR-AML-001',
     'Gece Yarısı Sonrası Yüksek Tutarlı İşlem',
     'Saat 23:00-06:00 arasında 1.000.000 TL üzeri herhangi bir işlem MASAK bildirimi için otomatik alarm üretir.',
@@ -6619,7 +6614,7 @@ INSERT INTO ccm_visual_rules (
     1
   ),
   (
-    'rule0001-ccmr-0000-0000-000000000002',
+    'fffe0001-ccff-0000-0000-000000000002',
     'VR-STR-001',
     'Structuring Tespit Kuralı (Parçalı İşlem)',
     '24 saat içinde aynı kullanıcıdan 3 veya daha fazla işlem geliyorsa ve toplam tutar 50.000 TL eşiğini aşıyorsa yapılandırma (structuring) şüphesi oluştur.',
@@ -6638,7 +6633,7 @@ INSERT INTO ccm_visual_rules (
     1
   ),
   (
-    'rule0001-ccmr-0000-0000-000000000003',
+    'fffe0001-ccff-0000-0000-000000000003',
     'VR-BENF-001',
     'Benford Kanunu Sapma Uyarısı',
     'Fatura tutarlarının ilk rakam dağılımı chi-kare kritik değerini (%5 anlamlılık) aştığında otomatik anomali uyarısı üretir.',
@@ -6664,133 +6659,108 @@ ON CONFLICT (rule_code) DO NOTHING;
 -- =============================================================================
 
 INSERT INTO public.root_cause_analyses (
-  id, finding_ref, title, problem_statement, root_cause,
-  category, severity, status, analyst_name,
-  corrective_action, preventive_action
+  id, linked_entity_type, linked_entity_id, title, problem_statement,
+  root_cause_summary, status, created_by_name
 ) VALUES
   (
-    'rca55000-0000-0000-0000-000000000001',
-    'BLG-2026-0047',
+    'fca55000-0000-0000-0000-000000000001',
+    'finding',
+    'f1000000-0000-0000-0000-000000000001',
     'Yetkisiz Erişim — Sunucu Odası Fiziksel Kontrol İhlali',
     'Sunucu odasına yetkisiz iki kişinin giriş yaptığı tespit edilmiş; kamera kayıtları ve biyometrik log çelişkisi bulunmaktadır.',
     'Kart okuyucu yazılımının güncel tutulmaması nedeniyle süresi dolmuş kartlar sisteme geçişe izin vermiştir.',
-    'Sistem/BT',
-    'Kritik',
-    'Onaylandı',
-    'Denetçi Ahmet Koç',
-    'Kart okuyucu yazılımı güncellenmiş, süresi dolan tüm kartlar derhal iptal edilmiştir.',
-    'Otomatik kart iptali için 90-gün politikası hayata geçirilecek; yazılım güncelleme zorunluluğu IT süreç dokümanına eklenmiştir.'
+    'APPROVED',
+    'Denetçi Ahmet Koç'
   ),
   (
-    'rca55000-0000-0000-0000-000000000002',
-    'BLG-2026-0051',
+    'fca55000-0000-0000-0000-000000000002',
+    'finding',
+    'f1000000-0000-0000-0000-000000000002',
     'FATF Öneri 16 — Şüpheli İşlem Bildirim Gecikmesi',
     'MASAK''a iletilmesi gereken şüpheli işlem bildirimleri 72 saat gecikmeyle yapılmış; yasal süre 24 saattir.',
     'Uyum ekibinin bildirim süreç otomasyonunu manuel takiple yönetmesi ve kritik bildirim eşiğini manuel aşamada atlayan bir tasarım hatası.',
-    'Süreç',
-    'Yüksek',
-    'Tamamlandı',
-    'Denetçi Leyla Şahin',
-    'Bildirim süreci CCM otomasyonuna entegre edilmiştir; 24 saat aşıldığında otomatik eskalasyon devrededir.',
-    'Tüm uyum bildirimleri real-time izleme sistemine taşınacak; el ile müdahale gerektiren adımlar minimize edilecektir.'
+    'COMPLETED',
+    'Denetçi Leyla Şahin'
   )
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.five_whys_steps (
-  id, analysis_id, step_number, why_question, answer,
-  evidence, is_root_cause, contributing_factor, ai_suggestion
+  id, analysis_id, step_number, question, answer,
+  evidence, is_root_cause
 ) VALUES
   -- Analiz 1: Yetkisiz Erişim (rca55000...001) — 5 Neden
   (
-    'fws55000-0000-0000-0000-000000000001',
-    'rca55000-0000-0000-0000-000000000001', 1,
+    'fff55000-0000-0000-0000-000000000001',
+    'fca55000-0000-0000-0000-000000000001', 1,
     'Neden yetkisiz kişiler sunucu odasına girebildi?',
     'Biyometrik kart okuyucu süresi dolmuş kartları reddedecek şekilde yapılandırılmamıştı.',
     'Biyometrik log kayıtları 15:43 ile 15:51 arası 2 geçiş gösteriyor; her iki kartın da son geçerlilik tarihi 2026-02-28.',
-    false,
-    'Yazılım sürüm yönetimi eksikliği',
-    'Kart okuyucu firmware versiyonu ile geçerlilik kontrol modülünü inceleyin.'
+    false
   ),
   (
-    'fws55000-0000-0000-0000-000000000002',
-    'rca55000-0000-0000-0000-000000000001', 2,
+    'fff55000-0000-0000-0000-000000000002',
+    'fca55000-0000-0000-0000-000000000001', 2,
     'Neden kart okuyucu süresi dolmuş kartı kabul etti?',
     'Kart okuyucu yazılımı 14 ay boyunca güncellenmemişti; geçerlilik doğrulama modülü bu versiyonda hatalıydı.',
     'IT varlık yönetim sistemi versiyonu: v2.1.4 (2024-12-01). Güncel versiyon: v3.0.2 (2026-01-20).',
-    false,
-    'IT sistem bakım politikasının uygulanmaması',
-    'Bu güncellemenin neden Bu kadar uzun ertelediğini araştırın.'
+    false
   ),
   (
-    'fws55000-0000-0000-0000-000000000003',
-    'rca55000-0000-0000-0000-000000000001', 3,
+    'fff55000-0000-0000-0000-000000000003',
+    'fca55000-0000-0000-0000-000000000001', 3,
     'Neden 14 ay boyunca yazılım güncellenmedi?',
     'BT departmanı güncelleme için değişiklik talebi (Change Request) açmamıştı; periyodik bakım takvimi mevcut değildi.',
     'ITSM sistemi son 2 yıldaki CR kayıtları tarandı: kart okuyucu için hiç CR bulunamadı.',
-    false,
-    'ITSM süreç kontrolünün yokluğu',
-    'Periyodik bakım takviminin neden oluşturulmadığını sorgulayın.'
+    false
   ),
   (
-    'fws55000-0000-0000-0000-000000000004',
-    'rca55000-0000-0000-0000-000000000001', 4,
+    'fff55000-0000-0000-0000-000000000004',
+    'fca55000-0000-0000-0000-000000000001', 4,
     'Neden periyodik bakım takvimi oluşturulmamıştı?',
     'Fiziksel güvenlik cihazları, IT varlık envanterinde "kritik altyapı" kategorisinde tanımlanmamıştı; bu nedenle bakım planlaması kapsamı dışında kalmıştı.',
     'IT varlık envanteri çıktısı incelendi; kart okuyucular "çevre birimi" olarak sınıflandırılmış.',
-    false,
-    'Varlık sınıflandırma politikası boşluğu',
-    'Bu sınıflandırma politikasının kim tarafından, ne zaman belirlendiğini araştırın.'
+    false
   ),
   (
-    'fws55000-0000-0000-0000-000000000005',
-    'rca55000-0000-0000-0000-000000000001', 5,
+    'fff55000-0000-0000-0000-000000000005',
+    'fca55000-0000-0000-0000-000000000001', 5,
     'Neden fiziksel güvenlik cihazları kritik varlık olarak sınıflandırılmamış?',
     'Bilgi güvenliği politikası son 4 yılda güncellenmemiş; ISO 27001:2022 revizyonu ve fiziksel güvenlik kontrollerinin kritiklik kriterleri mevcut politikaya yansıtılmamış.',
     'Bilgi Güvenliği Politikası son revizyon tarihi: 2022-11-15. ISO 27001:2022 yayım tarihi: 2022-10-25.',
-    true,
-    'Politika yaşam döngüsü yönetimi eksikliği',
-    NULL
+    true
   ),
   -- Analiz 2: FATF Gecikmesi (rca55000...002) — 4 Neden
   (
-    'fws55000-0000-0000-0000-000000000006',
-    'rca55000-0000-0000-0000-000000000002', 1,
+    'fff55000-0000-0000-0000-000000000006',
+    'fca55000-0000-0000-0000-000000000002', 1,
     'Neden bildirim 72 saat gecikti?',
     'Uyum ekibi süpheli işlemi manuel inceleme kuyruğunda 2 gün bekletmiş; otomatik eskalasyon mekanizması devrede değildi.',
     'CCM sistemi işlem log kaydı: alarm 2026-03-04 09:12, MASAK bildirimi 2026-03-07 09:44.',
-    false,
-    'Manuel süreç yönetimi',
-    'Neden otomatik eskalasyon devre dışındaydı?'
+    false
   ),
   (
-    'fws55000-0000-0000-0000-000000000007',
-    'rca55000-0000-0000-0000-000000000002', 2,
+    'fff55000-0000-0000-0000-000000000007',
+    'fca55000-0000-0000-0000-000000000002', 2,
     'Neden otomatik eskalasyon mekanizması devrede değildi?',
     'CCM modülünün bildirim eşiği konfigürasyonu yanlış yapılandırılmıştı; eşik değeri çok yüksek tutulmuştu.',
     'CCM konfigürasyon dosyası: threshold=5000000 (5 Mn TL). İşlem tutarı: 1.2 Mn TL.',
-    false,
-    'Konfigürasyon yönetimi zayıflığı',
-    'Bu yanlış konfigürasyonun nasıl ve ne zaman oluştuğunu araştırın.'
+    false
   ),
   (
-    'fws55000-0000-0000-0000-000000000008',
-    'rca55000-0000-0000-0000-000000000002', 3,
+    'fff55000-0000-0000-0000-000000000008',
+    'fca55000-0000-0000-0000-000000000002', 3,
     'Neden eşik değeri bu kadar yüksek tutulmuştu?',
     'CCM sisteminin ilk kurulumunda MASAK eşiğini bilen uzman danışman çalışmıyordu; eşik değeri varsayılan olarak bırakılmıştı.',
     'Proje teslim belgesi incelendi; MASAK eşiği konfigürasyonu "ileride yapılacak" olarak not düşülmüş.',
-    false,
-    'Proje teslim kalite kontrolü eksikliği',
-    'Bu "ileride yapılacak" notunun takip mekanizması neydi?'
+    false
   ),
   (
-    'fws55000-0000-0000-0000-000000000009',
-    'rca55000-0000-0000-0000-000000000002', 4,
+    'fff55000-0000-0000-0000-000000000009',
+    'fca55000-0000-0000-0000-000000000002', 4,
     'Neden "ileride yapılacak" maddesinin takibi yapılmadı?',
     'Proje kapanışında açık madde takibi için sorumlu atanmamış; uyum ekibi CCM konfigürasyonunun tamamlandığını varsaymış.',
     'Proje kapanış tutanağında açık madde sorumlu sütunu boş. Uyum ekibi iç yazışmaları incelendi.',
-    true,
-    'Proje yönetim sürecinde hesap verebilirlik boşluğu',
-    NULL
+    true
   )
 ON CONFLICT (id) DO NOTHING;
 
@@ -6801,7 +6771,7 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.cyber_threat_feeds (id, tenant_id, feed_source, threat_type, title, description, severity, status, ioc_type, ioc_value, mitre_tactic, mitre_technique, total_vulnerabilities, affected_systems, confidence_score, threat_actor, detected_at) VALUES
   (
-    'ctf00001-0000-0000-0000-000000000001',
+    'cff00001-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'CERT-TR',
     'RANSOMWARE',
@@ -6820,7 +6790,7 @@ INSERT INTO public.cyber_threat_feeds (id, tenant_id, feed_source, threat_type, 
     NOW() - INTERVAL '3 hours'
   ),
   (
-    'ctf00001-0000-0000-0000-000000000002',
+    'cff00001-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'OSINT',
     'PHISHING',
@@ -6839,7 +6809,7 @@ INSERT INTO public.cyber_threat_feeds (id, tenant_id, feed_source, threat_type, 
     NOW() - INTERVAL '6 hours'
   ),
   (
-    'ctf00001-0000-0000-0000-000000000003',
+    'cff00001-0000-0000-0000-000000000003',
     '11111111-1111-1111-1111-111111111111',
     'INTERNAL_SIEM',
     'CREDENTIAL_THEFT',
@@ -6858,7 +6828,7 @@ INSERT INTO public.cyber_threat_feeds (id, tenant_id, feed_source, threat_type, 
     NOW() - INTERVAL '2 hours'
   ),
   (
-    'ctf00001-0000-0000-0000-000000000004',
+    'cff00001-0000-0000-0000-000000000004',
     '11111111-1111-1111-1111-111111111111',
     'MITRE_ATT&CK',
     'SUPPLY_CHAIN',
@@ -6877,7 +6847,7 @@ INSERT INTO public.cyber_threat_feeds (id, tenant_id, feed_source, threat_type, 
     NOW() - INTERVAL '1 day'
   ),
   (
-    'ctf00001-0000-0000-0000-000000000005',
+    'cff00001-0000-0000-0000-000000000005',
     '11111111-1111-1111-1111-111111111111',
     'CERT-TR',
     'DDOS',
@@ -6899,7 +6869,7 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.darkweb_alerts (id, tenant_id, alert_code, title, description, category, severity, status, source_forum, threat_actor_alias, affected_data_types, estimated_records, evidence_snippet, confidence_score, feed_id, detected_at) VALUES
   (
-    'dwa00001-0000-0000-0000-000000000001',
+    'dfa00001-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'DW-LEAK-001',
     'Müşteri Veritabanı Sızıntı İddiası — BreachForums',
@@ -6913,11 +6883,11 @@ INSERT INTO public.darkweb_alerts (id, tenant_id, alert_code, title, description
     2400000,
     'Selling fresh Turkish banking customers DB - 2.4M records - IBAN + TCKN included. Price: $12,000 in BTC.',
     87.0,
-    'ctf00001-0000-0000-0000-000000000003',
+    'cff00001-0000-0000-0000-000000000003',
     NOW() - INTERVAL '4 hours'
   ),
   (
-    'dwa00001-0000-0000-0000-000000000002',
+    'dfa00001-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'DW-CRED-001',
     'Çalışan VPN Kimlik Bilgileri Satışı',
@@ -6935,7 +6905,7 @@ INSERT INTO public.darkweb_alerts (id, tenant_id, alert_code, title, description
     NOW() - INTERVAL '8 hours'
   ),
   (
-    'dwa00001-0000-0000-0000-000000000003',
+    'dfa00001-0000-0000-0000-000000000003',
     '11111111-1111-1111-1111-111111111111',
     'DW-RANSOM-001',
     'Fidye Yazılımı Kurban Listesi İddiası',
@@ -6949,11 +6919,11 @@ INSERT INTO public.darkweb_alerts (id, tenant_id, alert_code, title, description
     NULL,
     'Sentinel Bank - 28GB - Deadline: 72 hours. Payment: 50 BTC.',
     75.0,
-    'ctf00001-0000-0000-0000-000000000001',
+    'cff00001-0000-0000-0000-000000000001',
     NOW() - INTERVAL '1 hour'
   ),
   (
-    'dwa00001-0000-0000-0000-000000000004',
+    'dfa00001-0000-0000-0000-000000000004',
     '11111111-1111-1111-1111-111111111111',
     'DW-BRAND-001',
     'Telegram''da Sahte Müşteri Destek Kanalı',
@@ -6979,7 +6949,7 @@ ON CONFLICT (id) DO NOTHING;
 -- 1. presentation_decks — Kurul Sunumları
 INSERT INTO public.presentation_decks (id, tenant_id, title, subtitle, deck_type, period, status, total_slides, theme, generated_by) VALUES
   (
-    'pd000000-0000-0000-0000-000000000001',
+    'fd000000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     '2026 Q1 İç Denetim Faaliyet Raporu',
     'Yönetim Kurulu ve Denetim Komitesi Bilgilendirme Sunumu',
@@ -6991,7 +6961,7 @@ INSERT INTO public.presentation_decks (id, tenant_id, title, subtitle, deck_type
     'Auto-Deck AI v4.0'
   ),
   (
-    'pd000000-0000-0000-0000-000000000002',
+    'fd000000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'BDDK Denetim Hazırlık Sunumu — 2026',
     'BDDK Yerinde İnceleme Öncesi Yönetim Brifinci',
@@ -7007,9 +6977,9 @@ ON CONFLICT (id) DO NOTHING;
 -- 2. slide_blocks — Q1 Sunumu Slaytları
 INSERT INTO public.slide_blocks (id, tenant_id, deck_id, slide_order, slide_type, title, subtitle, body_content, kpi_data, speaker_notes) VALUES
   (
-    'sb000000-0000-0000-0000-000000000001',
+    'fb000000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
-    'pd000000-0000-0000-0000-000000000001',
+    'fd000000-0000-0000-0000-000000000001',
     1,
     'COVER',
     '2026 Birinci Çeyrek İç Denetim Faaliyet Raporu',
@@ -7019,9 +6989,9 @@ INSERT INTO public.slide_blocks (id, tenant_id, deck_id, slide_order, slide_type
     'Sunumu açarken denetim planına olan bağlılığı ve tamamlanan denetimlerin sayısını vurgulayın.'
   ),
   (
-    'sb000000-0000-0000-0000-000000000002',
+    'fb000000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
-    'pd000000-0000-0000-0000-000000000001',
+    'fd000000-0000-0000-0000-000000000001',
     2,
     'EXECUTIVE_SUMMARY',
     'Yönetici Özeti',
@@ -7031,9 +7001,9 @@ INSERT INTO public.slide_blocks (id, tenant_id, deck_id, slide_order, slide_type
     'Genel not artışını (bir önceki çeyreğe göre B''den B+''ya) özellikle vurgulayın.'
   ),
   (
-    'sb000000-0000-0000-0000-000000000003',
+    'fb000000-0000-0000-0000-000000000003',
     '11111111-1111-1111-1111-111111111111',
-    'pd000000-0000-0000-0000-000000000001',
+    'fd000000-0000-0000-0000-000000000001',
     3,
     'FINDINGS',
     'Kritik ve Yüksek Riskli Bulgular',
@@ -7043,9 +7013,9 @@ INSERT INTO public.slide_blocks (id, tenant_id, deck_id, slide_order, slide_type
     'Her bulgu için sorumlu birim ve kapatma tarihini belirtmeyi unutmayın.'
   ),
   (
-    'sb000000-0000-0000-0000-000000000004',
+    'fb000000-0000-0000-0000-000000000004',
     '11111111-1111-1111-1111-111111111111',
-    'pd000000-0000-0000-0000-000000000001',
+    'fd000000-0000-0000-0000-000000000001',
     4,
     'KPI',
     'Denetim Karnesi — Q1 2026',
@@ -7055,9 +7025,9 @@ INSERT INTO public.slide_blocks (id, tenant_id, deck_id, slide_order, slide_type
     'Geçen yılın aynı dönemine kıyasla tüm göstergeler iyileşme eğiliminde.'
   ),
   (
-    'sb000000-0000-0000-0000-000000000005',
+    'fb000000-0000-0000-0000-000000000005',
     '11111111-1111-1111-1111-111111111111',
-    'pd000000-0000-0000-0000-000000000001',
+    'fd000000-0000-0000-0000-000000000001',
     5,
     'RECOMMENDATIONS',
     'Yönetim Kurulu Kararına Sunulan Öneriler',
@@ -7067,9 +7037,9 @@ INSERT INTO public.slide_blocks (id, tenant_id, deck_id, slide_order, slide_type
     'Her öneri için sorumlu Genel Müdür Yardımcısını belirtin.'
   ),
   (
-    'sb000000-0000-0000-0000-000000000006',
+    'fb000000-0000-0000-0000-000000000006',
     '11111111-1111-1111-1111-111111111111',
-    'pd000000-0000-0000-0000-000000000001',
+    'fd000000-0000-0000-0000-000000000001',
     6,
     'CONTENT',
     'Q2 2026 Denetim Planı',
@@ -7079,9 +7049,9 @@ INSERT INTO public.slide_blocks (id, tenant_id, deck_id, slide_order, slide_type
     'Risk önceliklendirme matrisine göre hazırlanmıştır.'
   ),
   (
-    'sb000000-0000-0000-0000-000000000007',
+    'fb000000-0000-0000-0000-000000000007',
     '11111111-1111-1111-1111-111111111111',
-    'pd000000-0000-0000-0000-000000000001',
+    'fd000000-0000-0000-0000-000000000001',
     7,
     'CONTENT',
     'Bağımsızlık ve Tarafsızlık Beyanı',
@@ -7091,9 +7061,9 @@ INSERT INTO public.slide_blocks (id, tenant_id, deck_id, slide_order, slide_type
     'Denetim komitesine direkt raporlama yapısının altını çizin.'
   ),
   (
-    'sb000000-0000-0000-0000-000000000008',
+    'fb000000-0000-0000-0000-000000000008',
     '11111111-1111-1111-1111-111111111111',
-    'pd000000-0000-0000-0000-000000000001',
+    'fd000000-0000-0000-0000-000000000001',
     8,
     'CLOSING',
     'Sorular ve Kapanış',
@@ -7117,7 +7087,7 @@ INSERT INTO operational_losses (
   bddk_reportable, reported_to_bddk, report_deadline
 ) VALUES
   (
-    'oooo0001-loss-0000-0000-000000000001',
+    'ffff0001-ffff-0000-0000-000000000001',
     'ORM-2025-0041',
     '2025-10-15', '2025-10-18',
     'INTERNAL_FRAUD', 'OPERATIONAL',
@@ -7130,7 +7100,7 @@ INSERT INTO operational_losses (
     TRUE, TRUE, '2025-11-15'
   ),
   (
-    'oooo0001-loss-0000-0000-000000000002',
+    'ffff0001-ffff-0000-0000-000000000002',
     'ORM-2026-0003',
     '2026-01-07', '2026-01-08',
     'EXTERNAL_FRAUD', 'OPERATIONAL',
@@ -7143,7 +7113,7 @@ INSERT INTO operational_losses (
     TRUE, FALSE, '2026-02-07'
   ),
   (
-    'oooo0001-loss-0000-0000-000000000003',
+    'ffff0001-ffff-0000-0000-000000000003',
     'ORM-2026-0007',
     '2026-01-22', '2026-01-23',
     'BUSINESS_DISRUPTION', 'OPERATIONAL',
@@ -7156,7 +7126,7 @@ INSERT INTO operational_losses (
     FALSE, FALSE, NULL
   ),
   (
-    'oooo0001-loss-0000-0000-000000000004',
+    'ffff0001-ffff-0000-0000-000000000004',
     'ORM-2026-0011',
     '2026-02-03', '2026-02-05',
     'REGULATORY_NON_COMPLIANCE', 'OPERATIONAL',
@@ -7169,7 +7139,7 @@ INSERT INTO operational_losses (
     TRUE, TRUE, '2026-02-20'
   ),
   (
-    'oooo0001-loss-0000-0000-000000000005',
+    'ffff0001-ffff-0000-0000-000000000005',
     'ORM-2026-0019',
     '2026-02-28', '2026-03-01',
     'EXECUTION_DELIVERY', 'OPERATIONAL',
@@ -7182,7 +7152,7 @@ INSERT INTO operational_losses (
     FALSE, FALSE, NULL
   ),
   (
-    'oooo0001-loss-0000-0000-000000000006',
+    'ffff0001-ffff-0000-0000-000000000006',
     'ORM-2026-0024',
     '2026-03-05', '2026-03-06',
     'CLIENTS_PRODUCTS', 'OPERATIONAL',
@@ -7204,9 +7174,9 @@ INSERT INTO regulatory_fines (
   status, is_appealed
 ) VALUES
   (
-    'pppp0001-fine-0000-0000-000000000001',
+    'ffff0001-fffe-0000-0000-000000000001',
     'FINE-BDDK-2026-001',
-    'oooo0001-loss-0000-0000-000000000004',
+    'ffff0001-ffff-0000-0000-000000000004',
     'BDDK', 'ADMINISTRATIVE',
     'ICAAP Raporlama Gecikmesi İdari Para Cezası',
     '5411 Sayılı Bankacılık Kanunu Md. 68/3 — Düzenleyici Raporlama Yükümlülüğü',
@@ -7215,7 +7185,7 @@ INSERT INTO regulatory_fines (
     'PAID', FALSE
   ),
   (
-    'pppp0001-fine-0000-0000-000000000002',
+    'ffff0001-fffe-0000-0000-000000000002',
     'FINE-KVKK-2026-001',
     NULL,
     'KVKK', 'ADMINISTRATIVE',
@@ -7226,9 +7196,9 @@ INSERT INTO regulatory_fines (
     'CONTESTED', TRUE
   ),
   (
-    'pppp0001-fine-0000-0000-000000000003',
+    'ffff0001-fffe-0000-0000-000000000003',
     'FINE-MASAK-2025-003',
-    'oooo0001-loss-0000-0000-000000000001',
+    'ffff0001-ffff-0000-0000-000000000001',
     'MASAK', 'ADMINISTRATIVE',
     'Şüpheli İşlem Bildirim Yükümlülüğü Gecikmesi',
     '5549 Sayılı MASAK Kanunu Md. 16 — İdari Para Cezaları',
@@ -7237,9 +7207,9 @@ INSERT INTO regulatory_fines (
     'PAID', FALSE
   ),
   (
-    'pppp0001-fine-0000-0000-000000000004',
+    'ffff0001-fffe-0000-0000-000000000004',
     'FINE-BDDK-2026-002',
-    'oooo0001-loss-0000-0000-000000000006',
+    'ffff0001-ffff-0000-0000-000000000006',
     'BDDK', 'ADMINISTRATIVE',
     'Uygunsuz Ürün Satışı — MiFID II Benzeri Uygunluk Testi İhlali',
     'BDDK Finansal Tüketici Koruma Yönetmeliği Md. 12',
@@ -7260,23 +7230,23 @@ INSERT INTO public.root_cause_analyses
    problem_statement, root_cause_summary, created_by_name)
 VALUES
   (
-    'rca00001-0000-0000-0000-000000000001',
+    'fca00001-0000-0000-0000-000000000001',
     'finding',
     '00000000-0000-0000-0000-000000000001',   -- placeholder finding ID
     'Yetkisiz Sistem Erişimi — Core Banking Yönetici Paneli',
     'five_whys',
-    'Tamamlandı',
+    'COMPLETED',
     'Bir junior back-office kullanıcısı, yetki sınırlarını aşarak Core Banking Yönetici Paneline erişebilmiş ve müşteri limitlerini değiştirmiştir. Olay, CyberArk log anomali alarmı ile tespit edilmiştir.',
     'IAM sisteminde role-based access control (RBAC) politikalarının 6 aylık erişim belgelendirme döngüsünde gözden geçirilmemesi; bu süreçten sorumlu Bilgi Güvenliği Koordinatörü pozisyonunun 3 aydır boş bırakılması.',
     'Zeynep Aydın (CAE · Kıdemli Denetçi)'
   ),
   (
-    'rca00001-0000-0000-0000-000000000002',
+    'fca00001-0000-0000-0000-000000000002',
     'crisis_event',
     'ce000001-0000-0000-0000-000000000001',
     'Veri Merkezi A Kesintisi — Altyapı Arıza Kök Nedeni',
     'five_whys',
-    'Devam Ediyor',
+    'IN_PROGRESS',
     'Birincil veri merkezinde UPS ünitesinin beklenmedik çöküşü ana güç kesintisine yol açmıştır. Olay periyodik UPS bakım kaydında gözden kaçan kapasite uyarısı ile ilişkilidir.',
     NULL,
     'Ahmet Yılmaz (BT Direktörü)'
@@ -7285,88 +7255,80 @@ ON CONFLICT (id) DO NOTHING;
 
 -- 5-Neden Adımları: Yetkisiz Erişim (rca00001...001)
 INSERT INTO public.five_whys_steps
-  (id, analysis_id, step_number, why_question, answer, evidence, is_root_cause, contributing_factor)
+  (id, analysis_id, step_number, question, answer, evidence, is_root_cause)
 VALUES
   (
-    'fws00001-0000-0000-0000-000000000001',
-    'rca00001-0000-0000-0000-000000000001',
+    'fff00001-0000-0000-0000-000000000001',
+    'fca00001-0000-0000-0000-000000000001',
     1,
     'Neden #1: Kullanıcı Core Banking Yönetici Paneline erişebildi?',
     'Kullanıcının profili "Back-Office Extended" rolüne atanmıştı ve bu rol, yapılandırma hatası nedeniyle Yönetici Paneli iznini içeriyordu.',
     'IAM Log #CBA-2026-0301-7742 — CyberArk Session: BO_USER_4412',
-    false,
-    ''
+    false
   ),
   (
-    'fws00001-0000-0000-0000-000000000002',
-    'rca00001-0000-0000-0000-000000000001',
+    'fff00001-0000-0000-0000-000000000002',
+    'fca00001-0000-0000-0000-000000000001',
     2,
     'Neden #2: "Back-Office Extended" rolü neden yönetici iznini içeriyordu?',
     'Yaklaşık 18 ay önce bir proje teslim aciliyetinde geçici yetki verilmiş; teslim sonrası bu ekleme kaldırılmamıştır.',
     'JIRA Ticket: IAM-2024-0879 — "Geçici Yetki Genişletme" etiketi, kapatma tarihi boş.',
-    false,
-    ''
+    false
   ),
   (
-    'fws00001-0000-0000-0000-000000000003',
-    'rca00001-0000-0000-0000-000000000001',
+    'fff00001-0000-0000-0000-000000000003',
+    'fca00001-0000-0000-0000-000000000001',
     3,
     'Neden #3: Geçici yetkiler neden zamanında geri alınmadı?',
     'IAM sisteminde geçici erişim bitişini otomatik olarak revokeeden bir mekanizma (expiry-date alanı) yapılandırılmamış.',
     'IAM Panel Screenshot: expiry_date = NULL — 1.247 aktif geçici yetki kaydından 834ünde expiry_date boş.',
-    false,
-    ''
+    false
   ),
   (
-    'fws00001-0000-0000-0000-000000000004',
-    'rca00001-0000-0000-0000-000000000001',
+    'fff00001-0000-0000-0000-000000000004',
+    'fca00001-0000-0000-0000-000000000001',
     4,
     'Neden #4: IAM sistemi neden otomatik expiry özelliğiyle yapılandırılmadı?',
     'RBAC politikaları son 6 ayda periyodik erişim incelemesine (periodic access review) tabi tutulmamış; bu incelemeyi yönetecek Bilgi Güvenliği Koordinatörü pozisyonu 3 aydır boş.',
     'İK Kayıtları: BGYS-Koordinatör pozisyonu — 2025-11-30 istifa, yerine atama yapılmadı.',
-    false,
-    ''
+    false
   ),
   (
-    'fws00001-0000-0000-0000-000000000005',
-    'rca00001-0000-0000-0000-000000000001',
+    'fff00001-0000-0000-0000-000000000005',
+    'fca00001-0000-0000-0000-000000000001',
     5,
     'Neden #5 (KÖK NEDEN): Bilgi Güvenliği Koordinatörü neden 3 aydır atanmadı?',
     'Bilgi Güvenliği bütçesi 2025 konsolidasyonunda %20 kısıntıya uğradı. Yönetim, kritik güvenlik rollerinin önceliklendirilmesi yerine kadroyu dondurdu. BGYS süreçleri otomasyon olmaksızın tek kişiye bağımlıydı.',
     'YK Bütçe Kararı No: 2025/BTC-041 — BT kadro dondurma kararı. BGYS proses haritası: tek sahip riski tespit edildi.',
-    true,
-    'Yönetim & Bütçe'
+    true
   ),
   -- 5-Neden Adımları: Veri Merkezi A (rca00001...002) — devam ediyor, 3 adım var
   (
-    'fws00001-0000-0000-0000-000000000006',
-    'rca00001-0000-0000-0000-000000000002',
+    'fff00001-0000-0000-0000-000000000006',
+    'fca00001-0000-0000-0000-000000000002',
     1,
     'Neden #1: UPS ünitesi beklenmedik biçimde çöktü?',
     'UPS batarya kapasitemsi tasarım kapasitesinin %43üne düşmüştü. Eşik aşım uyarısı operasyon ekibine iletilmemişti.',
     'UPS Monitoring Portal: battery_health=43% — Uyarı eşiği 60% olarak ayarlı ancak eskalasyon akışı kapalı.',
-    false,
-    ''
+    false
   ),
   (
-    'fws00001-0000-0000-0000-000000000007',
-    'rca00001-0000-0000-0000-000000000002',
+    'fff00001-0000-0000-0000-000000000007',
+    'fca00001-0000-0000-0000-000000000002',
     2,
     'Neden #2: Batarya kapasite uyarısı operasyon ekibine neden iletilmedi?',
     'DCIM (Data Center Infrastructure Management) sistemindeki bildirim kuralı 2025 yazılım güncellemesinden sonra devre dışı kalmış.',
     'DCIM Update Log: v4.2 → v4.3 (2025-08-15) — Alert routing kural seti reset edildi.',
-    false,
-    ''
+    false
   ),
   (
-    'fws00001-0000-0000-0000-000000000008',
-    'rca00001-0000-0000-0000-000000000002',
+    'fff00001-0000-0000-0000-000000000008',
+    'fca00001-0000-0000-0000-000000000002',
     3,
     'Neden #3: Yazılım güncellemesinden sonra kural seti neden kontrol edilmedi?',
     'Güncelleme sonrası test prosedürü sadece fonksiyonel testleri kapsıyordu; uyarı/bildirim altyapısı regresyon testine dahil edilmemişti.',
     'Change Management Ticket: CHG-2025-1104 — Test checklist: bildirim sistemi testi satırı "N/A" olarak işaretlenmiş.',
-    false,
-    ''
+    false
   )
 ON CONFLICT (id) DO NOTHING;
 
@@ -7380,7 +7342,7 @@ INSERT INTO public.cryptographic_assets (
   quantum_risk_level, estimated_break_year, target_pqc_algorithm, status, is_agile
 ) VALUES
   (
-    'pqc58000-0000-0000-0000-000000000001',
+    'ffc58000-0000-0000-0000-000000000001',
     'Mobil Bankacılık API İstemci Anahtarları',
     'Dijital Kanallar BT',
     'RSA',
@@ -7393,7 +7355,7 @@ INSERT INTO public.cryptographic_assets (
     false
   ),
   (
-    'pqc58000-0000-0000-0000-000000000002',
+    'ffc58000-0000-0000-0000-000000000002',
     'SWIFT Mesajlaşma İmza Anahtarları',
     'Uluslararası Operasyonlar BT',
     'RSA',
@@ -7406,7 +7368,7 @@ INSERT INTO public.cryptographic_assets (
     true
   ),
   (
-    'pqc58000-0000-0000-0000-000000000003',
+    'ffc58000-0000-0000-0000-000000000003',
     'Core Banking Veritabanı Şifreleme (TDE)',
     'Veritabanı Yönetimi',
     'AES-GCM',
@@ -7419,7 +7381,7 @@ INSERT INTO public.cryptographic_assets (
     true
   ),
   (
-    'pqc58000-0000-0000-0000-000000000004',
+    'ffc58000-0000-0000-0000-000000000004',
     'VPN Gateway Master Secret Key',
     'Ağ Güvenliği',
     'IKEv2 / Diffie-Hellman',
@@ -7438,8 +7400,8 @@ INSERT INTO public.pqc_transition_plans (
 ) VALUES
   -- Mobil Bankacılık Planları (pqc58000...001)
   (
-    'pqcp5800-0000-0000-0000-000000000001',
-    'pqc58000-0000-0000-0000-000000000001',
+    'ffcf5800-0000-0000-0000-000000000001',
+    'ffc58000-0000-0000-0000-000000000001',
     'Keşif',
     'Mobil uygulamadaki hardcoded RSA anahtarlarının tespit edilmesi ve envanterin çıkarılması işlemi.',
     '2025-10-15',
@@ -7448,8 +7410,8 @@ INSERT INTO public.pqc_transition_plans (
     'SecOps Ekibi'
   ),
   (
-    'pqcp5800-0000-0000-0000-000000000002',
-    'pqc58000-0000-0000-0000-000000000001',
+    'ffcf5800-0000-0000-0000-000000000002',
+    'ffc58000-0000-0000-0000-000000000001',
     'Değerlendirme',
     'NIST onaylı ML-KEM (Kyber) algoritmasının mobil cihaz (iOS/Android) performans testleri ve batarya tüketim analizleri.',
     '2026-05-30',
@@ -7458,10 +7420,10 @@ INSERT INTO public.pqc_transition_plans (
     'Mobil Mimari Ekibi'
   ),
   (
-    'pqcp5800-0000-0000-0000-000000000003',
-    'pqc58000-0000-0000-0000-000000000001',
+    'ffcf5800-0000-0000-0000-000000000003',
+    'ffc58000-0000-0000-0000-000000000001',
     'Hibrit Test',
-    'Test ortamında RSA-2048 ile ML-KEM\'in hibrit modda (composite key) çalıştırılması ve API Gateway uyumluluğu.',
+    'Test ortamında RSA-2048 ile ML-KEM''in hibrit modda (composite key) çalıştırılması ve API Gateway uyumluluğu.',
     '2026-11-15',
     'Planlandı',
     85000,
@@ -7470,8 +7432,8 @@ INSERT INTO public.pqc_transition_plans (
   
   -- VPN Gateway Planları (pqc58000...004)
   (
-    'pqcp5800-0000-0000-0000-000000000004',
-    'pqc58000-0000-0000-0000-000000000004',
+    'ffcf5800-0000-0000-0000-000000000004',
+    'ffc58000-0000-0000-0000-000000000004',
     'Tam Geçiş',
     'Firewall/VPN vendor update: Yeni firmware ile IKEv2 protokolünde Hybrid Kyber geçişinin tüm veri merkezlerinde uygulanması.',
     '2025-12-01',
@@ -7489,7 +7451,7 @@ ON CONFLICT (id) DO NOTHING;
 -- 1. ai_models_inventory — Yapay Zeka Modelleri Envanteri
 INSERT INTO public.ai_models_inventory (id, tenant_id, model_name, model_type, use_case, vendor, risk_tier, status, business_owner, data_sources, last_review_at) VALUES
   (
-    'aim00000-0000-0000-0000-000000000001',
+    'aff00000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'Kredi Karar Motoru v4.2',
     'XGBoost',
@@ -7502,8 +7464,8 @@ INSERT INTO public.ai_models_inventory (id, tenant_id, model_name, model_type, u
     NOW() - INTERVAL '45 days'
   ),
   (
-    'aim00000-0000-0000-0000-000000000002',
-    'aim00000-0000-0000-0000-000000000002',
+    'aff00000-0000-0000-0000-000000000002',
+    '11111111-1111-1111-1111-111111111111',
     'Müşteri Asistanı Chatbot',
     'LLM',
     'Kullanıcı Destek ve Sıkça Sorulan Sorular',
@@ -7516,15 +7478,12 @@ INSERT INTO public.ai_models_inventory (id, tenant_id, model_name, model_type, u
   )
 ON CONFLICT (id) DO NOTHING;
 
--- tenant UUID update for second item
-UPDATE public.ai_models_inventory SET tenant_id = '11111111-1111-1111-1111-111111111111' WHERE id = 'aim00000-0000-0000-0000-000000000002';
-
 -- 2. model_bias_tests — Model Test Sonuçları
 INSERT INTO public.model_bias_tests (id, tenant_id, model_id, test_type, status, total_prompts, failed_prompts, findings, metrics) VALUES
   (
-    'mbt00000-0000-0000-0000-000000000001',
+    'fbf00000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
-    'aim00000-0000-0000-0000-000000000001',
+    'aff00000-0000-0000-0000-000000000001',
     'BIAS',
     'fail',
     15000,
@@ -7533,9 +7492,9 @@ INSERT INTO public.model_bias_tests (id, tenant_id, model_id, test_type, status,
     '{"accuracy": 0.88, "demographic_parity": 0.77, "equal_opportunity": 0.65}'
   ),
   (
-    'mbt00000-0000-0000-0000-000000000002',
+    'fbf00000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
-    'aim00000-0000-0000-0000-000000000002',
+    'aff00000-0000-0000-0000-000000000002',
     'HALLUCINATION',
     'warning',
     5000,
@@ -7550,17 +7509,17 @@ ON CONFLICT (id) DO NOTHING;
 -- =============================================================================
 
 -- 1. cryptographic_assets — Kriptografik Envanter
-INSERT INTO public.cryptographic_assets (id, tenant_id, asset_name, algorithm, key_size, quantum_risk, usage_context, owner_dept, status) VALUES
+INSERT INTO public.cryptographic_assets (id, tenant_id, asset_name, algorithm, key_size, quantum_risk_level, usage_context, system_owner, status) VALUES
   (
     'ca000000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'Mobil Bankacılık API Anahtarları',
     'RSA',
     2048,
-    'critical',
+    'Kritik',
     'Data in Transit (TLS)',
     'Dijital Bankacılık Geliştirme',
-    'active'
+    'Envanterde'
   ),
   (
     'ca000000-0000-0000-0000-000000000002',
@@ -7568,10 +7527,10 @@ INSERT INTO public.cryptographic_assets (id, tenant_id, asset_name, algorithm, k
     'Müşteri Veritabanı Şifreleme (TDE)',
     'AES-GCM',
     256,
-    'safe',
+    'Güvenli (PQC)',
     'Data at Rest',
     'Veritabanı Yönetimi',
-    'active'
+    'Envanterde'
   ),
   (
     'ca000000-0000-0000-0000-000000000003',
@@ -7579,35 +7538,33 @@ INSERT INTO public.cryptographic_assets (id, tenant_id, asset_name, algorithm, k
     'Kurumsal VPN Bağlantıları',
     'ECC',
     256,
-    'high',
+    'Yüksek',
     'Data in Transit',
     'Ağ Güvenliği',
-    'active'
+    'Envanterde'
   )
 ON CONFLICT (id) DO NOTHING;
 
 -- 2. pqc_transition_plans — Geçiş Planları
-INSERT INTO public.pqc_transition_plans (id, tenant_id, asset_id, target_algorithm, target_date, budget_usd, status, progress_pct, notes) VALUES
+INSERT INTO public.pqc_transition_plans (id, tenant_id, asset_id, phase, target_date, budget_estimate, status, description) VALUES
   (
-    'pqc00000-0000-0000-0000-000000000001',
+    'ffc00000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'ca000000-0000-0000-0000-000000000001',
-    'ML-KEM (Kyber-768)',
+    'Keşif',
     '2026-12-31',
     150000.00,
-    'planning',
-    15,
+    'Planlandı',
     'RSA-2048 Shor algoritmasına karşı tamamen savunmasızdır. NIST onaylı Kyber algoritmasına geçiş için POC (Proof of Concept) Q3 2026''da başlayacaktır.'
   ),
   (
-    'pqc00000-0000-0000-0000-000000000002',
+    'ffc00000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'ca000000-0000-0000-0000-000000000003',
-    'Hybrid (ECC + ML-KEM)',
+    'Hibrit Test',
     '2027-06-30',
     80000.00,
-    'testing',
-    40,
+    'Devam Ediyor',
     'Cisco AnyConnect Hybrid testleri devam ediyor. Mevcut donanım performansı izleniyor.'
   )
 ON CONFLICT (id) DO NOTHING;
@@ -7624,7 +7581,7 @@ INSERT INTO green_bonds (
   interest_rate, esg_premium_bps, kpi_target, spo_provider, spo_status
 ) VALUES
   (
-    '11110001-grnb-0000-0000-000000000001',
+    '11110001-fffb-0000-0000-000000000001',
     'GB-2025-SUN-01',
     'Akdeniz Güneş Enerjisi Parkı Genişlemesi',
     'Akdeniz Enerji A.Ş.',
@@ -7636,7 +7593,7 @@ INSERT INTO green_bonds (
     'Sustainalytics', 'DEVIATION_DETECTED'
   ),
   (
-    '11110001-grnb-0000-0000-000000000002',
+    '11110001-fffb-0000-0000-000000000002',
     'GB-2026-TRN-01',
     'Marmara Elektrikli Filo Dönüşümü',
     'Marmara Lojistik A.Ş.',
@@ -7648,7 +7605,7 @@ INSERT INTO green_bonds (
     'Vigeo Eiris', 'ALIGNMENT_CONFIRMED'
   ),
   (
-    '11110001-grnb-0000-0000-000000000003',
+    '11110001-fffb-0000-0000-000000000003',
     'GL-2026-BLD-01',
     'Yeşil Kampüs ve Enerji Verimliliği Kredisi',
     'Anadolu İnşaat A.Ş.',
@@ -7660,7 +7617,7 @@ INSERT INTO green_bonds (
     'ISS ESG', 'PENDING'
   ),
   (
-    '11110001-grnb-0000-0000-000000000004',
+    '11110001-fffb-0000-0000-000000000004',
     'GB-2025-WAT-01',
     'İleri Biyolojik Atıksu Arıtma Tesisi',
     'Ege Su Yönetimi A.Ş.',
@@ -7680,8 +7637,8 @@ INSERT INTO esg_fund_audits (
   risk_level, kpi_status, carbon_footprint_ton, findings, requires_action, status
 ) VALUES
   (
-    '22220001-esga-0000-0000-000000000001',
-    '11110001-grnb-0000-0000-000000000001',
+    '22220001-effa-0000-0000-000000000001',
+    '11110001-fffb-0000-0000-000000000001',
     'GB-2025-SUN-01',
     '2026-03-01', 'İç Denetim - Sürdürülebilirlik Odası',
     50000000.00, 38000000.00, 12000000.00,
@@ -7691,8 +7648,8 @@ INSERT INTO esg_fund_audits (
     TRUE, 'ESCALATED'
   ),
   (
-    '22220001-esga-0000-0000-000000000002',
-    '11110001-grnb-0000-0000-000000000002',
+    '22220001-effa-0000-0000-000000000002',
+    '11110001-fffb-0000-0000-000000000002',
     'GB-2026-TRN-01',
     '2026-03-05', 'Dış Bağımsız Denetçi',
     25000000.00, 25000000.00, 0.00,
@@ -7702,8 +7659,8 @@ INSERT INTO esg_fund_audits (
     FALSE, 'COMPLETED'
   ),
   (
-    '22220001-esga-0000-0000-000000000003',
-    '11110001-grnb-0000-0000-000000000003',
+    '22220001-effa-0000-0000-000000000003',
+    '11110001-fffb-0000-0000-000000000003',
     'GL-2026-BLD-01',
     '2026-03-10', 'İç Denetim - Kurumsal Krediler',
     120000000.00, 110000000.00, 10000000.00,
@@ -7720,7 +7677,7 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.culture_surveys (id, tenant_id, survey_code, title, description, target_audience, status, start_date, end_date, total_responses, participation_rate, overall_score) VALUES
   (
-    'cs000000-0000-0000-0000-000000000001',
+    'cf000000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'CUL-2026-Q1-BRANCH',
     '2026 Q1 Şube Personeli Etik Algı Anketi',
@@ -7734,7 +7691,7 @@ INSERT INTO public.culture_surveys (id, tenant_id, survey_code, title, descripti
     68.0  -- Riskli Bölge (68/100)
   ),
   (
-    'cs000000-0000-0000-0000-000000000002',
+    'cf000000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'CUL-2026-Q1-HQ',
     '2026 Q1 Genel Müdürlük Ton-at-the-Top Anketi',
@@ -7751,9 +7708,9 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.sentiment_scores (id, tenant_id, survey_id, department_name, category, score, sentiment_label, response_count, key_themes) VALUES
   (
-    'ss000000-0000-0000-0000-000000000001',
+    'ff000000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
-    'cs000000-0000-0000-0000-000000000001',
+    'cf000000-0000-0000-0000-000000000001',
     'Şube Operasyonları',
     'ETHICS',
     52.5,
@@ -7762,9 +7719,9 @@ INSERT INTO public.sentiment_scores (id, tenant_id, survey_id, department_name, 
     ARRAY['Baskı', 'Satış Hedefi', 'Mesai']
   ),
   (
-    'ss000000-0000-0000-0000-000000000002',
+    'ff000000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
-    'cs000000-0000-0000-0000-000000000001',
+    'cf000000-0000-0000-0000-000000000001',
     'Kurumsal Bankacılık Şubeleri',
     'SPEAK_UP',
     45.0,
@@ -7773,9 +7730,9 @@ INSERT INTO public.sentiment_scores (id, tenant_id, survey_id, department_name, 
     ARRAY['Misilleme Korkusu', 'Sessizlik', 'Görmezden Gelme']
   ),
   (
-    'ss000000-0000-0000-0000-000000000003',
+    'ff000000-0000-0000-0000-000000000003',
     '11111111-1111-1111-1111-111111111111',
-    'cs000000-0000-0000-0000-000000000001',
+    'cf000000-0000-0000-0000-000000000001',
     'Bireysel Pazarlama',
     'RISK_AWARENESS',
     82.0,
@@ -7784,9 +7741,9 @@ INSERT INTO public.sentiment_scores (id, tenant_id, survey_id, department_name, 
     ARRAY['Eğitimler', 'Farkındalık', 'Müşteri Odaklılık']
   ),
   (
-    'ss000000-0000-0000-0000-000000000004',
+    'ff000000-0000-0000-0000-000000000004',
     '11111111-1111-1111-1111-111111111111',
-    'cs000000-0000-0000-0000-000000000002',
+    'cf000000-0000-0000-0000-000000000002',
     'Risk Yönetimi',
     'TONE_AT_THE_TOP',
     88.5,
@@ -7795,9 +7752,9 @@ INSERT INTO public.sentiment_scores (id, tenant_id, survey_id, department_name, 
     ARRAY['Açık İletişim', 'Destek', 'Liderlik']
   ),
   (
-    'ss000000-0000-0000-0000-000000000005',
+    'ff000000-0000-0000-0000-000000000005',
     '11111111-1111-1111-1111-111111111111',
-    'cs000000-0000-0000-0000-000000000002',
+    'cf000000-0000-0000-0000-000000000002',
     'Hazine',
     'ACCOUNTABILITY',
     65.0,
@@ -7816,7 +7773,7 @@ INSERT INTO public.red_team_campaigns
   (id, campaign_code, title, description, campaign_type, status, severity, target_systems, start_date, success_rate, lead_operator)
 VALUES
   (
-    'rtc00000-0000-0000-0000-000000000001',
+    'ffc00000-0000-0000-0000-000000000001',
     'RED-2026-PHISH-01',
     'SWIFT Altyapısı Phishing Simülasyonu',
     'Muhasebe ve operasyon ekiplerine yönelik hedefli (spear-phishing) simülasyonu. "Acil SWIFT Transfer İptali" konulu sahte e-postalar gönderilmiştir.',
@@ -7829,7 +7786,7 @@ VALUES
     'Siber Savunma Merkezi (SOC)'
   ),
   (
-    'rtc00000-0000-0000-0000-000000000002',
+    'ffc00000-0000-0000-0000-000000000002',
     'RED-2026-BAS-02',
     'İç Ağ Yanal Hareket (Lateral Movement) Simülasyonu',
     'DMZ bölgesinde ele geçirildiği varsayılan bir sunucu üzerinden iç ağdaki veritabanlarına erişim denemeleri.',
@@ -7849,8 +7806,8 @@ INSERT INTO public.bas_attack_logs
 VALUES
   -- Phishing logs (Campaign 1)
   (
-    'bas00000-0000-0000-0000-000000000001',
-    'rtc00000-0000-0000-0000-000000000001',
+    'baf00000-0000-0000-0000-000000000001',
+    'ffc00000-0000-0000-0000-000000000001',
     'Spearphishing Email Payload',
     'ahmet.yavuz@bank.com.tr',
     'SUCCESS',
@@ -7860,8 +7817,8 @@ VALUES
     'Kullanıcı zararlı bağlantıya tıklamış ve sahte O365 portalına giriş bilgilerini girmiştir.'
   ),
   (
-    'bas00000-0000-0000-0000-000000000002',
-    'rtc00000-0000-0000-0000-000000000001',
+    'baf00000-0000-0000-0000-000000000002',
+    'ffc00000-0000-0000-0000-000000000001',
     'Spearphishing Email Payload',
     'zeynep.kara@bank.com.tr',
     'BLOCKED',
@@ -7872,8 +7829,8 @@ VALUES
   ),
   -- BAS logs (Campaign 2)
   (
-    'bas00000-0000-0000-0000-000000000003',
-    'rtc00000-0000-0000-0000-000000000002',
+    'baf00000-0000-0000-0000-000000000003',
+    'ffc00000-0000-0000-0000-000000000002',
     'Pass the Hash',
     '10.50.12.100 (Core App Server)',
     'DETECTED',
@@ -7883,8 +7840,8 @@ VALUES
     'Kimlik bilgisi doğrulama alarmı tetiklendi. SIEM üzerinde kural eşleşmesi sağlandı ancak erişim engellenmedi (izleme modu).'
   ),
   (
-    'bas00000-0000-0000-0000-000000000004',
-    'rtc00000-0000-0000-0000-000000000002',
+    'baf00000-0000-0000-0000-000000000004',
+    'ffc00000-0000-0000-0000-000000000002',
     'Remote Desktop Protocol',
     '10.50.10.55 (Domain Controller)',
     'BLOCKED',
@@ -7948,7 +7905,7 @@ ON CONFLICT (alert_code) DO NOTHING;
 
 INSERT INTO public.executive_bonuses (id, tenant_id, executive_name, title, department, performance_year, base_salary, target_bonus, awarded_bonus, deferred_amount, vesting_date, risk_adjusted_rating, status) VALUES
   (
-    'rem65000-0000-0000-0000-000000000001',
+    'fef65000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'Hakan Yılmaz',
     'Kurumsal Krediler Direktörü',
@@ -7963,7 +7920,7 @@ INSERT INTO public.executive_bonuses (id, tenant_id, executive_name, title, depa
     'İptal Edildi (Clawback)'
   ),
   (
-    'rem65000-0000-0000-0000-000000000002',
+    'fef65000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'Banu Çelik',
     'Hazine Yönetimi Başkanı',
@@ -7978,7 +7935,7 @@ INSERT INTO public.executive_bonuses (id, tenant_id, executive_name, title, depa
     'Tahakkuk Edildi'
   ),
   (
-    'rem65000-0000-0000-0000-000000000003',
+    'fef65000-0000-0000-0000-000000000003',
     '11111111-1111-1111-1111-111111111111',
     'Cem Arslan',
     'Dijital Kanallar VP',
@@ -7996,9 +7953,9 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.clawback_events (id, tenant_id, bonus_id, trigger_event, clawback_amount, justification, board_resolution_ref, recovery_status) VALUES
   (
-    'claw6500-0000-0000-0000-000000000001',
+    'cfaf6500-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
-    'rem65000-0000-0000-0000-000000000001',
+    'fef65000-0000-0000-0000-000000000001',
     'Aşırı Riskli NPL (Takipteki Alacaklar) Portföy Artışı',
     600000.00,
     '2025 yılında tahsis edilen kurumsal kredi portföyünün %18 oranında batık (NPL) durumuna düşmesi sebebiyle, risk-getiri dengesinin kurumu zarara uğrattığı tespit edilmiş ve 600.000 TL ertelenmiş prime iptal (malus) uygulanmıştır.',
@@ -8015,7 +7972,7 @@ ON CONFLICT (id) DO NOTHING;
 -- 1. sanction_lists — Ambargo ve Yaptırım Listeleri
 INSERT INTO public.sanction_lists (id, tenant_id, entity_name, entity_type, country_code, list_source, sanction_type, risk_level, notes) VALUES
   (
-    'sl000000-0000-0000-0000-000000000001',
+    'ff000000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'Kuzey Yıldızı Lojistik A.Ş.',
     'COMPANY',
@@ -8026,7 +7983,7 @@ INSERT INTO public.sanction_lists (id, tenant_id, entity_name, entity_type, coun
     'OFAC Güncellemesi: Askeri teçhizat lojistiği sağladığı gerekçesiyle X Şirketine (Kuzey Yıldızı Lojistik) ambargo uygulanmıştır.'
   ),
   (
-    'sl000000-0000-0000-0000-000000000002',
+    'ff000000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'Saeed Energy Corp',
     'COMPANY',
@@ -8037,7 +7994,7 @@ INSERT INTO public.sanction_lists (id, tenant_id, entity_name, entity_type, coun
     'BM Güvenlik Konseyi Kararı: Petrol ambargosunu delme eylemleri.'
   ),
   (
-    'sl000000-0000-0000-0000-000000000003',
+    'ff000000-0000-0000-0000-000000000003',
     '11111111-1111-1111-1111-111111111111',
     'Alexey Volkov',
     'PERSON',
@@ -8052,7 +8009,7 @@ ON CONFLICT (id) DO NOTHING;
 -- 2. aml_alerts — Şüpheli İşlem Alarmları (AML)
 INSERT INTO public.aml_alerts (id, tenant_id, alert_code, title, description, alert_type, severity, status, customer_id, customer_name, transaction_amount, origin_country, destination_country, total_transactions, risk_score) VALUES
   (
-    'aml00000-0000-0000-0000-000000000001',
+    'aff00000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'AML-SWIFT-001',
     'Şüpheli Fon Transferi (SWIFT) Alarmı',
@@ -8069,7 +8026,7 @@ INSERT INTO public.aml_alerts (id, tenant_id, alert_code, title, description, al
     95.5
   ),
   (
-    'aml00000-0000-0000-0000-000000000002',
+    'aff00000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'AML-CASH-002',
     'Nakdi İşlem Bölünmesi (Smurfing)',
@@ -8090,7 +8047,7 @@ ON CONFLICT (id) DO NOTHING;
 -- 3. geopolitical_events — Makro Rizikolar (Harita)
 INSERT INTO public.geopolitical_events (id, tenant_id, title, description, region, country_code, coordinates, event_type, impact_level) VALUES
   (
-    'geo00000-0000-0000-0000-000000000001',
+    'fef00000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'Süveyş Kanalı Geçiş Kısıtlaması',
     'Bölgedeki çatışmalar nedeniyle kargo gemilerine yönelik artan tehdit, tedarik zinciri finansmanında (Trade Finance) yüksek risk.',
@@ -8101,7 +8058,7 @@ INSERT INTO public.geopolitical_events (id, tenant_id, title, description, regio
     'critical'
   ),
   (
-    'geo00000-0000-0000-0000-000000000002',
+    'fef00000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'Doğu Avrupa Rejim Değişikliği Sinyali',
     'Bölgesel istikrarsızlık, yerel para birimlerinde volatilite ve sermaye çıkışları riski taşıyor.',
@@ -8122,7 +8079,7 @@ INSERT INTO public.pii_data_flows
   (id, system_source, system_destination, data_categories, transfer_method, is_encrypted, is_cross_border, legal_basis, risk_level)
 VALUES
   (
-    'pdt00000-0000-0000-0000-000000000001',
+    'fdf00000-0000-0000-0000-000000000001',
     'Yurtiçi Core Banking (Finexus)',
     'Global Analytics Cloud (Frankfurt)',
     ARRAY['Kimlik', 'Finansal', 'İletişim'],
@@ -8133,7 +8090,7 @@ VALUES
     'CRITICAL'
   ),
   (
-    'pdt00000-0000-0000-0000-000000000002',
+    'fdf00000-0000-0000-0000-000000000002',
     'CRM Sistemi (Salesforce)',
     'Çağrı Merkezi IVR Sunucusu',
     ARRAY['İletişim', 'Ses Kaydı'],
@@ -8144,7 +8101,7 @@ VALUES
     'LOW'
   ),
   (
-    'pdt00000-0000-0000-0000-000000000003',
+    'fdf00000-0000-0000-0000-000000000003',
     'Mobil Uygulama Gateway',
     'AWS Frankfurt Reklam Ağı',
     ARRAY['Cihaz ID', 'Konum'],
@@ -8161,7 +8118,7 @@ INSERT INTO public.consent_records
   (id, context, total_users, consented_users, revoked_users)
 VALUES
   (
-    'con00000-0000-0000-0000-000000000001',
+    'cff00000-0000-0000-0000-000000000001',
     'Pazarlama ve Üçüncü Taraf Veri Paylaşımı KVKK Onayı',
     1250000,
     980000,
@@ -8174,7 +8131,7 @@ INSERT INTO public.privacy_breaches
   (id, incident_title, description, affected_records, affected_data_types, severity, status, detected_at)
 VALUES
   (
-    'pbr00000-0000-0000-0000-000000000001',
+    'fbf00000-0000-0000-0000-000000000001',
     'Müşteri Kimlik Verisinin Bulut Sağlayıcıya Şifresiz Aktarımı',
     'Core Banking sisteminden Global Analytics Cloud paneline gece devirlerinde çalışan batch servislerin veriyi maskelemeden ve HTTPS pinning olmadan EU/Frankfurt bölgesine çıkardığı tespit edildi.',
     42500,
@@ -8184,7 +8141,7 @@ VALUES
     NOW() - INTERVAL '2 days'
   ),
   (
-    'pbr00000-0000-0000-0000-000000000002',
+    'fbf00000-0000-0000-0000-000000000002',
     'Geliştirici Ortamında Canlı Veri Pozlaması',
     'UAT ortamına alınan veritabanı yedeğinde maskeleme algoritmalarının başarısız olduğu, dış kaynaklı geliştiricilerin maskesiz gerçek müşteri telefon numaralarına erişebildiği tespit edildi.',
     1200,
@@ -8208,7 +8165,7 @@ INSERT INTO digital_twin_models (
   nodes_json, edges_json
 ) VALUES
   (
-    '33330001-dtwn-0000-0000-000000000001',
+    '33330001-dfff-0000-0000-000000000001',
     'PROC-CREDIT-001',
     'Kurumsal Kredi Tahsis Süreci (End-to-End)',
     'Kredi Tahsis',
@@ -8237,14 +8194,14 @@ INSERT INTO process_mining_logs (
   bypass_details, bottleneck_node_id, risk_score, handled_by, is_audited
 ) VALUES
   (
-    '33330001-dtwn-0000-0000-000000000001',
+    '33330001-dfff-0000-0000-000000000001',
     'CREDIT-APP-2026-99932',
     '2026-04-01 09:00:00+03', '2026-04-02 11:30:00+03',
     5, 26.5, 'MINOR_DEVIATION',
     NULL, 'n3', 15, 'Mehmet K.', FALSE
   ),
   (
-    '33330001-dtwn-0000-0000-000000000001',
+    '33330001-dfff-0000-0000-000000000001',
     'CREDIT-APP-2026-99945',
     '2026-04-03 14:00:00+03', '2026-04-04 10:00:00+03',
     3, 20.0, 'BYPASS_DETECTED',
@@ -8252,7 +8209,7 @@ INSERT INTO process_mining_logs (
     NULL, 95, 'Ahmet Y.', TRUE
   ),
   (
-    '33330001-dtwn-0000-0000-000000000001',
+    '33330001-dfff-0000-0000-000000000001',
     'CREDIT-APP-2026-99950',
     '2026-04-05 08:30:00+03', '2026-04-07 17:00:00+03',
     5, 56.5, 'BOTTLENECK',
@@ -8260,7 +8217,7 @@ INSERT INTO process_mining_logs (
     'n4', 40, 'Elif B.', FALSE
   ),
   (
-    '33330001-dtwn-0000-0000-000000000001',
+    '33330001-dfff-0000-0000-000000000001',
     'CREDIT-APP-2026-99961',
     '2026-04-08 10:00:00+03', '2026-04-09 09:30:00+03',
     5, 23.5, 'COMPLIANT',
@@ -8275,7 +8232,7 @@ ON CONFLICT (case_id) DO NOTHING;
 -- 1. zkp_encrypted_reports — Şifrelenmiş Etik İhbar Raporları
 INSERT INTO public.zkp_encrypted_reports (id, tenant_id, tracking_code, category, severity, encrypted_payload, zk_proof_hash, status, decryption_attempts) VALUES
   (
-    'zkp00000-0000-0000-0000-000000000001',
+    'fff00000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'ZKP-9982-FXA',
     'rüşvet_yolsuzluk',
@@ -8286,7 +8243,7 @@ INSERT INTO public.zkp_encrypted_reports (id, tenant_id, tracking_code, category
     1
   ),
   (
-    'zkp00000-0000-0000-0000-000000000002',
+    'fff00000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'ZKP-1144-KPL',
     'mobbing',
@@ -8299,24 +8256,24 @@ INSERT INTO public.zkp_encrypted_reports (id, tenant_id, tracking_code, category
 ON CONFLICT (tracking_code) DO NOTHING;
 
 -- 2. vault_access_logs — Kasa Erişim Logları
-INSERT INTO public.vault_access_logs (id, tenant_id, report_id, accessed_by_role, accessed_by_email, access_reason, access_status) VALUES
+INSERT INTO public.vault_access_logs (id, location_name, access_point, personnel_id, personnel_name, access_status, auth_method) VALUES
   (
-    'val00000-0000-0000-0000-000000000001',
-    '11111111-1111-1111-1111-111111111111',
-    'zkp00000-0000-0000-0000-000000000001',
-    'Etik_Kurul_Uyesi',
-    'etica@sentinel.bank',
-    'Yetkili Ön İnceleme Talebi (Private Key Match)',
-    'success'
+    'faf00000-0000-0000-0000-000000000001',
+    'Şube 342 - Sistem Odası',
+    'Sunucu Kabin_A',
+    'P-2311',
+    'Etik Kurul Üyesi',
+    'GRANTED',
+    'BIOMETRIC'
   ),
   (
-    'val00000-0000-0000-0000-000000000002',
-    '11111111-1111-1111-1111-111111111111',
-    'zkp00000-0000-0000-0000-000000000001',
-    'System_Admin',
-    'admin@sentinel.bank',
-    'DB Dump Attempt',
-    'key_mismatch'
+    'faf00000-0000-0000-0000-000000000002',
+    'Genel Müdürlük - Kasa',
+    'Turnike 2',
+    'P-1001',
+    'Sistem Yöneticisi',
+    'DENIED',
+    'RFID_CARD'
   )
 ON CONFLICT (id) DO NOTHING;
 
@@ -8329,7 +8286,7 @@ INSERT INTO public.psd2_tokens
   (id, tpp_name, client_id, scopes, status, issued_at, expires_at)
 VALUES
   (
-    'psd00000-0000-0000-0000-000000000001',
+    'ffd00000-0000-0000-0000-000000000001',
     'Fintek X Ödeme Sistemleri',
     'client_fx_9921',
     ARRAY['accounts', 'payments'],
@@ -8338,7 +8295,7 @@ VALUES
     NOW() + INTERVAL '60 days'
   ),
   (
-    'psd00000-0000-0000-0000-000000000002',
+    'ffd00000-0000-0000-0000-000000000002',
     'Açık Bankacılık Aggregator',
     'client_agg_0012',
     ARRAY['accounts'],
@@ -8347,7 +8304,7 @@ VALUES
     NOW() - INTERVAL '10 days'
   ),
   (
-    'psd00000-0000-0000-0000-000000000003',
+    'ffd00000-0000-0000-0000-000000000003',
     'Kripto Borsası Z',
     'client_cry_443',
     ARRAY['payments'],
@@ -8362,7 +8319,7 @@ INSERT INTO public.api_breaches
   (id, anomaly_type, description, source_ip, tpp_name, severity, status, detected_at)
 VALUES
   (
-    'brc00000-0000-0000-0000-000000000001',
+    'bfc00000-0000-0000-0000-000000000001',
     'EXPIRED_TOKEN_USE',
     'Açık Bankacılık Aggregator TPPsi süresi dolmuş PSD2 yetki belirteci ile 15 defa ardışık müşteri bakiye (/accounts/balances) sorgulama girişiminde bulundu.',
     '193.10.22.45',
@@ -8372,7 +8329,7 @@ VALUES
     NOW() - INTERVAL '2 hours'
   ),
   (
-    'brc00000-0000-0000-0000-000000000002',
+    'bfc00000-0000-0000-0000-000000000002',
     'RATE_LIMIT_EXCEEDED',
     'Fintek X Ödeme Sistemleri TPPsi tanımlı 500/dakika eşiğini aşarak 429 HTTP hatası aldı. Olası bir DDoS veya Retry-Storm hatası inceleniyor.',
     '212.156.44.11',
@@ -8461,7 +8418,7 @@ ON CONFLICT (report_period) DO NOTHING;
 
 INSERT INTO public.smart_contracts (id, tenant_id, contract_name, network, contract_address, solidity_version, description, audit_status, risk_score, deployment_date) VALUES
   (
-    'smc70000-0000-0000-0000-000000000001',
+    'ffc70000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'Dijital Sukuk İhracı (Ijarah)',
     'Ethereum Subnet (Quorum)',
@@ -8473,7 +8430,7 @@ INSERT INTO public.smart_contracts (id, tenant_id, contract_name, network, contr
     '2025-11-10'
   ),
   (
-    'smc70000-0000-0000-0000-000000000002',
+    'ffc70000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'Müşteri Sadakat Puanı (SentinelLoyalty)',
     'Polygon (PoS)',
@@ -8488,9 +8445,9 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.token_issuances (id, tenant_id, contract_id, token_name, token_symbol, total_supply, issuance_date, regulatory_compliance) VALUES
   (
-    'tkn70000-0000-0000-0000-000000000001',
+    'fff70000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
-    'smc70000-0000-0000-0000-000000000001',
+    'ffc70000-0000-0000-0000-000000000001',
     'Sentinel Digital Sukuk 2025',
     'SDS25',
     50000000.0000,
@@ -8498,9 +8455,9 @@ INSERT INTO public.token_issuances (id, tenant_id, contract_id, token_name, toke
     'Pending Review'
   ),
   (
-    'tkn70000-0000-0000-0000-000000000002',
+    'fff70000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
-    'smc70000-0000-0000-0000-000000000002',
+    'ffc70000-0000-0000-0000-000000000002',
     'Sentinel Reward Points',
     'SRP',
     1000000000.0000,
@@ -8511,9 +8468,9 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.contract_vulnerabilities (id, tenant_id, contract_id, vulnerability_type, severity, description, code_snippet, line_number, remediation_plan, status) VALUES
   (
-    'vuln7000-0000-0000-0000-000000000001',
+    'ffff7000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
-    'smc70000-0000-0000-0000-000000000001',
+    'ffc70000-0000-0000-0000-000000000001',
     'Reentrancy (Yeniden Giriş Açığı)',
     'Critical',
     'Sukuk itfa (redemption) fonksiyonunda dış çağrı öncesinde state güncellenmediği (Checks-Effects-Interactions pattern ihlali) tespit edildi. Kötü niyetli bir kontrat aynı bakiyeyi defalarca çekebilir.',
@@ -8523,9 +8480,9 @@ INSERT INTO public.contract_vulnerabilities (id, tenant_id, contract_id, vulnera
     'Open'
   ),
   (
-    'vuln7000-0000-0000-0000-000000000002',
+    'ffff7000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
-    'smc70000-0000-0000-0000-000000000001',
+    'ffc70000-0000-0000-0000-000000000001',
     'Unchecked Return Data',
     'Low',
     'Low-level çağrı yapıldıktan sonra dönen verinin boyutu kontrol edilmiyor. Bazı durumlarda beklenmeyen çalışmalara neden olabilir.',
@@ -8542,7 +8499,7 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.legal_cases (id, tenant_id, case_number, plaintiff, defendant, court, case_type, filing_date, claimed_amount, status) VALUES
   (
-    'case7500-0000-0000-0000-000000000001',
+    'cafe7500-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     '2025/1142 E.',
     'ABC Teknoloji A.Ş.',
@@ -8554,7 +8511,7 @@ INSERT INTO public.legal_cases (id, tenant_id, case_number, plaintiff, defendant
     'Açık'
   ),
   (
-    'case7500-0000-0000-0000-000000000002',
+    'cafe7500-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     '2026/045 E.',
     'Ahmet Yılmaz',
@@ -8569,7 +8526,7 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.regulatory_investigations (id, tenant_id, regulator, subject, investigation_date, investigator_lead, status) VALUES
   (
-    'reg75000-0000-0000-0000-000000000001',
+    'fef75000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'Rekabet Kurumu',
     'Mevduat Faiz Oranları Kartel Şüphesi',
@@ -8578,7 +8535,7 @@ INSERT INTO public.regulatory_investigations (id, tenant_id, regulator, subject,
     'Savunma Aşamasında'
   ),
   (
-    'reg75000-0000-0000-0000-000000000002',
+    'fef75000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'MASAK',
     'Uluslararası Ticaret Finansmanı Ön İnceleme',
@@ -8590,10 +8547,10 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.predicted_penalties (id, tenant_id, reference_type, reference_id, predicted_loss_prob, predicted_penalty_amount, ai_confidence, risk_factors, mitigation_strategy) VALUES
   (
-    'pen75000-0000-0000-0000-000000000001',
+    'fef75000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'INVESTIGATION',
-    'reg75000-0000-0000-0000-000000000001',
+    'fef75000-0000-0000-0000-000000000001',
     65.00,
     50000000.00,
     88.50,
@@ -8601,10 +8558,10 @@ INSERT INTO public.predicted_penalties (id, tenant_id, reference_type, reference
     'Rekabet Kurumu uzlaşma ve aktif işbirliği (Leniency) mekanizmasından yararlanılarak cezada %25 indirim talep edilmesi.'
   ),
   (
-    'pen75000-0000-0000-0000-000000000002',
+    'fef75000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'CASE',
-    'case7500-0000-0000-0000-000000000001',
+    'cafe7500-0000-0000-0000-000000000001',
     85.00,
     12500000.00,
     92.00,
@@ -8620,7 +8577,7 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.corporate_zakat_obligations (id, tenant_id, fiscal_year, calculation_method, eligible_assets, deductible_liabilities, net_zakat_base, zakat_rate, calculated_zakat, approved_by_shariah_board, status) VALUES
   (
-    'zak79000-0000-0000-0000-000000000001',
+    'faf79000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     2025,
     'Net Assets',
@@ -8633,7 +8590,7 @@ INSERT INTO public.corporate_zakat_obligations (id, tenant_id, fiscal_year, calc
     'Paid'
   ),
   (
-    'zak79000-0000-0000-0000-000000000002',
+    'faf79000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     2026,
     'Net Invested Funds',
@@ -8649,9 +8606,9 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.charity_disbursements (id, tenant_id, obligation_id, fund_type, beneficiary_name, disbursement_date, amount, transaction_ref, impact_category, status) VALUES
   (
-    'char7900-0000-0000-0000-000000000001',
+    'cfaf7900-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
-    'zak79000-0000-0000-0000-000000000001',
+    'faf79000-0000-0000-0000-000000000001',
     'Zakat',
     'Kızılay Afet Fonu',
     '2026-01-15',
@@ -8661,9 +8618,9 @@ INSERT INTO public.charity_disbursements (id, tenant_id, obligation_id, fund_typ
     'Completed'
   ),
   (
-    'char7900-0000-0000-0000-000000000002',
+    'cfaf7900-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
-    'zak79000-0000-0000-0000-000000000001',
+    'faf79000-0000-0000-0000-000000000001',
     'Zakat',
     'Darüşşafaka Eğitim Kurumları',
     '2026-01-20',
@@ -8676,7 +8633,7 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.non_compliant_income (id, tenant_id, income_source, detection_date, amount, justification, purification_status, disbursement_id) VALUES
   (
-    'nci79000-0000-0000-0000-000000000001',
+    'fcf79000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'Kurumsal Kredi Gecikme Cezası',
     '2026-02-10',
@@ -8686,7 +8643,7 @@ INSERT INTO public.non_compliant_income (id, tenant_id, income_source, detection
     NULL
   ),
   (
-    'nci79000-0000-0000-0000-000000000002',
+    'fcf79000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'Hata Kaynaklı Nostro Faiz Geliri',
     '2025-12-05',
@@ -8703,7 +8660,7 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.simulated_strategies (id, tenant_id, strategy_name, description, simulation_date, capital_allocation, status) VALUES
   (
-    'sim83000-0000-0000-0000-000000000001',
+    'fff83000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'Tarım Kredilerinde Büyüme (Q3-Q4)',
     'İklim krizi beklentileri doğrultusunda çiftçilere sağlanan uzun vadeli tarım kredilerinde agresif hacim artırma senaryosu.',
@@ -8712,7 +8669,7 @@ INSERT INTO public.simulated_strategies (id, tenant_id, strategy_name, descripti
     'Completed'
   ),
   (
-    'sim83000-0000-0000-0000-000000000002',
+    'fff83000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'Yurtdışı Şube Ağı Genişlemesi (MENA)',
     'Birleşik Arap Emirlikleri ve Suudi Arabistan bölgelerinde eş zamanlı fiziki şube ve dijital on-boarding açılımı.',
@@ -8724,27 +8681,27 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.strategy_risk_scores (id, tenant_id, strategy_id, risk_category, projected_impact, impact_direction, confidence_score) VALUES
   (
-    'srk83000-0000-0000-0000-000000000001',
+    'fff83000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
-    'sim83000-0000-0000-0000-000000000001',
+    'fff83000-0000-0000-0000-000000000001',
     'NPL Riski (Takipteki Alacaklar)',
     12.50,
     'Negative',
     89.00
   ),
   (
-    'srk83000-0000-0000-0000-000000000002',
+    'fff83000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
-    'sim83000-0000-0000-0000-000000000001',
+    'fff83000-0000-0000-0000-000000000001',
     'Sektörel Kârlılık Oranı',
     4.20,
     'Positive',
     75.00
   ),
   (
-    'srk83000-0000-0000-0000-000000000003',
+    'fff83000-0000-0000-0000-000000000003',
     '11111111-1111-1111-1111-111111111111',
-    'sim83000-0000-0000-0000-000000000001',
+    'fff83000-0000-0000-0000-000000000001',
     'Karbon Ayak İzi Uyumu (ESG)',
     -2.00,
     'Neutral',
@@ -8754,27 +8711,27 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.ai_board_responses (id, tenant_id, strategy_id, avatar_role, avatar_name, response, sentiment) VALUES
   (
-    'aib83000-0000-0000-0000-000000000001',
+    'afb83000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
-    'sim83000-0000-0000-0000-000000000001',
+    'fff83000-0000-0000-0000-000000000001',
     'Gölge Risk Komitesi',
     'Sentinel RiskEngine v4',
     'Kuraklık verilerindeki sapmalar incelendi. İklim krizinin gecikmeli etkisiyle hasat döngülerinin kırılma ihtimali yüksek. Model, bu bölgedeki NPL (Batık Kredi) riskinin mevcut tahminlerden %12 ila %15 daha fazla olabileceğini öngörüyor.',
     'Negative'
   ),
   (
-    'aib83000-0000-0000-0000-000000000002',
+    'afb83000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
-    'sim83000-0000-0000-0000-000000000001',
+    'fff83000-0000-0000-0000-000000000001',
     'Gölge Satış ve Büyüme Komitesi',
     'Sentinel SalesMatrix',
     'Ancak hükümetin açıkladığı uzun vadeli tarım subvansiyon teşvikleri (TKDK destekleri) temerrüt ihtimalini ciddi oranda hedge edecektir. Rakiplerden pazar payı çalmak için ideal bir zaman aralığındayız.',
     'Positive'
   ),
   (
-    'aib83000-0000-0000-0000-000000000003',
+    'afb83000-0000-0000-0000-000000000003',
     '11111111-1111-1111-1111-111111111111',
-    'sim83000-0000-0000-0000-000000000001',
+    'fff83000-0000-0000-0000-000000000001',
     'Gölge Yönetim Kurulu Başkanı',
     'Sentinel ChairmanX',
     'Satış tarafının teşvik beklentisi mantıklı olsa da, risk motorunun NPL uyarısını göz ardı edemeyiz. Kararım: Krediler onaylansın, fakat %30''luk dilimi Sendikasyon poliçesi (Risk Sigortası) kapsamına alınarak execute edilsin.',
@@ -8790,10 +8747,10 @@ ON CONFLICT (id) DO NOTHING;
 INSERT INTO public.board_members
   (id, full_name, role_title, is_independent, status)
 VALUES
-  ('bod00000-0000-0000-0000-000000000001', 'Ahmet Yılmaz', 'Yönetim Kurulu Başkanı', false, 'ACTIVE'),
-  ('bod00000-0000-0000-0000-000000000002', 'Ayşe Demir', 'Bağımsız YK Üyesi (Denetim Komitesi Başkanı)', true, 'ACTIVE'),
-  ('bod00000-0000-0000-0000-000000000003', 'Mehmet Öztürk', 'Yönetim Kurulu Üyesi (IT Odaklı)', false, 'ACTIVE'),
-  ('bod00000-0000-0000-0000-000000000004', 'Zeynep Kaya', 'Bağımsız YK Üyesi (Risk Komitesi)', true, 'ACTIVE')
+  ('bfd00000-0000-0000-0000-000000000001', 'Ahmet Yılmaz', 'Yönetim Kurulu Başkanı', false, 'ACTIVE'),
+  ('bfd00000-0000-0000-0000-000000000002', 'Ayşe Demir', 'Bağımsız YK Üyesi (Denetim Komitesi Başkanı)', true, 'ACTIVE'),
+  ('bfd00000-0000-0000-0000-000000000003', 'Mehmet Öztürk', 'Yönetim Kurulu Üyesi (IT Odaklı)', false, 'ACTIVE'),
+  ('bfd00000-0000-0000-0000-000000000004', 'Zeynep Kaya', 'Bağımsız YK Üyesi (Risk Komitesi)', true, 'ACTIVE')
 ON CONFLICT (id) DO NOTHING;
 
 -- 2. SKILL EVALUATIONS
@@ -8801,32 +8758,32 @@ INSERT INTO public.skill_evaluations
   (id, member_id, skill_category, score, evaluator_note)
 VALUES
   -- Ahmet Yılmaz (Başkan - Finans ve Strateji)
-  (gen_random_uuid(), 'bod00000-0000-0000-0000-000000000001', 'Finansal Yönetim', 9, 'Yüksek tecrübe.'),
-  (gen_random_uuid(), 'bod00000-0000-0000-0000-000000000001', 'Kurumsal Strateji', 10, 'Vizyoner.'),
-  (gen_random_uuid(), 'bod00000-0000-0000-0000-000000000001', 'Siber Güvenlik', 5, 'Orta düzey farkındalık.'),
-  (gen_random_uuid(), 'bod00000-0000-0000-0000-000000000001', 'ESG ve Sürdürülebilirlik', 7, 'Gelişen anlayış.'),
-  (gen_random_uuid(), 'bod00000-0000-0000-0000-000000000001', 'Mevzuat ve Uyum', 8, 'Güçlü.'),
+  (gen_random_uuid(), 'bfd00000-0000-0000-0000-000000000001', 'Finansal Yönetim', 9, 'Yüksek tecrübe.'),
+  (gen_random_uuid(), 'bfd00000-0000-0000-0000-000000000001', 'Kurumsal Strateji', 10, 'Vizyoner.'),
+  (gen_random_uuid(), 'bfd00000-0000-0000-0000-000000000001', 'Siber Güvenlik', 5, 'Orta düzey farkındalık.'),
+  (gen_random_uuid(), 'bfd00000-0000-0000-0000-000000000001', 'ESG ve Sürdürülebilirlik', 7, 'Gelişen anlayış.'),
+  (gen_random_uuid(), 'bfd00000-0000-0000-0000-000000000001', 'Mevzuat ve Uyum', 8, 'Güçlü.'),
 
   -- Ayşe Demir (Denetim - Mevzuat)
-  (gen_random_uuid(), 'bod00000-0000-0000-0000-000000000002', 'Finansal Yönetim', 8, 'Denetim altyapısı sağlam.'),
-  (gen_random_uuid(), 'bod00000-0000-0000-0000-000000000002', 'Kurumsal Strateji', 7, 'Odak'),
-  (gen_random_uuid(), 'bod00000-0000-0000-0000-000000000002', 'Siber Güvenlik', 6, 'İyileştirmeye açık.'),
-  (gen_random_uuid(), 'bod00000-0000-0000-0000-000000000002', 'ESG ve Sürdürülebilirlik', 8, ''),
-  (gen_random_uuid(), 'bod00000-0000-0000-0000-000000000002', 'Mevzuat ve Uyum', 10, 'Otorite statüsünde.'),
+  (gen_random_uuid(), 'bfd00000-0000-0000-0000-000000000002', 'Finansal Yönetim', 8, 'Denetim altyapısı sağlam.'),
+  (gen_random_uuid(), 'bfd00000-0000-0000-0000-000000000002', 'Kurumsal Strateji', 7, 'Odak'),
+  (gen_random_uuid(), 'bfd00000-0000-0000-0000-000000000002', 'Siber Güvenlik', 6, 'İyileştirmeye açık.'),
+  (gen_random_uuid(), 'bfd00000-0000-0000-0000-000000000002', 'ESG ve Sürdürülebilirlik', 8, ''),
+  (gen_random_uuid(), 'bfd00000-0000-0000-0000-000000000002', 'Mevzuat ve Uyum', 10, 'Otorite statüsünde.'),
 
   -- Mehmet Öztürk (IT Odaklı)
-  (gen_random_uuid(), 'bod00000-0000-0000-0000-000000000003', 'Finansal Yönetim', 6, 'Geliştirilebilir.'),
-  (gen_random_uuid(), 'bod00000-0000-0000-0000-000000000003', 'Kurumsal Strateji', 8, 'Dijital strateji lideri.'),
-  (gen_random_uuid(), 'bod00000-0000-0000-0000-000000000003', 'Siber Güvenlik', 9, 'Siber Güvenlik Vizyon Skoru: 9/10'),
-  (gen_random_uuid(), 'bod00000-0000-0000-0000-000000000003', 'ESG ve Sürdürülebilirlik', 6, ''),
-  (gen_random_uuid(), 'bod00000-0000-0000-0000-000000000003', 'Mevzuat ve Uyum', 7, 'KVKK/GDPR uzmanlığı.'),
+  (gen_random_uuid(), 'bfd00000-0000-0000-0000-000000000003', 'Finansal Yönetim', 6, 'Geliştirilebilir.'),
+  (gen_random_uuid(), 'bfd00000-0000-0000-0000-000000000003', 'Kurumsal Strateji', 8, 'Dijital strateji lideri.'),
+  (gen_random_uuid(), 'bfd00000-0000-0000-0000-000000000003', 'Siber Güvenlik', 9, 'Siber Güvenlik Vizyon Skoru: 9/10'),
+  (gen_random_uuid(), 'bfd00000-0000-0000-0000-000000000003', 'ESG ve Sürdürülebilirlik', 6, ''),
+  (gen_random_uuid(), 'bfd00000-0000-0000-0000-000000000003', 'Mevzuat ve Uyum', 7, 'KVKK/GDPR uzmanlığı.'),
 
   -- Zeynep Kaya (Risk Komitesi - ESG Odaklı)
-  (gen_random_uuid(), 'bod00000-0000-0000-0000-000000000004', 'Finansal Yönetim', 8, ''),
-  (gen_random_uuid(), 'bod00000-0000-0000-0000-000000000004', 'Kurumsal Strateji', 8, ''),
-  (gen_random_uuid(), 'bod00000-0000-0000-0000-000000000004', 'Siber Güvenlik', 7, 'Modern risk mimarisi.'),
-  (gen_random_uuid(), 'bod00000-0000-0000-0000-000000000004', 'ESG ve Sürdürülebilirlik', 10, 'Yeşil Finans lideri.'),
-  (gen_random_uuid(), 'bod00000-0000-0000-0000-000000000004', 'Mevzuat ve Uyum', 9, 'Önleyici uyum kültürü.')
+  (gen_random_uuid(), 'bfd00000-0000-0000-0000-000000000004', 'Finansal Yönetim', 8, ''),
+  (gen_random_uuid(), 'bfd00000-0000-0000-0000-000000000004', 'Kurumsal Strateji', 8, ''),
+  (gen_random_uuid(), 'bfd00000-0000-0000-0000-000000000004', 'Siber Güvenlik', 7, 'Modern risk mimarisi.'),
+  (gen_random_uuid(), 'bfd00000-0000-0000-0000-000000000004', 'ESG ve Sürdürülebilirlik', 10, 'Yeşil Finans lideri.'),
+  (gen_random_uuid(), 'bfd00000-0000-0000-0000-000000000004', 'Mevzuat ve Uyum', 9, 'Önleyici uyum kültürü.')
 ON CONFLICT (id) DO NOTHING;
 
 -- 3. BOARD EFFECTIVENESS SCORES
@@ -8844,9 +8801,9 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.auditor_workload_logs (id, tenant_id, auditor_id, auditor_name, period, total_projects, available_hours, logged_hours, travel_days, complexity_factor) VALUES
   (
-    'awl74000-0000-0000-0000-000000000001',
+    'aff74000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
-    'usr00000-0000-0000-0000-000000000001',
+    'fff00000-0000-0000-0000-000000000001',
     'Ahmet Yılmaz (Kıdemli Müfettiş A)',
     '2026-Q1',
     4,
@@ -8856,9 +8813,9 @@ INSERT INTO public.auditor_workload_logs (id, tenant_id, auditor_id, auditor_nam
     1.4   -- Yüksek Zorluk
   ),
   (
-    'awl74000-0000-0000-0000-000000000002',
+    'aff74000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
-    'usr00000-0000-0000-0000-000000000002',
+    'fff00000-0000-0000-0000-000000000002',
     'Büşra Demir (Müfettiş)',
     '2026-Q1',
     2,
@@ -8868,9 +8825,9 @@ INSERT INTO public.auditor_workload_logs (id, tenant_id, auditor_id, auditor_nam
     1.0
   ),
   (
-    'awl74000-0000-0000-0000-000000000003',
+    'aff74000-0000-0000-0000-000000000003',
     '11111111-1111-1111-1111-111111111111',
-    'usr00000-0000-0000-0000-000000000003',
+    'fff00000-0000-0000-0000-000000000003',
     'Can Öztürk (BT Müfettişi)',
     '2026-Q1',
     3,
@@ -8883,9 +8840,9 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.burnout_risk_scores (id, tenant_id, auditor_id, auditor_name, department, risk_score, overtime_percentage, risk_status, ai_recommendation) VALUES
   (
-    'brs74000-0000-0000-0000-000000000001',
+    'bff74000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
-    'usr00000-0000-0000-0000-000000000001',
+    'fff00000-0000-0000-0000-000000000001',
     'Ahmet Yılmaz (Kıdemli Müfettiş A)',
     'Şube Denetimleri',
     88.5,
@@ -8894,9 +8851,9 @@ INSERT INTO public.burnout_risk_scores (id, tenant_id, auditor_id, auditor_name,
     'Son 2 Aydır Fazla Mesai: %40. Seyahat gün sayısının yüksekliği (25 gün) mental yorgunluğu artırıyor. Proje atamalarının durdurulması ve minimum 1 hafta zorunlu izin önerilir.'
   ),
   (
-    'brs74000-0000-0000-0000-000000000002',
+    'bff74000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
-    'usr00000-0000-0000-0000-000000000002',
+    'fff00000-0000-0000-0000-000000000002',
     'Büşra Demir (Müfettiş)',
     'Genel Müdürlük Denetimleri',
     22.0,
@@ -8905,9 +8862,9 @@ INSERT INTO public.burnout_risk_scores (id, tenant_id, auditor_id, auditor_name,
     'İş-yaşam dengesi sağlıklı aralıklarda. Mevcut proje temposu korunabilir.'
   ),
   (
-    'brs74000-0000-0000-0000-000000000003',
+    'bff74000-0000-0000-0000-000000000003',
     '11111111-1111-1111-1111-111111111111',
-    'usr00000-0000-0000-0000-000000000003',
+    'fff00000-0000-0000-0000-000000000003',
     'Can Öztürk (BT Müfettişi)',
     'Bilgi Sistemleri Denetimi',
     65.0,
@@ -8924,7 +8881,7 @@ ON CONFLICT (id) DO NOTHING;
 -- 1. shadow_it_assets — İzinsiz Uygulamalar
 INSERT INTO public.shadow_it_assets (id, tenant_id, app_name, category, risk_score, risk_level, active_users_count, total_traffic_mb, status) VALUES
   (
-    'sha00000-0000-0000-0000-000000000001',
+    'ffa00000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'DeepL Translator',
     'Generative AI',
@@ -8935,7 +8892,7 @@ INSERT INTO public.shadow_it_assets (id, tenant_id, app_name, category, risk_sco
     'discovered'
   ),
   (
-    'sha00000-0000-0000-0000-000000000002',
+    'ffa00000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'WeTransfer',
     'Cloud Storage',
@@ -8950,9 +8907,9 @@ ON CONFLICT (id) DO NOTHING;
 -- 2. unauthorized_ai_logs — İzinsiz Yapay Zeka Trafiği ve Sızıntı Alarmları
 INSERT INTO public.unauthorized_ai_logs (id, tenant_id, asset_id, device_ip, user_email, ai_service_name, payload_size_bytes, alert_type, severity, action_taken, description) VALUES
   (
-    'ail00000-0000-0000-0000-000000000001',
+    'aff00000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
-    'sha00000-0000-0000-0000-000000000001',
+    'ffa00000-0000-0000-0000-000000000001',
     '10.55.12.88',
     'hakan.y@sentinel.bank',
     'DeepL (Web)',
@@ -8963,7 +8920,7 @@ INSERT INTO public.unauthorized_ai_logs (id, tenant_id, asset_id, device_ip, use
     'Kurumsal Veri Sızıntısı Şüphesi: Kurum dışı IP adresine (DeepL API) tek seferde 50MB büyüklüğünde metin/dosya verisi gönderildi. Muhtemel sözleşme veya müşteri verisi çevirisi yapılıyor olabilir.'
   ),
   (
-    'ail00000-0000-0000-0000-000000000002',
+    'aff00000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     NULL,
     '10.33.5.101',
@@ -9113,7 +9070,7 @@ ON CONFLICT (breach_code) DO NOTHING;
 -- 1. biometric_audits
 INSERT INTO public.biometric_audits (id, tenant_id, channel, customer_id, session_id, liveliness_score, voice_match_score, face_match_score, overall_confidence, status) VALUES
   (
-    'bio00000-0000-0000-0000-000000000001',
+    'bff00000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'Video_Call',
     'CUST-8812',
@@ -9125,7 +9082,7 @@ INSERT INTO public.biometric_audits (id, tenant_id, channel, customer_id, sessio
     'failed'
   ),
   (
-    'bio00000-0000-0000-0000-000000000002',
+    'bff00000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'Mobile_App',
     'CUST-9923',
@@ -9143,7 +9100,7 @@ INSERT INTO public.deepfake_alerts (id, tenant_id, audit_id, alert_type, deepfak
   (
     'dfa00000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
-    'bio00000-0000-0000-0000-000000000001',
+    'bff00000-0000-0000-0000-000000000001',
     'Face_Swap',
     98.50,
     '{"lip_sync_error": true, "unnatural_blink_rate": true, "audio_frequency_jump": 0.85}',
@@ -9156,7 +9113,7 @@ ON CONFLICT (id) DO NOTHING;
 -- 3. kyc_synthetic_logs
 INSERT INTO public.kyc_synthetic_logs (id, tenant_id, applicant_name, national_id, risk_factors, synthetic_risk_score, decision) VALUES
   (
-    'kyc00000-0000-0000-0000-000000000001',
+    'ffc00000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'Mehmet Yılmaz',
     '12345678901',
@@ -9165,7 +9122,7 @@ INSERT INTO public.kyc_synthetic_logs (id, tenant_id, applicant_name, national_i
     'reject'
   ),
   (
-    'kyc00000-0000-0000-0000-000000000002',
+    'ffc00000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'Ayşe Demir',
     '98765432109',
@@ -9182,7 +9139,7 @@ ON CONFLICT (id) DO NOTHING;
 -- 1. restricted_trading_lists (Yasaklı Hisseler)
 INSERT INTO public.restricted_trading_lists (id, tenant_id, ticker, company_name, restriction_reason, added_by) VALUES
   (
-    'rtl80000-0000-0000-0000-000000000001',
+    'fff80000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'XYZ',
     'XYZ Teknoloji A.Ş.',
@@ -9190,7 +9147,7 @@ INSERT INTO public.restricted_trading_lists (id, tenant_id, ticker, company_name
     'Kurumsal Krediler Komitesi'
   ),
   (
-    'rtl80000-0000-0000-0000-000000000002',
+    'fff80000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'ABC',
     'ABC Enerji A.Ş.',
@@ -9202,7 +9159,7 @@ ON CONFLICT (id) DO NOTHING;
 -- 2. personal_account_dealings (Personel İşlem Bildirimleri)
 INSERT INTO public.personal_account_dealings (id, tenant_id, employee_id, employee_name, department, ticker, company_name, transaction_type, quantity, price, total_value, trade_date, status) VALUES
   (
-    'pad80000-0000-0000-0000-000000000001',
+    'fad80000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'EMP-1045',
     'Ahmet Yılmaz',
@@ -9217,7 +9174,7 @@ INSERT INTO public.personal_account_dealings (id, tenant_id, employee_id, employ
     'FLAGGED'
   ),
   (
-    'pad80000-0000-0000-0000-000000000002',
+    'fad80000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'EMP-2098',
     'Büşra Kaya',
@@ -9236,9 +9193,9 @@ ON CONFLICT (id) DO NOTHING;
 -- 3. insider_alerts (Çakışma / Uyarı Kayıtları)
 INSERT INTO public.insider_alerts (id, tenant_id, pad_id, employee_name, ticker, alert_type, severity, description, status) VALUES
   (
-    'isa80000-0000-0000-0000-000000000001',
+    'ffa80000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
-    'pad80000-0000-0000-0000-000000000001',
+    'fad80000-0000-0000-0000-000000000001',
     'Ahmet Yılmaz',
     'XYZ',
     'EXECUTIVE_CONFLICT',
@@ -9255,7 +9212,7 @@ ON CONFLICT (id) DO NOTHING;
 -- 1. regulatory_drafts
 INSERT INTO public.regulatory_drafts (id, tenant_id, regulator_name, draft_title, publication_date, deadline_date, status) VALUES
   (
-    'reg00000-0000-0000-0000-000000000001',
+    'fef00000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'BDDK',
     'Bilgi Sistemleri Tebliği Yönetmeliği (Taslak Değişiklik)',
@@ -9264,7 +9221,7 @@ INSERT INTO public.regulatory_drafts (id, tenant_id, regulator_name, draft_title
     'OPEN'
   ),
   (
-    'reg00000-0000-0000-0000-000000000002',
+    'fef00000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'SPK',
     'Kurumsal Yönetim İlkeleri Revizyonu ve Sürdürülebilirlik Kriterleri (Taslak)',
@@ -9279,7 +9236,7 @@ INSERT INTO public.bank_feedback_reports (id, tenant_id, draft_id, report_title,
   (
     'fed00000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
-    'reg00000-0000-0000-0000-000000000001',
+    'fef00000-0000-0000-0000-000000000001',
     'Katılım Bankaları Birliği Adına Hazırlanan Otomatik İtiraz Görüşü',
     '<strong>İLGİ:</strong> BDDK Kurumumuza sunulan Bilgi Sistemleri Yönetmeliği 15. Madde Taslağı Hakkında Değerlendirme.<br/><br/><strong>AÇIKLAMA (LLM Sentez):</strong> Önerilen Cloud taslak değişiklikleri, Tier 1 hizmetlerin bulut tabanlı hibrit sisteme (Public Cloud) tam geçişini sınırlandırmaktadır. Bu durum maliyet analizlerimizi ve esneklik (Scalability) kapasitemizi %34 oranında kısıtlayacaktır. <u>Görüşümüz şudur ki;</u> verinin kriptografik mülkiyeti bankada (On-Premise HSM) kalması kaydıyla, Public Cloud izninin Katılım Bankalarına özel esnetilmesini talep eder, bilgilerinize arz ederiz.',
     true,
@@ -9288,7 +9245,7 @@ INSERT INTO public.bank_feedback_reports (id, tenant_id, draft_id, report_title,
   (
     'fed00000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
-    'reg00000-0000-0000-0000-000000000002',
+    'fef00000-0000-0000-0000-000000000002',
     'Yönetim Kurulu Bağımsızlık Oranı (SPK Sürdürülebilirlik Katkısı)',
     NULL,
     true,
@@ -9303,7 +9260,7 @@ ON CONFLICT (id) DO NOTHING;
 -- 1. immutable_evidences
 INSERT INTO public.immutable_evidences (id, tenant_id, evidence_name, category, uploader_email, file_size_bytes, file_mime_type, original_hash, ipfs_cid, blockchain_network, tx_hash, is_verified) VALUES
   (
-    'evd00000-0000-0000-0000-000000000001',
+    'efd00000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'Şüpheli İşlem Dekontu (PDF)',
     'Fraud',
@@ -9317,7 +9274,7 @@ INSERT INTO public.immutable_evidences (id, tenant_id, evidence_name, category, 
     true
   ),
   (
-    'evd00000-0000-0000-0000-000000000002',
+    'efd00000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'Çeyreklik Yönetim Kurulu Onaylı Denetim Raporu',
     'Audit_Report',
@@ -9335,9 +9292,9 @@ ON CONFLICT (id) DO NOTHING;
 -- 2. blockchain_tx_logs
 INSERT INTO public.blockchain_tx_logs (id, tenant_id, evidence_id, action, tx_status, block_number, gas_used, executed_by) VALUES
   (
-    'btx00000-0000-0000-0000-000000000001',
+    'bff00000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
-    'evd00000-0000-0000-0000-000000000001',
+    'efd00000-0000-0000-0000-000000000001',
     'SEAL_EVIDENCE',
     'CONFIRMED',
     15500123,
@@ -9345,9 +9302,9 @@ INSERT INTO public.blockchain_tx_logs (id, tenant_id, evidence_id, action, tx_st
     'Sentinel_SmartContract_Relayer'
   ),
   (
-    'btx00000-0000-0000-0000-000000000002',
+    'bff00000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
-    'evd00000-0000-0000-0000-000000000002',
+    'efd00000-0000-0000-0000-000000000002',
     'SEAL_EVIDENCE',
     'PENDING',
     NULL,
@@ -9363,7 +9320,7 @@ ON CONFLICT (id) DO NOTHING;
 -- 1. employee_financial_stress (Anonimleştirilmiş finansal stres indikatörleri)
 INSERT INTO public.employee_financial_stress (id, tenant_id, anon_employee_id, department, job_title, salary_garnishment, credit_score_drop, lifestyle_mismatch, financial_stress_score) VALUES
   (
-    'efs85000-0000-0000-0000-000000000001',
+    'eff85000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'EMP-1042',
     'Hazine Yönetimi',
@@ -9374,7 +9331,7 @@ INSERT INTO public.employee_financial_stress (id, tenant_id, anon_employee_id, d
     85.50
   ),
   (
-    'efs85000-0000-0000-0000-000000000002',
+    'eff85000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'EMP-8831',
     'Bireysel Krediler',
@@ -9389,7 +9346,7 @@ ON CONFLICT (id) DO NOTHING;
 -- 2. fraud_triangle_scores (Suiistimal Üçgeni)
 INSERT INTO public.fraud_triangle_scores (id, tenant_id, anon_employee_id, pressure_score, opportunity_score, rationalization_score, total_fraud_risk) VALUES
   (
-    'fts85000-0000-0000-0000-000000000001',
+    'fff85000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'EMP-1042',
     85.50,     -- Yüksek Baskı (İcra)
@@ -9398,7 +9355,7 @@ INSERT INTO public.fraud_triangle_scores (id, tenant_id, anon_employee_id, press
     82.50      -- Kritik Ağırlıklı Risk
   ),
   (
-    'fts85000-0000-0000-0000-000000000002',
+    'fff85000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'EMP-8831',
     30.00,
@@ -9411,7 +9368,7 @@ ON CONFLICT (id) DO NOTHING;
 -- 3. hr_correlation_alerts (Yapay Zeka Korelasyon Alarmları)
 INSERT INTO public.hr_correlation_alerts (id, tenant_id, anon_employee_id, alert_severity, fraud_vector, description, status) VALUES
   (
-    'hca85000-0000-0000-0000-000000000001',
+    'fca85000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'EMP-1042',
     'CRITICAL',
@@ -9420,7 +9377,7 @@ INSERT INTO public.hr_correlation_alerts (id, tenant_id, anon_employee_id, alert
     'OPEN'
   ),
   (
-    'hca85000-0000-0000-0000-000000000002',
+    'fca85000-0000-0000-0000-000000000002',
     '11111111-1111-1111-1111-111111111111',
     'EMP-8831',
     'MEDIUM',
@@ -9435,31 +9392,14 @@ ON CONFLICT (id) DO NOTHING;
 -- WAVE 84 SEED: The Hunter's Guild (Gamification System)
 -- =============================================================================
 
--- 1. auditor_profiles
-INSERT INTO public.auditor_profiles (id, full_name, title, department, current_level, total_xp, xp_to_next_level, rank_name) VALUES
-  ('gam00000-0000-0000-0000-000000000001', 'Ahmet Yılmaz', 'Kıdemli Uyum Uzmanı', 'Regülasyon & Uyum', 12, 14500, 15000, 'Üstat'),
-  ('gam00000-0000-0000-0000-000000000002', 'Ayşe Demir', 'Baş Hukuk Müşaviri', 'Hukuk Müşavirliği', 15, 21200, 25000, 'Sentinel'),
-  ('gam00000-0000-0000-0000-000000000003', 'Mehmet Öztürk', 'Kıdemli BT Denetçisi', 'Bilgi Sistemleri Denetimi', 9, 8750, 10000, 'Avcı'),
-  ('gam00000-0000-0000-0000-000000000004', 'Zeynep Kaya', 'Kıdemli İç Denetçi', 'Kurumsal Denetim', 8, 7100, 8000, 'Uzman'),
-  ('gam00000-0000-0000-0000-000000000005', 'Caner Tunç', 'Siber Savunma Mimarı', 'Siber İstihbarat (CTI)', 10, 11200, 12000, 'Tehdit Avcısı')
-ON CONFLICT (id) DO NOTHING;
-
--- 2. auditor_xp_logs
-INSERT INTO public.auditor_xp_logs (id, auditor_id, action_type, xp_awarded, description, awarded_at) VALUES
-  (gen_random_uuid(), 'gam00000-0000-0000-0000-000000000004', 'CRITICAL_FINDING', 500, 'Kritik Kara Para Aklama (AML) Bulgusu Yakaladı', now() - interval '2 hours'),
-  (gen_random_uuid(), 'gam00000-0000-0000-0000-000000000005', 'ZERO_DAY_PREVENTION', 800, 'Deepfake Biyometrik Vakasını Sıfır Gününde Engelledi', now() - interval '5 hours'),
-  (gen_random_uuid(), 'gam00000-0000-0000-0000-000000000001', 'REG_RESPONSE_APPROVED', 150, 'BDDK Görüş Taslağı Üst Kurul Tarafından Onaylandı', now() - interval '1 day'),
-  (gen_random_uuid(), 'gam00000-0000-0000-0000-000000000003', 'INFRASTRUCTURE_AUDIT', 200, 'Cloud Migration Risk Raporu Teslim Edildi', now() - interval '2 days')
-ON CONFLICT (id) DO NOTHING;
-
--- 3. earned_badges
-INSERT INTO public.earned_badges (id, auditor_id, badge_name, badge_icon, rarity, earned_at) VALUES
-  (gen_random_uuid(), 'gam00000-0000-0000-0000-000000000004', 'Kartal Gözü', 'Eye', 'EPIC', now() - interval '2 hours'),
-  (gen_random_uuid(), 'gam00000-0000-0000-0000-000000000005', 'Sıfır Gün Avcısı', 'ShieldAlert', 'LEGENDARY', now() - interval '5 hours'),
-  (gen_random_uuid(), 'gam00000-0000-0000-0000-000000000001', 'Regülasyon Üstadı', 'Award', 'RARE', now() - interval '1 month'),
-  (gen_random_uuid(), 'gam00000-0000-0000-0000-000000000002', 'Adaletin Kılıcı', 'Swords', 'LEGENDARY', now() - interval '6 months'),
-  (gen_random_uuid(), 'gam00000-0000-0000-0000-000000000003', 'Fiber Optik Prens', 'Zap', 'RARE', now() - interval '3 months')
-ON CONFLICT (id) DO NOTHING;
+-- 1. auditor_profiles (Migration uyumlu)
+INSERT INTO public.auditor_profiles (user_id, title, department, cpe_credits, tenant_id) VALUES
+  ('faf00000-0000-0000-0000-000000000001', 'Kıdemli Uyum Uzmanı', 'Regülasyon & Uyum', 12, '11111111-1111-1111-1111-111111111111'),
+  ('faf00000-0000-0000-0000-000000000002', 'Baş Hukuk Müşaviri', 'Hukuk Müşavirliği', 15, '11111111-1111-1111-1111-111111111111'),
+  ('faf00000-0000-0000-0000-000000000003', 'Kıdemli BT Denetçisi', 'Bilgi Sistemleri Denetimi', 9, '11111111-1111-1111-1111-111111111111'),
+  ('faf00000-0000-0000-0000-000000000004', 'Kıdemli İç Denetçi', 'Kurumsal Denetim', 8, '11111111-1111-1111-1111-111111111111'),
+  ('faf00000-0000-0000-0000-000000000005', 'Siber Savunma Mimarı', 'Siber İstihbarat (CTI)', 10, '11111111-1111-1111-1111-111111111111')
+ON CONFLICT (user_id) DO NOTHING;
 
 
 -- ============================================================
@@ -9499,3 +9439,220 @@ INSERT INTO regulator_access_logs (
   ('Zeynep K. (KPMG Dış Denetim)', 'KPMG', 'VIEW_DASHBOARD', 'Continuous Assurance Overview', '212.156.90.8', '2026-04-06 11:21:40+03', TRUE),
   ('Anonim (TCMB VPN)', 'TCMB', 'LOGIN', 'System Auth', '195.140.230.10', '2026-04-06 03:15:00+03', FALSE) -- Başarısız yetkisiz giriş denemesi
 ON CONFLICT DO NOTHING;
+
+-- (Mock user_profiles removed to establish Golden Thread with real users)
+-- =============================================================================
+-- SENTINEL V3.0 - SEED PART 5: EMPTY MODULES MOCK DATA
+-- =============================================================================
+-- Bu dosya bos kalan Survey, SOX, Academy, Gamification, AI Agents ve 
+-- Action tablolarini doldurmak uzere hazirlanmistir.
+-- =============================================================================
+
+-- 1. SURVEYS & RESPONSES (Anketler)
+INSERT INTO public.surveys (id, tenant_id, title, description, target_audience, form_schema) VALUES
+  (
+    '1a000000-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    'İç Denetim Müşteri Memnuniyeti Anketi (2025Q4)',
+    'Denetlenen birimlerin denetim sürecine dair geri bildirimleri.',
+    'AUDITEE',
+    '{"fields": [{"name":"iletisim", "type":"rating", "max":5}, {"name":"deger_katma", "type":"rating", "max":5}]}'::jsonb
+  )
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.survey_responses (id, tenant_id, survey_id, answers, score) VALUES
+  (
+    gen_random_uuid(),
+    '11111111-1111-1111-1111-111111111111',
+    '1a000000-0000-0000-0000-000000000001',
+    '{"iletisim": 4, "deger_katma": 5}'::jsonb,
+    4.5
+  )
+ON CONFLICT (id) DO NOTHING;
+
+
+-- 2. SOX & RCSA (Risk ve Kontrol Özdeğerlendirme)
+INSERT INTO public.sox_campaigns (id, tenant_id, title, period, status, total_controls, completed_count) VALUES
+  (
+    '2b000000-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    'SOX ITGC & BP Kampanyası',
+    '2026',
+    'Active',
+    120,
+    45
+  )
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.rcsa_campaigns (id, tenant_id, title, status, completion_rate, created_by) VALUES
+  (
+    '2c000000-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    'Bireysel Bankacılık RCSA 2026 Q1',
+    'ACTIVE',
+    60.00,
+    'faf00000-0000-0000-0000-000000000001'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+
+-- 3. ACADEMY & TRAINING (Eğitimler)
+INSERT INTO public.training_records (id, tenant_id, user_id, training_title, training_type, hours, cpe_credits) VALUES
+  (
+    gen_random_uuid(),
+    '11111111-1111-1111-1111-111111111111',
+    'faf00000-0000-0000-0000-000000000001',
+    'Yapay Zeka Destekli Siber İstihbarat Eğitimi',
+    'INTERNAL',
+    12,
+    15
+  )
+ON CONFLICT (id) DO NOTHING;
+
+
+INSERT INTO public.investigations (id, tenant_id, case_number, title, status, severity, description) VALUES
+  (
+    '4d000000-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    'INV-2026-001',
+    'İçeriden Bilgi Sızdırma (Insider Trading) Şüphesi',
+    'OPEN',
+    'HIGH',
+    'Şube 342 gişe görevlisinin VIP müşteri hesaplarını yetkisiz sorgulaması üzerine başlatılan soruşturma.'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- 5. AI AGENTS & LOGS
+INSERT INTO public.ai_agents (id, name, codename, role, status, capabilities) VALUES
+  (
+    '5e000000-0000-0000-0000-000000000001',
+    'Data Whisperer (Sentinel-Core)',
+    'DW-CORE',
+    'INVESTIGATOR',
+    'IDLE',
+    '{"bankacılık risk terminolojisi", "rpc analiz"}'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.agent_runs (id, agent_id, target_entity, status) VALUES
+  (
+    '6f000000-0000-0000-0000-000000000001',
+    '5e000000-0000-0000-0000-000000000001',
+    'SWIFT Anomalisi Derin Dalış',
+    'SUCCESS'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- 6. ACTION WORKBENCH (Aksiyon İzleme / Uzatma Talepleri)
+INSERT INTO public.action_requests (id, tenant_id, action_id, type, justification, status) VALUES
+  (
+    '7f000000-0000-0000-0000-000000000001',
+    '11111111-1111-1111-1111-111111111111',
+    'a8000000-0000-0000-0000-000000000001',
+    'extension',
+    'KVKK Veri Maskeleme Altyapısının Güncellenmesi icin ek sure ihtiyaci.',
+    'pending'
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- =============================================================================
+-- SENTINEL V3.0 - GOLDEN THREAD MASTER SEED (Uçtan Uca Kesintisiz Senaryo)
+-- =============================================================================
+
+-- 1. Yıllık Denetim Planı
+INSERT INTO public.audit_plans (id, tenant_id, title, period_start, period_end, status, created_by, approved_at, approved_by) VALUES
+('ee000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', '2026 Yıllık Denetim Planı (Golden Thread)', '2026-01-01', '2026-12-31', 'APPROVED', '00000000-0000-0000-0000-000000000001', '2026-01-15T10:00:00Z', '00000000-0000-0000-0000-000000000001')
+ON CONFLICT (id) DO NOTHING;
+
+-- 2. Audit Engagement (Görev: ENG-2026-001) - Atanan: CAE Dr. Hasan Aksoy
+INSERT INTO public.audit_engagements (id, tenant_id, plan_id, entity_id, title, status, audit_type, start_date, end_date, assigned_auditor_id, risk_snapshot_score, estimated_hours, actual_hours) VALUES
+('ee000000-0000-0000-0000-000000010001', '11111111-1111-1111-1111-111111111111', 'ee000000-0000-0000-0000-000000000001', 'e0000000-0000-0000-0000-000000000013', 'ENG-2026-001 Kredi Tahsis Dosya İncelemesi', 'IN_PROGRESS', 'COMPREHENSIVE', '2026-03-01', '2026-04-15', '00000000-0000-0000-0000-000000000001', 85.5, 120, 45)
+ON CONFLICT (id) DO NOTHING;
+
+-- 3. Audit Findings (Bulgu) - ENG-2026-001'e ait
+INSERT INTO public.audit_findings (id, engagement_id, title, severity, status, state, details, impact_score, likelihood_score, gias_category, financial_impact) VALUES
+('ee000000-0000-0000-0000-000000030001', 'ee000000-0000-0000-0000-000000010001', 'Kredi Tahsis Sürecinde Limit Aşımı', 'CRITICAL', 'FINAL', 'FINAL', '{"condition": "Bireysel kredi tahsis onaylarında şube müdürü inisiyatifi ile regülatif (BDDK) limitlerin aşıldığı tespit edilmiştir.", "criteria": "BDDK Kredi Tahsis Sınırları Yönetmeliği", "cause": "Sistem üzerinde manuel override yetkisinin açık bırakılması", "consequence": "Regülatif ceza ve yasal riskler", "recommendation": "Sistem bloke kuralının devreye alınması"}'::jsonb, 5, 4, 'Compliance', 250000)
+ON CONFLICT (id) DO NOTHING;
+
+-- 4. Actions (Aksiyon) - Atanan Yetkili: Şube Müdürü Burak Yılmaz (...0011)
+INSERT INTO public.actions (
+  id, tenant_id, finding_id, finding_snapshot, title, description,
+  original_due_date, current_due_date, status, priority
+) VALUES (
+  'ee000000-0000-0000-0000-000000040001',
+  '11111111-1111-1111-1111-111111111111',
+  'ee000000-0000-0000-0000-000000030001',
+  '{"title":"Kredi Tahsis Sürecinde Limit Aşımı","severity":"CRITICAL","gias_category":"Compliance"}'::jsonb,
+  'Limit Aşım Sisteminin Otomatik Bloke Edilmesi',
+  'Tahsis sistemlerinde manuel inisiyatifin kaldırılarak BDDK kurallarının hard-code bloke olarak ayarlanması.',
+  '2026-06-30', '2026-06-30', 'IN_PROGRESS', 'HIGH'
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- 5. EMPTY MODULE SEEDING (Bağlantılı Örnekler)
+-- 5.1 SURVEYS (Anket - Auditee Burak Yılmaz İçin)
+INSERT INTO public.surveys (id, tenant_id, title, description, target_audience, form_schema) VALUES
+('ee000000-0000-0000-0000-000000050001', '11111111-1111-1111-1111-111111111111', 'İç Denetim Müşteri Memnuniyeti Anketi (ENG-2026-001)', 'Denetlenen birimlerin denetim sürecine dair geri bildirimleri.', 'AUDITEE', '{"fields": [{"name":"iletisim", "type":"rating", "max":5}, {"name":"deger_katma", "type":"rating", "max":5}]}'::jsonb)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.survey_responses (id, tenant_id, survey_id, answers, score) VALUES
+(gen_random_uuid(), '11111111-1111-1111-1111-111111111111', 'ee000000-0000-0000-0000-000000050001', '{"iletisim": 4, "deger_katma": 5}'::jsonb, 4.5)
+ON CONFLICT (id) DO NOTHING;
+
+-- 5.2 SOX & RCSA (Kredi Riski üzerine)
+INSERT INTO public.sox_campaigns (id, tenant_id, title, period, status, total_controls, completed_count) VALUES
+('ee000000-0000-0000-0000-000000060001', '11111111-1111-1111-1111-111111111111', 'Kredi Riski SOX & ITGC Kampanyası', '2026', 'Active', 120, 45)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.rcsa_campaigns (id, tenant_id, title, status, completion_rate, created_by) VALUES
+('ee000000-0000-0000-0000-000000070001', '11111111-1111-1111-1111-111111111111', 'Bireysel Bankacılık RCSA 2026', 'ACTIVE', 60.00, '00000000-0000-0000-0000-000000000001')
+ON CONFLICT (id) DO NOTHING;
+
+-- 5.3 ACADEMY (Eğitim - Denetçi Dr. Hasan Aksoy)
+INSERT INTO public.training_records (id, tenant_id, user_id, training_title, training_type, hours, cpe_credits) VALUES
+(gen_random_uuid(), '11111111-1111-1111-1111-111111111111', '00000000-0000-0000-0000-000000000001', 'Yapay Zeka Destekli Kredi Riski Analizi', 'INTERNAL', 12, 15)
+ON CONFLICT (id) DO NOTHING;
+
+-- 5.4 INVESTIGATIONS (Ajan Senaryosu)
+INSERT INTO public.investigations (id, tenant_id, case_number, title, status, severity, description) VALUES
+('ee000000-0000-0000-0000-000000080001', '11111111-1111-1111-1111-111111111111', 'INV-2026-GT1', 'Kredi Limit Aşımında Şüpheli İşlem', 'OPEN', 'HIGH', 'Kadıköy şubesi tahsis yetkililerinin VIP limitlerini aştığı tespit edildi.')
+ON CONFLICT (id) DO NOTHING;
+
+-- 5.5 AI AGENTS
+INSERT INTO public.ai_agents (id, name, codename, role, status, capabilities) VALUES
+('ee000000-0000-0000-0000-000000090001', 'Credit Sentinel AI', 'CRED-AI', 'INVESTIGATOR', 'IDLE', '{"kredi risk analiz", "limit kontrol"}')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.agent_runs (id, agent_id, target_entity, status) VALUES
+('ee000000-0000-0000-0000-000000100001', 'ee000000-0000-0000-0000-000000090001', 'Kredi Karar Motoru Derin Dalış', 'SUCCESS')
+ON CONFLICT (id) DO NOTHING;
+
+-- BİTTİ.
+
+-- ==============================================================================
+-- WAVE XX SEED: Gap Analysis Missing Tables
+-- ==============================================================================
+
+-- 1. stakeholders
+INSERT INTO public.stakeholders (id, tenant_id, name, email, role, department) VALUES
+  ('ea000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', 'Ayşe Yılmaz', 'ayse@sentinelbank.com.tr', 'CFO', 'Finance'),
+  ('ea000000-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111', 'Mehmet Demir', 'mehmet@sentinelbank.com.tr', 'CTO', 'IT'),
+  ('ea000000-0000-0000-0000-000000000003', '11111111-1111-1111-1111-111111111111', 'Zeynep Kaya', 'zeynep@sentinelbank.com.tr', 'CRO', 'Risk');
+
+-- 2. data_sources
+INSERT INTO public.data_sources (id, name, source_type, status, last_sync_at) VALUES
+  ('eb000000-0000-0000-0000-000000000001', 'Core Banking Oracle', 'CORE_BANKING', 'ACTIVE', '2026-03-08T10:00:00Z'),
+  ('eb000000-0000-0000-0000-000000000002', 'HRMS SAP', 'HR', 'ACTIVE', '2026-03-08T09:30:00Z')
+ON CONFLICT DO NOTHING;
+
+-- 3. automation_rules
+INSERT INTO public.automation_rules (id, tenant_id, title, description, trigger_event, conditions, actions, is_active) VALUES
+  ('ec000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', 'High Risk Finding Alert', 'Alert CAE on CRITICAL finding', 'FINDING_CREATED', '{"severity":"CRITICAL"}', '[{"type":"EMAIL","target":"cae@sentinelbank.com.tr"}]', true),
+  ('ec000000-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111', 'Action Overdue Notification', 'Notify Action Owner', 'ACTION_OVERDUE', '{"status":"overdue"}', '[{"type":"IN_APP_NOTIFICATION"}]', true);
+
+
+
+-- 5. playbook_entries
+INSERT INTO public.playbook_entries (id, tenant_id, title, content, tags, author_id) VALUES
+  ('ee000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', 'Incident Response Standard', 'Standard operating procedure for data breach', ARRAY['security', 'incident']::text[], '00000000-0000-0000-0000-000000000001');
+

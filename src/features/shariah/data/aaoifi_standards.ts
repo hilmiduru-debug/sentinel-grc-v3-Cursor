@@ -13,14 +13,14 @@
  */
 
 export interface AAOIFIStandard {
-  id: string;
-  standard_name: string;
-  standard_no: number;
-  article_no: string;
-  section: string;
-  text: string;
-  ruling: 'mandatory' | 'recommended' | 'permissible' | 'discouraged' | 'prohibited';
-  risk_level: 'critical' | 'high' | 'medium' | 'low';
-  keywords: string[];
-  references?: string[];
+ id: string;
+ standard_name: string;
+ standard_no: number;
+ article_no: string;
+ section: string;
+ text: string;
+ ruling: 'mandatory' | 'recommended' | 'permissible' | 'discouraged' | 'prohibited';
+ risk_level: 'critical' | 'high' | 'medium' | 'low';
+ keywords: string[];
+ references?: string[];
 }

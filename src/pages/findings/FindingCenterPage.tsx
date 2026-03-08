@@ -14,7 +14,6 @@ import { PageHeader } from '@/shared/ui/PageHeader';
 import { FindingKanbanBoard } from '@/features/finding-hub';
 import { NewFindingModal } from '@/features/finding-form'; 
 import { comprehensiveFindingApi } from '@/entities/finding/api/module5-api';
-import { UniversalFindingDrawer } from '@/widgets/UniversalFindingDrawer';
 import type { ComprehensiveFinding } from '@/entities/finding/model/types';
 import { useParameterStore } from '@/entities/settings/model/parameter-store';
 
@@ -32,7 +31,7 @@ export default function FindingCenterPage() {
   const [showNewFindingModal, setShowNewFindingModal] = useState(false);
 
   // === SUPER DRAWER STATE (FSD Anayasası: Sayfa yenileme yasak) ===
-  const [selectedFindingId, setSelectedFindingId] = useState<string | null>(null);
+  // Drawer state extracted to details page
 
   // === VERİ YÜKLEME: TanStack React Query (FSD Anayasası: sadece entity API) ===
   const {
@@ -91,8 +90,10 @@ export default function FindingCenterPage() {
 
   // === HANDLERS ===
   const handleRowClick = (finding: ComprehensiveFinding) => {
-    // FSD Anayasası: Sayfa yenileme yok — Super Drawer açılır
-    setSelectedFindingId(finding?.id ?? null);
+    // Redirect to Details Page directly
+    if (finding?.id) {
+      navigate(`/findings/${finding.id}`);
+    }
   };
 
   const handleOpenInStudio = (e: React.MouseEvent, id: string) => {
@@ -215,9 +216,7 @@ export default function FindingCenterPage() {
                   onClick={() => handleRowClick(finding)}
                   className={clsx(
                     "bg-surface border rounded-xl p-4 transition-all cursor-pointer group relative overflow-hidden",
-                    selectedFindingId === finding?.id
-                      ? "border-indigo-400 shadow-lg shadow-indigo-100 ring-2 ring-indigo-200"
-                      : "border-slate-200 hover:border-indigo-300 hover:shadow-md"
+                    "border-slate-200 hover:border-indigo-300 hover:shadow-md"
                   )}
                 >
                   <div className={clsx("absolute left-0 top-0 bottom-0 w-1.5 rounded-l-xl", getSeverityColor(finding?.severity ?? '').split(' ')[0])} />
@@ -255,7 +254,7 @@ export default function FindingCenterPage() {
                         <Layers size={13} /> Studio
                       </button>
                       <ChevronRight
-                        className={clsx("transition-colors", selectedFindingId === finding?.id ? "text-indigo-500" : "text-slate-300 group-hover:text-indigo-500")}
+                        className="transition-colors text-slate-300 group-hover:text-indigo-500"
                         size={18}
                       />
                     </div>
@@ -269,17 +268,7 @@ export default function FindingCenterPage() {
         </div>
       </div>
 
-      {/* SUPER DRAWER — Sağdan kayan, sayfa bağlamı kırılmaz */}
-      {selectedFindingId && (
-        <div className="w-[420px] shrink-0 border-l border-slate-200 bg-surface overflow-hidden animate-in slide-in-from-right duration-300">
-          <UniversalFindingDrawer
-            findingId={selectedFindingId}
-            isOpen={true}
-            onClose={() => setSelectedFindingId(null)}
-            defaultTab="ai"
-          />
-        </div>
-      )}
+      {/* SUPER DRAWER moved to detail view */}
 
       <NewFindingModal
         isOpen={showNewFindingModal}

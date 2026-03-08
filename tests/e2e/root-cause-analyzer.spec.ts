@@ -14,19 +14,19 @@ test.describe('🔍 ROOT CAUSE 5-WHYS ANALYZER E2E TEST', () => {
 
   test('Root Cause Analyzer page loads without WSOD', async ({ page }) => {
     await page.goto('/root-cause');
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(500);
     await expect(page.locator('body')).not.toBeEmpty();
   });
 
   test('Analysis list shows seeded data from Supabase', async ({ page }) => {
     await page.goto('/root-cause');
-    await page.waitForTimeout(3500);
+    await page.waitForTimeout(500);
     await expect(page.getByText('Yetkisiz Sistem Erişimi')).toBeVisible({ timeout: 10000 });
   });
 
   test('Five Whys tabular tree renders with numbered steps', async ({ page }) => {
     await page.goto('/root-cause');
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(500);
 
     const analysisCard = page.getByText('Yetkisiz Sistem Erişimi').first();
     if (await analysisCard.isVisible()) {

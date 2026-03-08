@@ -4,25 +4,16 @@
  */
 
 export {
-  default as SENTINEL_CONSTITUTION,
-  ConstitutionUtils,
-  ValidationRules,
+ ConstitutionUtils, default as SENTINEL_CONSTITUTION, ValidationRules
 } from './constitution';
 
 export {
-  navigationConfig,
-  getAllNavigationPaths,
-  findNavigationItem,
+ findNavigationItem, getAllNavigationPaths, navigationConfig
 } from './navigation';
 
 export type {
-  RiskZone,
-  GradeScale,
-  FindingSeverity,
-  FindingStatus,
-  WorkpaperState,
-  ProbeType,
-  ModuleName,
+ FindingSeverity,
+ FindingStatus, GradeScale, ModuleName, ProbeType, RiskZone, WorkpaperState
 } from './constitution';
 
 export type { NavigationItem } from './navigation';

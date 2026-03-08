@@ -13,14 +13,14 @@ test.describe('🎮 HUNTERS GUILD GAMIFICATION E2E TEST', () => {
 
   test('Gamification page loads without WSOD', async ({ page }) => {
     await page.goto('/academy/gamification');
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(500);
     await expect(page.locator('body')).not.toBeEmpty();
     await expect(page.getByText('Müfettiş Performans Ligi')).toBeVisible({ timeout: 10000 });
   });
 
   test('Leaderboard and XP Streams render correctly from Supabase', async ({ page }) => {
     await page.goto('/academy/gamification');
-    await page.waitForTimeout(3500);
+    await page.waitForTimeout(500);
 
     // Look for Podium 1st place Profile
     await expect(page.getByText('Ayşe Demir')).first().toBeVisible();

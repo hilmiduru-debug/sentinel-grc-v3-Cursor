@@ -12,44 +12,44 @@
 import { supabase } from '@/shared/api/supabase';
 
 export interface TimeLogInput {
-  workpaper_id: string;
-  auditor_id: string;
-  hours_logged: number;
-  log_date: string;
-  description?: string;
-  tenant_id: string;
+ workpaper_id: string;
+ auditor_id: string;
+ hours_logged: number;
+ log_date: string;
+ description?: string;
+ tenant_id: string;
 }
 
 export interface TimeLogRecord {
-  id: string;
-  workpaper_id: string;
-  auditor_id: string;
-  hours_logged: number;
-  log_date: string;
-  description: string | null;
-  created_at: string;
+ id: string;
+ workpaper_id: string;
+ auditor_id: string;
+ hours_logged: number;
+ log_date: string;
+ description: string | null;
+ created_at: string;
 }
 
 export interface BudgetSummary {
-  engagement_id: string;
-  title: string;
-  estimated_hours: number;
-  actual_hours: number;
-  variance_hours: number;
-  utilization_percent: number;
-  budget_status: 'UNDER_BUDGET' | 'ON_BUDGET' | 'OVER_BUDGET';
+ engagement_id: string;
+ title: string;
+ estimated_hours: number;
+ actual_hours: number;
+ variance_hours: number;
+ utilization_percent: number;
+ budget_status: 'UNDER_BUDGET' | 'ON_BUDGET' | 'OVER_BUDGET';
 }
 
 export interface BurnRateAnalysis {
-  engagement_id: string;
-  days_elapsed: number;
-  days_total: number;
-  progress_percent: number;
-  hours_burned: number;
-  hours_budget: number;
-  burn_rate: number;
-  projected_total_hours: number;
-  is_at_risk: boolean;
+ engagement_id: string;
+ days_elapsed: number;
+ days_total: number;
+ progress_percent: number;
+ hours_burned: number;
+ hours_budget: number;
+ burn_rate: number;
+ projected_total_hours: number;
+ is_at_risk: boolean;
 }
 
 /**
@@ -57,65 +57,65 @@ export interface BurnRateAnalysis {
  * Triggers automatic rollup to engagement.actual_hours
  */
 export async function logWorkpaperTime(input: TimeLogInput): Promise<TimeLogRecord> {
-  const { data, error } = await supabase
-    .from('workpaper_time_logs')
-    .insert({
-      workpaper_id: input.workpaper_id,
-      auditor_id: input.auditor_id,
-      hours_logged: input.hours_logged,
-      log_date: input.log_date,
-      description: input.description || null,
-      tenant_id: input.tenant_id,
-    })
-    .select()
-    .single();
+ const { data, error } = await supabase
+ .from('workpaper_time_logs')
+ .insert({
+ workpaper_id: input.workpaper_id,
+ auditor_id: input.auditor_id,
+ hours_logged: input.hours_logged,
+ log_date: input.log_date,
+ description: input.description || null,
+ tenant_id: input.tenant_id,
+ })
+ .select()
+ .single();
 
-  if (error) {
-    throw new Error(`Failed to log time: ${error.message}`);
-  }
+ if (error) {
+ throw new Error(`Failed to log time: ${error.message}`);
+ }
 
-  // Database triggers will automatically:
-  // 1. Update workpapers.total_hours_spent
-  // 2. Update audit_engagements.actual_hours
+ // Database triggers will automatically:
+ // 1. Update workpapers.total_hours_spent
+ // 2. Update audit_engagements.actual_hours
 
-  return data as TimeLogRecord;
+ return data as TimeLogRecord;
 }
 
 /**
  * Shortcut: Log time for today
  */
 export async function quickLogTime(
-  workpaperId: string,
-  auditorId: string,
-  hours: number,
-  tenantId: string,
-  description?: string
+ workpaperId: string,
+ auditorId: string,
+ hours: number,
+ tenantId: string,
+ description?: string
 ): Promise<TimeLogRecord> {
-  return logWorkpaperTime({
-    workpaper_id: workpaperId,
-    auditor_id: auditorId,
-    hours_logged: hours,
-    log_date: new Date().toISOString().split('T')[0],
-    description,
-    tenant_id: tenantId,
-  });
+ return logWorkpaperTime({
+ workpaper_id: workpaperId,
+ auditor_id: auditorId,
+ hours_logged: hours,
+ log_date: new Date().toISOString().split('T')[0],
+ description,
+ tenant_id: tenantId,
+ });
 }
 
 /**
  * Get all time logs for a workpaper
  */
 export async function getWorkpaperTimeLogs(workpaperId: string): Promise<TimeLogRecord[]> {
-  const { data, error } = await supabase
-    .from('workpaper_time_logs')
-    .select('*')
-    .eq('workpaper_id', workpaperId)
-    .order('log_date', { ascending: false });
+ const { data, error } = await supabase
+ .from('workpaper_time_logs')
+ .select('*')
+ .eq('workpaper_id', workpaperId)
+ .order('log_date', { ascending: false });
 
-  if (error) {
-    throw new Error(`Failed to fetch time logs: ${error.message}`);
-  }
+ if (error) {
+ throw new Error(`Failed to fetch time logs: ${error.message}`);
+ }
 
-  return data as TimeLogRecord[];
+ return data as TimeLogRecord[];
 }
 
 /**
@@ -123,33 +123,33 @@ export async function getWorkpaperTimeLogs(workpaperId: string): Promise<TimeLog
  * Usually not needed - DB triggers handle this automatically
  */
 export async function rollupWorkpaperTimeToEngagement(engagementId: string): Promise<void> {
-  // Query all workpapers for this engagement and sum hours
-  const { data: workpapers, error } = await supabase
-    .from('workpapers')
-    .select('total_hours_spent, step_id')
-    .in(
-      'step_id',
-      supabase
-        .from('audit_steps')
-        .select('id')
-        .eq('engagement_id', engagementId)
-    );
+ // Query all workpapers for this engagement and sum hours
+ const { data: workpapers, error } = await supabase
+ .from('workpapers')
+ .select('total_hours_spent, step_id')
+ .in(
+ 'step_id',
+ supabase
+ .from('audit_steps')
+ .select('id')
+ .eq('engagement_id', engagementId)
+ );
 
-  if (error || !workpapers) {
-    throw new Error(`Failed to rollup time: ${error?.message}`);
-  }
+ if (error || !workpapers) {
+ throw new Error(`Failed to rollup time: ${error?.message}`);
+ }
 
-  const totalHours = workpapers.reduce((sum, wp) => sum + (wp.total_hours_spent || 0), 0);
+ const totalHours = (workpapers || []).reduce((sum, wp) => sum + (wp.total_hours_spent || 0), 0);
 
-  // Update engagement
-  const { error: updateError } = await supabase
-    .from('audit_engagements')
-    .update({ actual_hours: Math.round(totalHours) })
-    .eq('id', engagementId);
+ // Update engagement
+ const { error: updateError } = await supabase
+ .from('audit_engagements')
+ .update({ actual_hours: Math.round(totalHours) })
+ .eq('id', engagementId);
 
-  if (updateError) {
-    throw new Error(`Failed to update engagement hours: ${updateError.message}`);
-  }
+ if (updateError) {
+ throw new Error(`Failed to update engagement hours: ${updateError.message}`);
+ }
 }
 
 /**
@@ -157,201 +157,201 @@ export async function rollupWorkpaperTimeToEngagement(engagementId: string): Pro
  * Uses the database view engagement_budget_summary
  */
 export async function getEngagementBudgetSummary(engagementId: string): Promise<BudgetSummary | null> {
-  const { data, error } = await supabase
-    .from('engagement_budget_summary')
-    .select('*')
-    .eq('engagement_id', engagementId)
-    .maybeSingle();
+ const { data, error } = await supabase
+ .from('engagement_budget_summary')
+ .select('*')
+ .eq('engagement_id', engagementId)
+ .maybeSingle();
 
-  if (error) {
-    throw new Error(`Failed to fetch budget summary: ${error.message}`);
-  }
+ if (error) {
+ throw new Error(`Failed to fetch budget summary: ${error.message}`);
+ }
 
-  return data as BudgetSummary | null;
+ return data as BudgetSummary | null;
 }
 
 /**
  * Get budget summaries for all active engagements
  */
 export async function getAllEngagementBudgets(): Promise<BudgetSummary[]> {
-  const { data, error } = await supabase
-    .from('engagement_budget_summary')
-    .select('*')
-    .order('title');
+ const { data, error } = await supabase
+ .from('engagement_budget_summary')
+ .select('*')
+ .order('title');
 
-  if (error) {
-    throw new Error(`Failed to fetch budget summaries: ${error.message}`);
-  }
+ if (error) {
+ throw new Error(`Failed to fetch budget summaries: ${error.message}`);
+ }
 
-  return data as BudgetSummary[];
+ return data as BudgetSummary[];
 }
 
 /**
  * Calculate burn rate and predict overrun
  */
 export async function calculateEngagementBurnRate(engagementId: string): Promise<BurnRateAnalysis | null> {
-  const { data: engagement, error } = await supabase
-    .from('audit_engagements')
-    .select('start_date, end_date, estimated_hours, actual_hours')
-    .eq('id', engagementId)
-    .maybeSingle();
+ const { data: engagement, error } = await supabase
+ .from('audit_engagements')
+ .select('start_date, end_date, estimated_hours, actual_hours')
+ .eq('id', engagementId)
+ .maybeSingle();
 
-  if (error || !engagement) {
-    return null;
-  }
+ if (error || !engagement) {
+ return null;
+ }
 
-  const startDate = new Date(engagement.start_date);
-  const endDate = new Date(engagement.end_date);
-  const today = new Date();
+ const startDate = new Date(engagement.start_date);
+ const endDate = new Date(engagement.end_date);
+ const today = new Date();
 
-  const daysTotal = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-  const daysElapsed = Math.ceil((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-  const progressPercent = Math.min(100, (daysElapsed / daysTotal) * 100);
+ const daysTotal = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+ const daysElapsed = Math.ceil((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+ const progressPercent = Math.min(100, (daysElapsed / daysTotal) * 100);
 
-  const hoursBurned = engagement.actual_hours || 0;
-  const hoursBudget = engagement.estimated_hours || 1;
-  const burnRate = hoursBurned / Math.max(1, daysElapsed);
+ const hoursBurned = engagement.actual_hours || 0;
+ const hoursBudget = engagement.estimated_hours || 1;
+ const burnRate = hoursBurned / Math.max(1, daysElapsed);
 
-  const projectedTotalHours = burnRate * daysTotal;
-  const isAtRisk = projectedTotalHours > hoursBudget * 1.1;
+ const projectedTotalHours = burnRate * daysTotal;
+ const isAtRisk = projectedTotalHours > hoursBudget * 1.1;
 
-  return {
-    engagement_id: engagementId,
-    days_elapsed: daysElapsed,
-    days_total: daysTotal,
-    progress_percent: Math.round(progressPercent),
-    hours_burned: hoursBurned,
-    hours_budget: hoursBudget,
-    burn_rate: Math.round(burnRate * 10) / 10,
-    projected_total_hours: Math.round(projectedTotalHours),
-    is_at_risk: isAtRisk,
-  };
+ return {
+ engagement_id: engagementId,
+ days_elapsed: daysElapsed,
+ days_total: daysTotal,
+ progress_percent: Math.round(progressPercent),
+ hours_burned: hoursBurned,
+ hours_budget: hoursBudget,
+ burn_rate: Math.round(burnRate * 10) / 10,
+ projected_total_hours: Math.round(projectedTotalHours),
+ is_at_risk: isAtRisk,
+ };
 }
 
 /**
  * Get time logs for an auditor (timesheet view)
  */
 export async function getAuditorTimeLogs(
-  auditorId: string,
-  startDate: string,
-  endDate: string
+ auditorId: string,
+ startDate: string,
+ endDate: string
 ): Promise<TimeLogRecord[]> {
-  const { data, error } = await supabase
-    .from('workpaper_time_logs')
-    .select('*')
-    .eq('auditor_id', auditorId)
-    .gte('log_date', startDate)
-    .lte('log_date', endDate)
-    .order('log_date', { ascending: false });
+ const { data, error } = await supabase
+ .from('workpaper_time_logs')
+ .select('*')
+ .eq('auditor_id', auditorId)
+ .gte('log_date', startDate)
+ .lte('log_date', endDate)
+ .order('log_date', { ascending: false });
 
-  if (error) {
-    throw new Error(`Failed to fetch auditor time logs: ${error.message}`);
-  }
+ if (error) {
+ throw new Error(`Failed to fetch auditor time logs: ${error.message}`);
+ }
 
-  return data as TimeLogRecord[];
+ return data as TimeLogRecord[];
 }
 
 /**
  * Get total hours logged by auditor in date range
  */
 export async function getAuditorTotalHours(
-  auditorId: string,
-  startDate: string,
-  endDate: string
+ auditorId: string,
+ startDate: string,
+ endDate: string
 ): Promise<number> {
-  const { data, error } = await supabase
-    .from('workpaper_time_logs')
-    .select('hours_logged')
-    .eq('auditor_id', auditorId)
-    .gte('log_date', startDate)
-    .lte('log_date', endDate);
+ const { data, error } = await supabase
+ .from('workpaper_time_logs')
+ .select('hours_logged')
+ .eq('auditor_id', auditorId)
+ .gte('log_date', startDate)
+ .lte('log_date', endDate);
 
-  if (error) {
-    return 0;
-  }
+ if (error) {
+ return 0;
+ }
 
-  return data.reduce((sum, log) => sum + log.hours_logged, 0);
+ return (data || []).reduce((sum, log) => sum + log.hours_logged, 0);
 }
 
 /**
  * Delete a time log (with rollback)
  */
 export async function deleteTimeLog(logId: string): Promise<void> {
-  const { error } = await supabase
-    .from('workpaper_time_logs')
-    .delete()
-    .eq('id', logId);
+ const { error } = await supabase
+ .from('workpaper_time_logs')
+ .delete()
+ .eq('id', logId);
 
-  if (error) {
-    throw new Error(`Failed to delete time log: ${error.message}`);
-  }
+ if (error) {
+ throw new Error(`Failed to delete time log: ${error.message}`);
+ }
 
-  // DB triggers will automatically recalculate totals
+ // DB triggers will automatically recalculate totals
 }
 
 /** Auditor cost entry for budget/cost engine UI */
 export interface EngagementAuditorCost {
-  id: string;
-  name: string;
-  title: string;
-  hoursLogged: number;
-  hourlyRate: number;
+ id: string;
+ name: string;
+ title: string;
+ hoursLogged: number;
+ hourlyRate: number;
 }
 
 /**
  * Get per-auditor cost summary for an engagement (from workpaper_time_logs + user_profiles + talent_profiles)
  */
 export async function getEngagementAuditorCosts(engagementId: string): Promise<EngagementAuditorCost[]> {
-  const { data: steps } = await supabase
-    .from('audit_steps')
-    .select('id')
-    .eq('engagement_id', engagementId);
-  if (!steps?.length) return [];
+ const { data: steps } = await supabase
+ .from('audit_steps')
+ .select('id')
+ .eq('engagement_id', engagementId);
+ if (!steps?.length) return [];
 
-  const stepIds = steps.map((s) => s.id);
-  const { data: workpapers } = await supabase
-    .from('workpapers')
-    .select('id')
-    .in('step_id', stepIds);
-  if (!workpapers?.length) return [];
+ const stepIds = (steps || []).map((s) => s.id);
+ const { data: workpapers } = await supabase
+ .from('workpapers')
+ .select('id')
+ .in('step_id', stepIds);
+ if (!workpapers?.length) return [];
 
-  const wpIds = workpapers.map((w) => w.id);
-  const { data: logs, error: logsErr } = await supabase
-    .from('workpaper_time_logs')
-    .select('auditor_id, hours_logged')
-    .in('workpaper_id', wpIds);
-  if (logsErr || !logs?.length) return [];
+ const wpIds = (workpapers || []).map((w) => w.id);
+ const { data: logs, error: logsErr } = await supabase
+ .from('workpaper_time_logs')
+ .select('auditor_id, hours_logged')
+ .in('workpaper_id', wpIds);
+ if (logsErr || !logs?.length) return [];
 
-  const byAuditor = new Map<string, number>();
-  for (const row of logs) {
-    const cur = byAuditor.get(row.auditor_id) ?? 0;
-    byAuditor.set(row.auditor_id, cur + Number(row.hours_logged));
-  }
+ const byAuditor = new Map<string, number>();
+ for (const row of logs) {
+ const cur = byAuditor.get(row.auditor_id) ?? 0;
+ byAuditor.set(row.auditor_id, cur + Number(row.hours_logged));
+ }
 
-  const auditorIds = [...byAuditor.keys()];
-  const { data: profiles } = await supabase
-    .from('user_profiles')
-    .select('id, full_name, role')
-    .in('id', auditorIds);
-  const { data: talent } = await supabase
-    .from('talent_profiles')
-    .select('user_id, hourly_rate')
-    .in('user_id', auditorIds);
+ const auditorIds = [...byAuditor.keys()];
+ const { data: profiles } = await supabase
+ .from('user_profiles')
+ .select('id, full_name, role')
+ .in('id', auditorIds);
+ const { data: talent } = await supabase
+ .from('talent_profiles')
+ .select('user_id, hourly_rate')
+ .in('user_id', auditorIds);
 
-  const rateByUser = new Map<string, number>();
-  talent?.forEach((t) => rateByUser.set(t.user_id, Number(t.hourly_rate ?? 0)));
-  const profileById = new Map(profiles?.map((p) => [p.id, p]) ?? []);
+ const rateByUser = new Map<string, number>();
+ talent?.forEach((t) => rateByUser.set(t.user_id, Number(t.hourly_rate ?? 0)));
+ const profileById = new Map(profiles?.map((p) => [p.id, p]) ?? []);
 
-  return auditorIds.map((id) => {
-    const p = profileById.get(id);
-    const hoursLogged = byAuditor.get(id) ?? 0;
-    const hourlyRate = rateByUser.get(id) ?? 0;
-    return {
-      id,
-      name: p?.full_name ?? 'Bilinmeyen',
-      title: p?.role ?? '—',
-      hoursLogged,
-      hourlyRate,
-    };
-  });
+ return (auditorIds || []).map((id) => {
+ const p = profileById.get(id);
+ const hoursLogged = byAuditor.get(id) ?? 0;
+ const hourlyRate = rateByUser.get(id) ?? 0;
+ return {
+ id,
+ name: p?.full_name ?? 'Bilinmeyen',
+ title: p?.role ?? '—',
+ hoursLogged,
+ hourlyRate,
+ };
+ });
 }

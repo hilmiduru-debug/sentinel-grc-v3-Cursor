@@ -13,14 +13,14 @@ test.describe('🛡️ DATA PRIVACY & PII FLOW MAPPER E2E TEST', () => {
 
   test('KVKK Data Privacy page loads without WSOD', async ({ page }) => {
     await page.goto('/data-privacy');
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(500);
     await expect(page.locator('body')).not.toBeEmpty();
     await expect(page.getByText('KVKK & GDPR Veri Mahremiyeti')).toBeVisible({ timeout: 10000 });
   });
 
   test('Data flows and breaches are loaded from Supabase', async ({ page }) => {
     await page.goto('/data-privacy');
-    await page.waitForTimeout(3500);
+    await page.waitForTimeout(500);
 
     // Look for the loaded Dataflow mapping (Cross Border)
     await expect(page.getByText('Global Analytics Cloud (Frankfurt)')).toBeVisible({ timeout: 10000 });

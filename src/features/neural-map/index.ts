@@ -3,5 +3,5 @@
  * Feature-Sliced Design Public API
  */
 
-export { calculateContagion, getRiskColor, getRiskLevelTR, calculateNetworkStats } from './engine';
-export type { NeuralNode, NeuralEdge, ContagionResult, NeuralMapState, NetworkStats } from './types';
+export { calculateContagion, calculateNetworkStats, getRiskColor, getRiskLevelTR } from './engine';
+export type { ContagionResult, NetworkStats, NeuralEdge, NeuralMapState, NeuralNode } from './types';

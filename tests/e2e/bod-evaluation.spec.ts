@@ -14,14 +14,14 @@ test.describe('📊 BoD EVALUATION & SKILL MATRIX E2E TEST', () => {
 
   test('Board Evaluation Skill Matrix page loads without WSOD', async ({ page }) => {
     await page.goto('/governance/board-evaluation');
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(500);
     await expect(page.locator('body')).not.toBeEmpty();
     await expect(page.getByText('BoD Evaluation & Skill Matrix')).toBeVisible({ timeout: 10000 });
   });
 
   test('Board Members list and Radar logic loads from Supabase', async ({ page }) => {
     await page.goto('/governance/board-evaluation');
-    await page.waitForTimeout(3500);
+    await page.waitForTimeout(500);
 
     // Assert Board Member profile button exists
     await expect(page.getByText('Mehmet Öztürk')).toBeVisible({ timeout: 10000 });

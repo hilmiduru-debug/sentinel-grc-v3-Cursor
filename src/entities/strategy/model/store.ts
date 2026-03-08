@@ -1,88 +1,88 @@
 import { create } from 'zustand';
+import { fetchAuditObjectivesSimple, fetchStrategicGoals } from '../api/goals';
 import type {
-  BankGoal,
-  AuditObjective,
-  StrategyAlignment,
-  StrategicGoal,
-  AuditObjectiveSimple,
+ AuditObjective,
+ AuditObjectiveSimple,
+ BankGoal,
+ StrategicGoal,
+ StrategyAlignment,
 } from './types';
-import { fetchStrategicGoals, fetchAuditObjectivesSimple } from '../api/goals';
 
 interface ExtendedStrategicGoal extends StrategicGoal {
-  period_year?: number;
-  weight?: number;
-  owner?: string;
+ period_year?: number;
+ weight?: number;
+ owner?: string;
 }
 
 interface ExtendedAuditObjective extends AuditObjectiveSimple {
-  relatedEngagementIds?: string[];
+ relatedEngagementIds?: string[];
 }
 
 interface StrategyStore {
-  bankGoals: BankGoal[];
-  auditObjectives: AuditObjective[];
-  alignments: StrategyAlignment[];
+ bankGoals: BankGoal[];
+ auditObjectives: AuditObjective[];
+ alignments: StrategyAlignment[];
 
-  goals: ExtendedStrategicGoal[];
-  objectives: ExtendedAuditObjective[];
-  riskWeights: { impact: number; likelihood: number; velocity: number };
+ goals: ExtendedStrategicGoal[];
+ objectives: ExtendedAuditObjective[];
+ riskWeights: { impact: number; likelihood: number; velocity: number };
 
-  addGoal: (goal: Omit<ExtendedStrategicGoal, 'id' | 'linkedAuditObjectives' | 'progress'>) => void;
-  addObjective: (objective: Omit<ExtendedAuditObjective, 'id' | 'status'>) => void;
-  updateRiskWeights: (weights: { impact: number; likelihood: number; velocity: number }) => void;
-  setGoals: (goals: ExtendedStrategicGoal[]) => void;
-  setObjectives: (objectives: ExtendedAuditObjective[]) => void;
+ addGoal: (goal: Omit<ExtendedStrategicGoal, 'id' | 'linkedAuditObjectives' | 'progress'>) => void;
+ addObjective: (objective: Omit<ExtendedAuditObjective, 'id' | 'status'>) => void;
+ updateRiskWeights: (weights: { impact: number; likelihood: number; velocity: number }) => void;
+ setGoals: (goals: ExtendedStrategicGoal[]) => void;
+ setObjectives: (objectives: ExtendedAuditObjective[]) => void;
 
-  getAlignmentsForGoal: (goalId: string) => StrategyAlignment[];
+ getAlignmentsForGoal: (goalId: string) => StrategyAlignment[];
 
-  /** strategic_bank_goals ve strategic_audit_objectives tablolarından veri çeker. */
-  initialize: () => Promise<void>;
+ /** strategic_bank_goals ve strategic_audit_objectives tablolarından veri çeker. */
+ initialize: () => Promise<void>;
 }
 
 export const useStrategyStore = create<StrategyStore>((set, get) => ({
-  bankGoals: [],
-  auditObjectives: [],
-  alignments: [],
+ bankGoals: [],
+ auditObjectives: [],
+ alignments: [],
 
-  goals: [],
-  objectives: [],
-  riskWeights: { impact: 40, likelihood: 40, velocity: 20 },
+ goals: [],
+ objectives: [],
+ riskWeights: { impact: 40, likelihood: 40, velocity: 20 },
 
-  addGoal: (newGoalData) => set((state) => ({
-    goals: [...state.goals, {
-      ...newGoalData,
-      id: crypto.randomUUID(),
-      linkedAuditObjectives: [],
-      progress: 0,
-      riskAppetite: newGoalData.riskAppetite || 'Medium'
-    }]
-  })),
+ addGoal: (newGoalData) => set((state) => ({
+ goals: [...state.goals, {
+ ...newGoalData,
+ id: crypto.randomUUID(),
+ linkedAuditObjectives: [],
+ progress: 0,
+ riskAppetite: newGoalData.riskAppetite || 'Medium'
+ }]
+ })),
 
-  addObjective: (newObjData) => set((state) => ({
-    objectives: [...state.objectives, {
-      ...newObjData,
-      id: crypto.randomUUID(),
-      status: 'On Track',
-      type: newObjData.type || 'Assurance',
-      relatedEngagementIds: newObjData.relatedEngagementIds || []
-    }]
-  })),
+ addObjective: (newObjData) => set((state) => ({
+ objectives: [...state.objectives, {
+ ...newObjData,
+ id: crypto.randomUUID(),
+ status: 'On Track',
+ type: newObjData.type || 'Assurance',
+ relatedEngagementIds: newObjData.relatedEngagementIds || []
+ }]
+ })),
 
-  updateRiskWeights: (weights) => set({ riskWeights: weights }),
+ updateRiskWeights: (weights) => set({ riskWeights: weights }),
 
-  setGoals: (goals) => set({ goals }),
+ setGoals: (goals) => set({ goals }),
 
-  setObjectives: (objectives) => set({ objectives }),
+ setObjectives: (objectives) => set({ objectives }),
 
-  getAlignmentsForGoal: (goalId) => {
-    return get().alignments.filter((a) => a.bank_goal_id === goalId);
-  },
+ getAlignmentsForGoal: (goalId) => {
+    return (get().alignments || []).filter((a) => a.bank_goal_id === goalId);
+ },
 
-  initialize: async () => {
-    const [goals, objectives] = await Promise.all([
-      fetchStrategicGoals(),
-      fetchAuditObjectivesSimple(),
-    ]);
-    set({ goals, objectives });
-  },
+ initialize: async () => {
+ const [goals, objectives] = await Promise.all([
+ fetchStrategicGoals(),
+ fetchAuditObjectivesSimple(),
+ ]);
+ set({ goals, objectives });
+ },
 }));

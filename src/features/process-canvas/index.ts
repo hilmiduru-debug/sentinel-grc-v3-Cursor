@@ -1,13 +1,6 @@
 export {
-  fetchProcessMaps,
-  fetchProcessMap,
-  createProcessMap,
-  saveProcessMap,
-  deleteProcessMap,
-  useProcessGraph,
-  useSaveProcessGraph,
-  fetchProcessGraphByEntity,
-  saveProcessGraphToDb,
+ createProcessMap, deleteProcessMap, fetchProcessGraphByEntity, fetchProcessMap, fetchProcessMaps, saveProcessGraphToDb, saveProcessMap, useProcessGraph,
+ useSaveProcessGraph
 } from './api';
-export type { ProcessMap, RiskMapping } from './types';
 export type { ProcessGraphResult, SaveProcessGraphInput } from './api';
+export type { ProcessMap, RiskMapping } from './types';
